@@ -23,3 +23,9 @@ python -m venv .env
 ```shell
 pip install -r requirements.txt
 ```
+
+- Install Yarn Packages
+
+```shell
+yarn install
+```

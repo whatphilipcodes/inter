@@ -1,6 +1,6 @@
 # Prerequisites
 
-- Tested only on a Windows 10 System with the following specs:
+- Tested only using Windows 10 on a system with the following specs:
 
   - CPU: 11th Gen Intel i9-11900K @3.50GHz
   - GPU: NVIDIA RTX 3080 (10GB)

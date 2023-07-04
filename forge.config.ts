@@ -17,7 +17,7 @@ const config: ForgeConfig = {
     asar: true,
   },
   rebuildConfig: {},
-  makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
+  makers: [new MakerSquirrel({}), new MakerZIP({})],
   publishers: [
     {
       name: '@electron-forge/publisher-github',

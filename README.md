@@ -12,10 +12,10 @@
 
 # Env Setup
 
-- Create venv
+- Create & Activate venv
 
 ```shell
-python -m venv .env
+python -m venv .env && .\.env\Scripts\activate
 ```
 
 - Install requirements

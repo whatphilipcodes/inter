@@ -6,7 +6,7 @@
   - GPU: NVIDIA RTX 3080 (10GB)
   - RAM: 32GB @3200MHz
   - Available Storage: 30GB Free
-    - HGHub caches dataset on C: drive regardess of where you install this application
+    - HGHub caches dataset on C:\ drive regardess of where you install this application
     - Due to the nature of this application, the size is incereasing slowly over time
 
 - Install Cuda 11.8<br>

@@ -265,4 +265,4 @@ resources/data/*
 !resources/data/dataset_name/
 
 # include .spec file for pyinstaller
-!freeze.spec
+!entry.spec

@@ -15,5 +15,5 @@
       "*": ["node_modules/*"]
     }
   },
-  "include": ["src-frontend/**/*"]
+  "include": ["src_frontend/**/*"]
 }

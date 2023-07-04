@@ -9,6 +9,9 @@ import { WebpackPlugin } from '@electron-forge/plugin-webpack';
 import { mainConfig } from './webpack.main.config';
 import { rendererConfig } from './webpack.renderer.config';
 
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.development.local' });
+
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
@@ -19,11 +22,12 @@ const config: ForgeConfig = {
     {
       name: '@electron-forge/publisher-github',
       config: {
+        authToken: process.env.GITHUB_TOKEN,
         repository: {
-          owner: 'me',
+          owner: 'whatphilipcodes',
           name: 'inter'
         },
-        prerelease: true
+        prerelease: true,
       }
     }
   ],

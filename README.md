@@ -14,14 +14,20 @@
 
 # Env Setup
 
-- Create venv
+- Create & Activate venv
 
 ```shell
-python -m venv .env
+python -m venv .env && .\.env\Scripts\activate
 ```
 
 - Install Requirements
 
 ```shell
 pip install -r requirements.txt
+```
+
+- Install Yarn Packages
+
+```shell
+yarn install
 ```

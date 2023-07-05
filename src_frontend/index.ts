@@ -24,15 +24,15 @@ const isDev = process.env.NODE_ENV === 'development';
 if (isDev) {
   process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'; // disable security warnings
 
-  // Start Python API in dev mode
-  PythonShell.run(API_DEV_PATH, null).then(messages => {
-    console.log(messages);
-  });
+  // // Start Python API in dev mode
+  // PythonShell.run(API_DEV_PATH, null).then(messages => {
+  //   console.log(messages);
+  // });
 } else {
-  // Start Python API in production mode
-  execFile(API_PROD_PATH, {
-    windowsHide: true,
-  });
+  // // Start Python API in production mode
+  // execFile(API_PROD_PATH, {
+  //   windowsHide: true,
+  // });
 
 }
 
@@ -61,15 +61,15 @@ app.whenReady().then(() => {
   createWindow()
 })
 
-// kill all child process before-quit
-app.on("before-quit", function () {
+// // kill all child process before-quit
+// app.on("before-quit", function () {
 
-  if (isDev) {
-    PythonShell.kill(API_DEV_PATH)
-  } else {
-    execFile().kill("SIGINT")
-  }
-});
+//   if (isDev) {
+//     PythonShell.kill(API_DEV_PATH)
+//   } else {
+//     execFile().kill("SIGINT")
+//   }
+// });
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -101,6 +101,10 @@ const devMenu = Menu.buildFromTemplate([
         role: 'toggleDevTools' // Option to toggle the developer tools
       },
       {
+        label: 'Toggle Fullscreen',
+        role: 'togglefullscreen' // Option to toggle fullscreen
+      },
+      {
         label: 'Quit',
         role: 'quit' // Option to quit the application
       }
@@ -112,13 +116,14 @@ const buildMenu = Menu.buildFromTemplate([
   {
     label: app.name, // Display the program name
     submenu: [
-      {
-        label: 'Restart',
-        click: () => {
-          app.relaunch(); // Option to restart the application
-          app.exit(0); // kill the old instance
-        }
-      },
+      // wont restart three.js #broken
+      // {
+      //   label: 'Restart',
+      //   click: () => {
+      //     app.relaunch(); // Option to restart the application
+      //     app.exit(0); // kill the old instance
+      //   }
+      // },
       {
         label: 'Quit',
         role: 'quit' // Option to quit the application

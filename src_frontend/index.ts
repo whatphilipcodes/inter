@@ -1,7 +1,5 @@
 import path from 'path';
 import { execFile } from "child_process";
-
-import getPort from 'get-port';
 import { PythonShell } from 'python-shell';
 
 import { app, BrowserWindow, Menu } from 'electron';
@@ -31,12 +29,9 @@ if (isDev) {
 
 const startPythonAPI = async (): Promise<void> => {
 
-  // get empty Port for Python API
-  const port: number = await getPort();
-
   // set up options for PythonShell
   const options: object = {
-    env: { 'PORT': port.toString() },
+    env: { 'PORT': MAIN_WINDOW_WEBPACK_ENTRY.toString() }, // needed for CORS policy
     pythonPath: './.env/Scripts/python.exe',
     pythonOptions: ['-u'],
   };

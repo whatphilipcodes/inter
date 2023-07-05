@@ -46,7 +46,6 @@
     "@types/python-shell": "^1.0.3",
     "@types/three": "^0.152.1",
     "electron-squirrel-startup": "^1.0.0",
-    "get-port": "^7.0.0",
     "python-shell": "^5.0.0",
     "three": "^0.154.0"
   }

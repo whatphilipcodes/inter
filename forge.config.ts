@@ -13,6 +13,9 @@ dotenv.config({ path: '.env.development.local' });
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    "extraResource": [
+      "./dist/backend",
+    ],
   },
   rebuildConfig: {},
   makers: [new MakerSquirrel({}), new MakerZIP({})],

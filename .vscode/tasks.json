@@ -11,6 +11,21 @@
         "kind": "test",
         "isDefault": true
       }
+    },
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "./build.bat",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "showReuseMessage": true,
+        "clear": true
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     }
   ]
 }

@@ -131,7 +131,7 @@ class Classifier:
         self.optimizer.step()
         self.lr_scheduler.step()
         self.optimizer.zero_grad()
-        #    self.progress_bar.update(1)
+        # self.progress_bar.update(1)
 
 
     def save(self):
@@ -139,7 +139,7 @@ class Classifier:
         self.model.save_pretrained(os.path.join(get_resource_path(), 'models', 'to-delete'))
         self.tokenizer.save_pretrained(os.path.join(get_resource_path(), 'models', 'to-delete'))
 
-    # yes i know how unneccesary the async is, but I hat this tqdm oh there was still one iteration left ruining my console view
+    # yes, i know how unneccesary the async is, but I hate this tqdm 'oh there was still one iteration left' ruining my console view
     async def evaluate(self):
 
         self.model.eval()

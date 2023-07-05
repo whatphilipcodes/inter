@@ -23,24 +23,22 @@ const isDev = process.env.NODE_ENV === 'development';
 // configure for dev or production
 if (isDev) {
   process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'; // disable security warnings
-
-  // // Start Python API in dev mode
-  // PythonShell.run(API_DEV_PATH, null).then(messages => {
-  //   console.log(messages);
-  // });
+  // Start Python API in dev mode
+  PythonShell.run(API_DEV_PATH, null).then(messages => {
+    console.log(messages);
+  });
 } else {
-  // // Start Python API in production mode
-  // execFile(API_PROD_PATH, {
-  //   windowsHide: true,
-  // });
-
+  // Start Python API in production mode
+  execFile(API_PROD_PATH, {
+    windowsHide: true,
+  });
 }
 
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     autoHideMenuBar: true, // toggle the menu bar using alt (win)
-    fullscreen: true,
+    fullscreen: !isDev, // fullscreen in production mode
     webPreferences: {
       devTools: isDev,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,

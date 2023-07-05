@@ -5,6 +5,7 @@ import os
 import asyncio
 
 # src
+from . import api
 from . import async_chat as chat
 from . import async_trainf as trainf
 
@@ -22,6 +23,7 @@ async def main():
     
     setup_env()
 
+    '''
     ### Async Testing
     inference_queue = asyncio.Queue()
 
@@ -39,6 +41,8 @@ async def main():
     # Cancel all side tasks
     for task in side_tasks:
         task.cancel()
+
+    '''
 
     print('# sucessfully ran main')
     

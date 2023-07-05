@@ -1,5 +1,7 @@
 import path from 'path';
 import { execFile } from "child_process";
+
+import getPort from 'get-port';
 import { PythonShell } from 'python-shell';
 
 import { app, BrowserWindow, Menu } from 'electron';
@@ -9,8 +11,9 @@ import { app, BrowserWindow, Menu } from 'electron';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
-const API_PROD_PATH: string = path.join(process.resourcesPath, '../lib/api/api.exe');
-const API_DEV_PATH: string = path.join(__dirname, '../../../engine/api.py');
+// const API_PROD_PATH: string = path.join(process.resourcesPath, '../lib/api/api.exe');
+// const API_DEV_PATH: string = path.join(__dirname, '../../../engine/api.py');
+const API_DEV_PATH = './entry.py';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -20,19 +23,35 @@ if (require('electron-squirrel-startup')) {
 // get build mode from environment variable
 const isDev = process.env.NODE_ENV === 'development';
 
-// configure for dev or production
+// configure process environment
 if (isDev) {
   process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'; // disable security warnings
   // Start Python API in dev mode
-  PythonShell.run(API_DEV_PATH, null).then(messages => {
-    console.log(messages);
-  });
-} else {
-  // Start Python API in production mode
-  execFile(API_PROD_PATH, {
-    windowsHide: true,
-  });
 }
+
+const startPythonAPI = async (): Promise<void> => {
+
+  // get empty Port for Python API
+  const port: number = await getPort();
+
+  // set up options for PythonShell
+  const options: object = {
+    env: { 'PORT': port.toString() },
+    pythonPath: './.env/Scripts/python.exe',
+    pythonOptions: ['-u'],
+  };
+
+  if (isDev) {
+    PythonShell.run(API_DEV_PATH, options).then(messages => {
+      console.log(messages);
+    });
+  } else {
+    // // Start Python API in production mode
+    // execFile(API_PROD_PATH, {
+    //   windowsHide: true,
+    // });
+  }
+};
 
 const createWindow = (): void => {
   // Create the browser window.
@@ -55,8 +74,9 @@ const createWindow = (): void => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   createWindow()
+  await startPythonAPI()
 })
 
 // // kill all child process before-quit

@@ -9,9 +9,8 @@ import { app, BrowserWindow, Menu } from 'electron';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
-// const API_PROD_PATH: string = path.join(process.resourcesPath, '../lib/api/api.exe');
-// const API_DEV_PATH: string = path.join(__dirname, '../../../engine/api.py');
-const API_DEV_PATH = './entry.py';
+const API_DEV_PATH: string = path.join('.', 'entry.py');
+const API_PROD_PATH: string = path.join(process.resourcesPath, 'backend', 'backend.exe');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -41,10 +40,10 @@ const startPythonAPI = async (): Promise<void> => {
       console.log(messages);
     });
   } else {
-    // // Start Python API in production mode
-    // execFile(API_PROD_PATH, {
-    //   windowsHide: true,
-    // });
+    // Start Python API in production mode
+    execFile(API_PROD_PATH, {
+      windowsHide: true,
+    });
   }
 };
 
@@ -74,15 +73,15 @@ app.whenReady().then(async () => {
   await startPythonAPI()
 })
 
-// // kill all child process before-quit
-// app.on("before-quit", function () {
+// kill all child process before-quit
+app.on("before-quit", function () {
 
-//   if (isDev) {
-//     PythonShell.kill(API_DEV_PATH)
-//   } else {
-//     execFile().kill("SIGINT")
-//   }
-// });
+  if (isDev) {
+    PythonShell.kill(API_DEV_PATH)
+  } else {
+    execFile().kill("SIGINT")
+  }
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

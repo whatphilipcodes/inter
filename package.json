@@ -42,7 +42,9 @@
     "typescript": "~4.5.4"
   },
   "dependencies": {
+    "@types/python-shell": "^1.0.3",
     "electron-squirrel-startup": "^1.0.0",
+    "python-shell": "^5.0.0",
     "three": "^0.154.0"
   }
 }

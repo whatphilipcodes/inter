@@ -8,7 +8,7 @@ async def run(inference_queue: asyncio.Queue):
 
     # Training Loop
     while True:
-        cls.training_step()
+        cls.training_step() # -> more steps per iteration
         await asyncio.sleep(0.0001) # Breaks without, however slows down trianing #inquiry
         if not inference_queue.empty():
             print("Training paused!")

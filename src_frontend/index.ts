@@ -25,7 +25,6 @@ const isDev = process.env.NODE_ENV === 'development';
 // configure process environment
 if (isDev) {
   process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'; // disable security warnings
-  // Start Python API in dev mode
 }
 
 /*************************************************************

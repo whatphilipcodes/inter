@@ -12,6 +12,9 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
+// Fix: https://github.com/electron/electron/issues/38790
+app.commandLine.appendSwitch('disable-features', 'WidgetLayering');
+
 /*************************************************************
  * Env Setup
  *************************************************************/

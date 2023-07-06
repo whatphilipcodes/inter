@@ -13,8 +13,7 @@
     "resolveJsonModule": true,
     "paths": {
       "*": ["node_modules/*"]
-    },
-    "jsx": "react-jsx" // react support
+    }
   },
   "include": ["src_frontend/**/*"]
 }

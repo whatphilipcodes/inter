@@ -29,10 +29,3 @@ if host is not None:
         print("Invalid host:", host)
 else:
     print("HOST environment variable is not set.")
-
-
-async def loop_test():
-    ### Test Loop
-    while True:
-        print("PyLoop running...")
-        await asyncio.sleep(1)

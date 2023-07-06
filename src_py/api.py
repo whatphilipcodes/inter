@@ -2,7 +2,8 @@
 
 # Lib Imports
 import os
-import asyncio
+import uvicorn
+from fastapi import FastAPI
 
 # END IMPORT BLOCK ###########################################################
 
@@ -29,3 +30,14 @@ if host is not None:
         print("Invalid host:", host)
 else:
     print("HOST environment variable is not set.")
+
+### Create FastAPI app
+app = FastAPI()
+
+### Routes
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+### Start FastAPI as Server
+uvicorn.run(app, host='127.0.0.1', port=port)

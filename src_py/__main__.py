@@ -22,6 +22,7 @@ def setup_env():
 async def main():
     
     setup_env()
+    await api.loop_test()
 
     '''
     ### Async Testing

@@ -2,6 +2,7 @@
 
 # Lib Imports
 import os
+import asyncio
 
 # END IMPORT BLOCK ###########################################################
 
@@ -16,3 +17,22 @@ if port is not None:
         print("Invalid port number:", port)
 else:
     print("PORT environment variable is not set.")
+
+### Get host from electron app
+host = os.environ.get('HOST')
+if host is not None:
+    try:
+        host = str(host)
+        # Use the host variable as an integer
+        print("Host:", host)
+    except ValueError:
+        print("Invalid host:", host)
+else:
+    print("HOST environment variable is not set.")
+
+
+async def loop_test():
+    ### Test Loop
+    while True:
+        print("PyLoop running...")
+        await asyncio.sleep(1)

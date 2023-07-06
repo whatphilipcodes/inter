@@ -1,5 +1,5 @@
 const template = document.createElement('template');
-template.innerHTML = `
+template.innerHTML = /*html*/`
     <style>
         h1 { color: white; }
     </style>

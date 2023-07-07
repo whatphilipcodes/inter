@@ -37,7 +37,8 @@ class Chat extends HTMLElement {
             cursor: pointer;
           }
         </style>
-        <div id="conversation"></div>
+        <div id="conversation">
+        </div>
         <input id="messageInput" type="text" placeholder="Type your message..." />
         <button id="sendButton">Send</button>
       `;

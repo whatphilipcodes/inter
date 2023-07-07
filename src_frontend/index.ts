@@ -21,6 +21,7 @@ app.commandLine.appendSwitch('disable-features', 'WidgetLayering');
 
 // get build mode from environment variable
 const isDev = process.env.NODE_ENV === 'development';
+const isWin = process.platform === 'win32';
 
 // configure process environment
 if (isDev) {
@@ -89,13 +90,13 @@ const createWindow = (): void => {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow()
-  startPythonAPI()
-  // startPythonLog()
+  if (isWin) startPythonAPI()
+  else console.log('Python API not supported on ' + process.platform)
 })
 
 // kill all child process when quitting
 app.on("before-quit", function () {
-  pyProcess.kill("SIGINT")
+  if (isWin) pyProcess.kill("SIGINT")
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

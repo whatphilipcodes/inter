@@ -20,7 +20,7 @@ const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     "extraResource": [
-      ...xRsc,
+      xRsc,
     ],
   },
   rebuildConfig: {},

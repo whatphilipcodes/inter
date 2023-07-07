@@ -7,7 +7,7 @@
       "command": "yarn run electron-forge start",
       "presentation": {
         "reveal": "always",
-        "panel": "new",
+        "panel": "dedicated",
         "showReuseMessage": true,
         "clear": true
       },
@@ -25,7 +25,7 @@
       },
       "presentation": {
         "reveal": "always",
-        "panel": "new",
+        "panel": "dedicated",
         "showReuseMessage": true,
         "clear": true
       },

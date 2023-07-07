@@ -1,0 +1,30 @@
+{
+	"Web Component": {
+		"scope": "typescript,javascript",
+		"prefix": "WebComp",
+		"body": [
+			"class ${1:${TM_FILENAME_BASE/(.)(.*)/${1:/capitalize}${2}/}} extends HTMLElement {",
+			"    constructor() {",
+			"        const template = document.createElement('template');",
+			"        template.innerHTML = /*html*/`",
+			"            <style>",
+			"                div {",
+			"                    color: white;",
+			"                }",
+			"            </style>",
+			"            <div>",
+			"                <slot></slot>",
+			"            </div>",
+			"        `;",
+			"",
+			"        super();",
+			"        this.attachShadow({ mode: 'open' });",
+			"        this.shadowRoot.appendChild(template.content.cloneNode(true));",
+			"    }",
+			"}",
+			"",
+			"customElements.define('${TM_FILENAME_BASE}-el', ${1:${TM_FILENAME_BASE/(.)(.*)/${1:/capitalize}${2}/}});"
+		],
+		"description": "Template for a simple web component with syntax highlighting"
+	},
+}

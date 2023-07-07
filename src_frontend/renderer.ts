@@ -30,4 +30,3 @@ import './index.css';
 import './three/demo.ts';
 
 // web components
-import './components/comp-test.ts';

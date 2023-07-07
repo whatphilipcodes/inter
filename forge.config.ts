@@ -10,11 +10,17 @@ import { rendererConfig } from './webpack.renderer.config';
 import dotenv from 'dotenv';
 dotenv.config({ path: '.env.development.local' });
 
+// Dont include backend resources on mac testbuilds
+let xRsc = '';
+if (process.platform === 'win32') {
+  xRsc = './dist/backend';
+}
+
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     "extraResource": [
-      "./dist/backend",
+      ...xRsc,
     ],
   },
   rebuildConfig: {},

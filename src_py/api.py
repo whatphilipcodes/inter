@@ -4,6 +4,7 @@
 import os
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 # END IMPORT BLOCK ###########################################################
 
@@ -31,13 +32,35 @@ if host is not None:
 else:
     print("HOST environment variable is not set.")
 
+### Get host from electron app
+url = os.environ.get('URL')
+if url is not None:
+    try:
+        url = str(url)
+        # Use the url variable as an integer
+        print("url:", url)
+    except ValueError:
+        print("Invalid URL:", url)
+else:
+    print("URL environment variable is not set.")
+
 ### Create FastAPI app
 app = FastAPI()
+
+### Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[url],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 ### Routes
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {
+        "message": "Hello World"}
 
 ### Start FastAPI as Server
-uvicorn.run(app, host='127.0.0.1', port=port)
+uvicorn.run(app, host=host, port=port)

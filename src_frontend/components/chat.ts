@@ -1,13 +1,15 @@
-class Chat extends HTMLElement {
-    conversationElement: HTMLElement;
-    messageInputElement: HTMLInputElement;
-    sendButtonElement: HTMLButtonElement;
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
+import { get } from '../utils/api';
 
-        const template = document.createElement('template');
-        template.innerHTML = /*html*/ `
+class Chat extends HTMLElement {
+  conversationElement: HTMLElement;
+  messageInputElement: HTMLInputElement;
+  sendButtonElement: HTMLButtonElement;
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+
+    const template = document.createElement('template');
+    template.innerHTML = /*html*/ `
         <style>
           :host * {
             color: white;
@@ -77,61 +79,61 @@ class Chat extends HTMLElement {
         </div>
       `;
 
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
-        this.conversationElement = this.shadowRoot.getElementById('conversation');
-        this.messageInputElement = this.shadowRoot.getElementById('messageInput') as HTMLInputElement;
-        this.sendButtonElement = this.shadowRoot.getElementById('sendButton') as HTMLButtonElement;
+    this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.conversationElement = this.shadowRoot.getElementById('conversation');
+    this.messageInputElement = this.shadowRoot.getElementById('messageInput') as HTMLInputElement;
+    this.sendButtonElement = this.shadowRoot.getElementById('sendButton') as HTMLButtonElement;
 
-        this.sendButtonElement.addEventListener('click', () => this.sendMessage());
-        this.messageInputElement.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                this.sendMessage();
-            }
-        });
-    }
-
-    sendMessage() {
-      const message = this.messageInputElement.value.trim(); // Trim whitespace from the message
-      if (message === '') {
-        // Show visual feedback for empty message
-        this.messageInputElement.blur(); // Remove focus from the input element
-        return; // Exit the method if the message is empty
+    this.sendButtonElement.addEventListener('click', () => this.sendMessage());
+    this.messageInputElement.addEventListener('keypress', (event) => {
+      if (event.key === 'Enter') {
+        this.sendMessage();
       }
-    
-      this.addMessage(message);
-      this.messageInputElement.value = '';
-      this.messageInputElement.style.border = 'none'; // Reset border style
-      this.response(); // Call the response function to simulate a response
+    });
+  }
+
+  sendMessage() {
+    const message = this.messageInputElement.value.trim(); // Trim whitespace from the message
+    if (message === '') {
+      // Show visual feedback for empty message
+      this.messageInputElement.blur(); // Remove focus from the input element
+      return; // Exit the method if the message is empty
     }
 
-    response() {
-      // Simulate a response by adding a message from the bot
-      const botMessage = 'This is a response from the bot.';
-      setTimeout(() => {
-          this.addMessage(botMessage, '#1d1d1d', 'flex-end');
-      }, 1000);
-    }
+    this.addMessage(message);
+    this.messageInputElement.value = '';
+    this.messageInputElement.style.border = 'none'; // Reset border style
+    this.response(); // Call the response function to simulate a response
+  }
 
-    addMessage(message: string, color = 'blueviolet', align = 'flex-start') {
-      const messageElement = document.createElement('div');
-      messageElement.style.alignSelf = align;
-      messageElement.style.backgroundColor = color;
-      messageElement.style.borderRadius = '5px';
-      messageElement.style.margin = '0px';
-      messageElement.style.width = 'calc(100% - 120px)';
-      messageElement.style.right = '0 px';
-      messageElement.textContent = `${message}`;
-      this.conversationElement.appendChild(messageElement);
-      this.scrollToBottom();
-    }
+  response() {
+    // Simulate a response by adding a message from the bot
+    get('http://127.0.0.1:3000/').then((response) => {
+      this.addMessage(response.message, '#1d1d1d', 'flex-end');
+      console.log(response);
+    });
+  }
 
-    scrollToBottom() {
-        this.conversationElement.scrollTop = this.conversationElement.scrollHeight;
-    }
+  addMessage(message: string, color = 'blueviolet', align = 'flex-start') {
+    const messageElement = document.createElement('div');
+    messageElement.style.alignSelf = align;
+    messageElement.style.backgroundColor = color;
+    messageElement.style.borderRadius = '5px';
+    messageElement.style.margin = '0px';
+    messageElement.style.width = 'calc(100% - 120px)';
+    messageElement.style.right = '0 px';
+    messageElement.textContent = `${message}`;
+    this.conversationElement.appendChild(messageElement);
+    this.scrollToBottom();
+  }
 
-    connectedCallback() {
-      this.scrollToBottom();
-    }
+  scrollToBottom() {
+    this.conversationElement.scrollTop = this.conversationElement.scrollHeight;
+  }
+
+  connectedCallback() {
+    this.scrollToBottom();
+  }
 }
 
 customElements.define('chat-el', Chat);

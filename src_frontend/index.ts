@@ -92,9 +92,10 @@ const createWindow = (): void => {
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 
+  // start python backend when url is ready
   mainWindow.webContents.on('did-finish-load', () => {
     if (isWin) startPythonAPI(mainWindow.webContents.getURL())
-    else console.log('Python API not supported on ' + process.platform)
+    else console.log('Python backend does not support ' + process.platform)
   });
 };
 

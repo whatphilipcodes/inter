@@ -90,8 +90,8 @@ const startPythonAPI = (url: URL): void => {
   const options: object = {
     env: {
       'PORT': url.port,
-      'HOST': url.host,
-      'URL': url.toString(),
+      'HOST': url.hostname,
+      'URL': url,
     }, // needed for CORS policy
     stdio: 'inherit',
   };

@@ -11,17 +11,15 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '.env.development.local' });
 
 // Don't include backend resources on mac testbuilds
-let xRsc = '';
-if (process.platform === 'win32') {
-  xRsc = './dist/backend';
+const extraResources: string[] = [];
+if (process.platform === 'win32' && process.env.INCLUDE_BACKEND === 'true') {
+  extraResources.push('./dist/backend');
 }
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    "extraResource": [
-      xRsc,
-    ],
+    "extraResource": extraResources,
   },
   rebuildConfig: {},
   makers: [new MakerSquirrel({}), new MakerZIP({})],

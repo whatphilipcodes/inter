@@ -150,9 +150,8 @@ app.whenReady().then(async () => {
   let url: URL;
   if (isDev) {
     url = new URL(`${MAIN_WINDOW_WEBPACK_ENTRY.split('/').slice(0, 3).join('/')}`);
-    // url = new URL('http://localhost:9000')
     const host = await getAddress('localhost');
-    url.host = host;
+    url.host = host; // CSP needs IP and can't resolve localhost
   } else {
     url = await getURL('localhost');
   }

@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // create axios instance on startup with CORS enabled
 const api = axios.create({
-    baseURL: 'http://localhost:9000/',
+    baseURL: '127.0.0.1:3000',
     timeout: 1000,
     headers: {
         'Access-Control-Allow-Origin': 'self',

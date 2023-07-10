@@ -43,28 +43,30 @@ const startPythonAPI = (): void => {
 
   const conInfo = getConnectInfo(MAIN_WINDOW_WEBPACK_ENTRY.toString());
 
-  if (isDev) {
-    // set up options for PythonShell
-    const options: object = {
-      env: {
-        'PORT': conInfo.portNumber,
-        'HOST': conInfo.host,
-        'URL': conInfo.hostURL,
-      }, // needed for CORS policy
-      stdio: 'inherit',
-    };
-    pyProcess = spawn(PY_ENV_PATH, [API_DEV_PATH], options);
-  }
+  // set up options for python process
+  const options: object = {
+    env: {
+      'PORT': conInfo.portNumber,
+      'HOST': conInfo.host,
+      'URL': conInfo.hostURL,
+    }, // needed for CORS policy
+    stdio: 'inherit',
+  };
 
-  pyProcess.on('exit', (code, signal) => {
-    if (code) {
-      console.log(`Backend exited with code: ${code}`);
-    }
-    if (signal) {
-      console.log(`Backend exited with signal: ${signal}`);
-    }
-    console.log('Backend exit done');
-  });
+  if (isDev) {
+    pyProcess = spawn(PY_ENV_PATH, [API_DEV_PATH], options);
+    pyProcess.on('exit', (code, signal) => {
+      if (code) {
+        console.log(`Backend exited with code: ${code}`);
+      }
+      if (signal) {
+        console.log(`Backend exited with signal: ${signal}`);
+      }
+      console.log('Backend exit done');
+    });
+  } else {
+    pyProcess = execFile(API_PROD_PATH, options);
+  }
 };
 
 /*************************************************************
@@ -125,7 +127,7 @@ app.on('activate', () => {
  * Content Security Policy
  *************************************************************/
 const setupCSP = () => {
-  session.defaultSession.webRequest.onHeadersReceived(async(details, callback) => {
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
@@ -137,8 +139,6 @@ const setupCSP = () => {
       }
     })
   })
-
-
 }
 
 /*************************************************************

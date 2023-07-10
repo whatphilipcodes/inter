@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { getConnectInfo } from './misc';
+// import { getConnectInfo } from './misc';
 
 // create axios instance on startup with CORS enabled
 const api = axios.create({
-    baseURL: getConnectInfo(window.location.href).hostURL,
+    baseURL: 'http://localhost:9000/',
     timeout: 1000,
     headers: {
         'Access-Control-Allow-Origin': 'self',

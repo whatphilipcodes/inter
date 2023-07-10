@@ -12,14 +12,18 @@ declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
-
+/*************************************************************
+ * Manual Overrides
+ *************************************************************/
 // Fix: https://github.com/electron/electron/issues/38790
 app.commandLine.appendSwitch('disable-features', 'WidgetLayering');
+
+// Prevent fullscreen and enable dev tools in in testbuild
+const isTestbuild = true;
 
 /*************************************************************
  * Env Setup
  *************************************************************/
-
 // get build mode from environment variable
 const isDev = process.env.NODE_ENV === 'development';
 const isWin = process.platform === 'win32';
@@ -32,16 +36,15 @@ if (isDev) {
 /*************************************************************
  * Python Backend
  *************************************************************/
-
 const PY_ENV_PATH: string = path.resolve('.', '.env', 'Scripts', 'python.exe');
 const API_DEV_PATH: string = path.resolve('.', 'entry.py');
 const API_PROD_PATH: string = path.resolve(process.resourcesPath, 'backend', 'backend.exe');
 
 let pyProcess: ChildProcess = null;
 
-const startPythonAPI = (): void => {
+const startPythonAPI = (windowURL: string): void => {
 
-  const conInfo = getConnectInfo(MAIN_WINDOW_WEBPACK_ENTRY.toString());
+  const conInfo = getConnectInfo(windowURL);
 
   // set up options for python process
   const options: object = {
@@ -72,14 +75,13 @@ const startPythonAPI = (): void => {
 /*************************************************************
  * Window Management
  *************************************************************/
-
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     autoHideMenuBar: true, // toggle the menu bar using alt (win)
-    fullscreen: !isDev, // fullscreen in production mode
+    fullscreen: fullScreen(),
     webPreferences: {
-      devTools: isDev,
+      devTools: devTools(),
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
   });
@@ -88,17 +90,30 @@ const createWindow = (): void => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  if (isDev) mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    if (isWin) startPythonAPI(mainWindow.webContents.getURL())
+    else console.log('Python API not supported on ' + process.platform)
+  });
+};
+
+const devTools = (): boolean => {
+  if (isDev || isTestbuild) return true;
+  return false;
+};
+
+const fullScreen = (): boolean => {
+  if (isDev || isTestbuild) return false;
+  return true;
 };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  if (isWin) startPythonAPI()
-  else console.log('Python API not supported on ' + process.platform)
-  createWindow()
   setupCSP()
+  createWindow()
 })
 
 // kill all child process when quitting
@@ -134,7 +149,7 @@ const setupCSP = () => {
         'Content-Security-Policy': [`
           default-src 'self' 'unsafe-inline' data:;
           script-src 'self' 'unsafe-eval' 'unsafe-inline' data:;
-          connect-src 'self' 127.0.0.1:${getConnectInfo(MAIN_WINDOW_WEBPACK_ENTRY.toString()).portNumber};
+          connect-src 'self' 127.0.0.1:${getConnectInfo(details.url).portNumber};
           `]
       }
     })
@@ -144,7 +159,6 @@ const setupCSP = () => {
 /*************************************************************
  * Menu Management
  *************************************************************/
-
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 

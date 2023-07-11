@@ -3,7 +3,7 @@ import axios, { AxiosInstance } from 'axios';
 let api: AxiosInstance;
 function initAxios(url: URL): AxiosInstance {
     return axios.create({
-        baseURL: url.hostname,
+        baseURL: url.origin,
         timeout: 1000,
         headers: {
             'Access-Control-Allow-Origin': 'self',

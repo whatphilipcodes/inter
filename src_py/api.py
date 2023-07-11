@@ -9,40 +9,40 @@ from fastapi.middleware.cors import CORSMiddleware
 # END IMPORT BLOCK ###########################################################
 
 ### Get port number from electron app
-port = os.environ.get('PORT')
-if port is not None:
+uvi_port = os.environ.get('UVI_PORT')
+if uvi_port is not None:
     try:
-        port = int(port)
-        # Use the port variable as an integer
-        print("Port number:", port)
+        uvi_port = int(uvi_port)
+        # Use the uvi_port variable as an integer
+        print("uvi_port number:", uvi_port)
     except ValueError:
-        print("Invalid port number:", port)
+        print("Invalid uvi_port number:", uvi_port)
 else:
-    print("PORT environment variable is not set.")
+    print("UVI_PORT environment variable is not set.")
 
 ### Get host from electron app
-host = os.environ.get('HOST')
-if host is not None:
+uvi_host = os.environ.get('UVI_HOST')
+if uvi_host is not None:
     try:
-        host = str(host)
-        # Use the host variable as an integer
-        print("Host:", host)
+        uvi_host = str(uvi_host)
+        # Use the uvi_host variable as an integer
+        print("uvi_host:", uvi_host)
     except ValueError:
-        print("Invalid host:", host)
+        print("Invalid uvi_host:", uvi_host)
 else:
-    print("HOST environment variable is not set.")
+    print("UVI_HOST environment variable is not set.")
 
 ### Get host from electron app
-url = os.environ.get('URL')
-if url is not None:
+el_url = os.environ.get('EL_URL')
+if el_url is not None:
     try:
-        url = str(url)
-        # Use the url variable as an integer
-        print("url:", url)
+        el_url = str(el_url)
+        # Use the el_url variable as an integer
+        print("el_url:", el_url)
     except ValueError:
-        print("Invalid URL:", url)
+        print("Invalid el_url:", el_url)
 else:
-    print("URL environment variable is not set.")
+    print("EL_URL environment variable is not set.")
 
 ### Create FastAPI app
 app = FastAPI()
@@ -50,7 +50,7 @@ app = FastAPI()
 ### Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[url],
+    allow_origins=[el_url],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -63,4 +63,4 @@ async def root():
         "message": "Hello World"}
 
 ### Start FastAPI as Server
-uvicorn.run(app, host=host, port=port)
+uvicorn.run(app, host=uvi_host, port=uvi_port)

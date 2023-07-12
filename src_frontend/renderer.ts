@@ -21,7 +21,6 @@ initAPI(globalState);
 //  *************************************************************/
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (window as any).electronAPI.onBackURL((_event: unknown, data: string) => {
-    console.log('URL received from main process:', data);
     try {
         const url = new URL(data);
         globalState.initAxios(url);

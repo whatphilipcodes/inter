@@ -1,4 +1,4 @@
-enum interState {
+enum appState {
     loading = 'loading',
     idle = 'idle',
     interaction = 'interaction',
@@ -6,4 +6,4 @@ enum interState {
 }
 
 // export
-export { interState };
+export { appState };

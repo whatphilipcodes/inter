@@ -1,33 +1,16 @@
-import axios, { AxiosInstance } from 'axios';
+import { Store } from '../state/store';
+import { appState } from './enums';
 
-let api: AxiosInstance;
-function initAxios(url: URL): AxiosInstance {
-    return axios.create({
-        baseURL: url.hostname,
-        timeout: 1000,
-        headers: {
-            'Access-Control-Allow-Origin': 'self',
-            'Content-Type': 'application/json',
-        }
-    });
+let state: Store;
+export function initAPI(globalState: Store): void {
+    state = globalState;
 }
 
-(window as any).electronAPI.onBackURL((_event: unknown, data: string) => {
-    // console.log('data received:', data);
-    try {
-        const url = new URL(data);
-        api = initAxios(url);
-        // Use the IP address as needed in the renderer process
-    } catch (error) {
-        console.error('Invalid URL:', error);
-        // Handle the invalid URL error
-    }
-});
-
 const get = async (url: string) => {
-    if (!api) throw new Error('API not initialized');
+    if (!state.api) throw new Error('Axios API not initialized');
     try {
-        const response = await api.get(url);
+        state.mutate({ applicationState: appState.idle });
+        const response = await state.api.get(url);
         return response.data;
     } catch (error) {
         console.error(error);

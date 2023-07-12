@@ -108,7 +108,7 @@ class Chat extends HTMLElement {
 
   response() {
     // Simulate a response by adding a message from the bot
-    get('http://127.0.0.1:3000/').then((response) => {
+    get('').then((response) => {
       this.addMessage(response.message, '#1d1d1d', 'flex-end');
       console.log(response);
     });

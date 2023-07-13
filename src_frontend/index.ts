@@ -172,7 +172,7 @@ const setupCSP = (url: URL) => {
 				'Content-Security-Policy': [
 					`
           default-src 'self' 'unsafe-inline' data:;
-          script-src 'self' 'unsafe-eval' 'unsafe-inline' data:;
+          script-src 'self' 'unsafe-eval' 'unsafe-inline' data: blob:;
           connect-src 'self' ${url.origin};
           `,
 				],

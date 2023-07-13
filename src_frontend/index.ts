@@ -264,22 +264,3 @@ async function getFreePort(): Promise<number> {
 		})
 	})
 }
-
-// async function getAddress(host: string): Promise<string> {
-//   let address = null;
-//   try {
-//     const resHost = await netElectron.resolveHost(host);
-//     for (const endpoint of resHost.endpoints) {
-//       if (endpoint.family === 'ipv4') {
-//         address = endpoint.address;
-//         break;
-//       }
-//     }
-//     if (!address) {
-//       console.log('No IPv4 address found for', host);
-//     }
-//   } catch (error) {
-//     console.error('Error resolving host:', host);
-//   }
-//   return address;
-// }

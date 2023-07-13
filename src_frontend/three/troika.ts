@@ -35,7 +35,7 @@ export function createScene() {
 
 	// Animation loop
 	function animate() {
-		text.position.z += 0.01
+		text.rotation.z += 0.01
 		requestAnimationFrame(animate)
 		renderer.render(scene, camera)
 	}

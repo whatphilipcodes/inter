@@ -1,15 +1,15 @@
-import { get } from '../utils/api';
+import { get } from '../utils/api'
 
 class Chat extends HTMLElement {
-  conversationElement: HTMLElement;
-  messageInputElement: HTMLInputElement;
-  sendButtonElement: HTMLButtonElement;
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
+	conversationElement: HTMLElement
+	messageInputElement: HTMLInputElement
+	sendButtonElement: HTMLButtonElement
+	constructor() {
+		super()
+		this.attachShadow({ mode: 'open' })
 
-    const template = document.createElement('template');
-    template.innerHTML = /*html*/ `
+		const template = document.createElement('template')
+		template.innerHTML = /*html*/ `
         <style>
           :host * {
             color: white;
@@ -77,63 +77,67 @@ class Chat extends HTMLElement {
             <button id="sendButton">Send</button>
           </div>
         </div>
-      `;
+      `
 
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
-    this.conversationElement = this.shadowRoot.getElementById('conversation');
-    this.messageInputElement = this.shadowRoot.getElementById('messageInput') as HTMLInputElement;
-    this.sendButtonElement = this.shadowRoot.getElementById('sendButton') as HTMLButtonElement;
+		this.shadowRoot.appendChild(template.content.cloneNode(true))
+		this.conversationElement = this.shadowRoot.getElementById('conversation')
+		this.messageInputElement = this.shadowRoot.getElementById(
+			'messageInput'
+		) as HTMLInputElement
+		this.sendButtonElement = this.shadowRoot.getElementById(
+			'sendButton'
+		) as HTMLButtonElement
 
-    this.sendButtonElement.addEventListener('click', () => this.sendMessage());
-    this.messageInputElement.addEventListener('keypress', (event) => {
-      if (event.key === 'Enter') {
-        this.sendMessage();
-      }
-    });
-  }
+		this.sendButtonElement.addEventListener('click', () => this.sendMessage())
+		this.messageInputElement.addEventListener('keypress', (event) => {
+			if (event.key === 'Enter') {
+				this.sendMessage()
+			}
+		})
+	}
 
-  sendMessage() {
-    const message = this.messageInputElement.value.trim(); // Trim whitespace from the message
-    if (message === '') {
-      // Show visual feedback for empty message
-      this.messageInputElement.blur(); // Remove focus from the input element
-      return; // Exit the method if the message is empty
-    }
+	sendMessage() {
+		const message = this.messageInputElement.value.trim() // Trim whitespace from the message
+		if (message === '') {
+			// Show visual feedback for empty message
+			this.messageInputElement.blur() // Remove focus from the input element
+			return // Exit the method if the message is empty
+		}
 
-    this.addMessage(message);
-    this.messageInputElement.value = '';
-    this.messageInputElement.style.border = 'none'; // Reset border style
-    this.response(); // Call the response function to simulate a response
-  }
+		this.addMessage(message)
+		this.messageInputElement.value = ''
+		this.messageInputElement.style.border = 'none' // Reset border style
+		this.response() // Call the response function to simulate a response
+	}
 
-  response() {
-    // Simulate a response by adding a message from the bot
-    get('').then((response) => {
-      this.addMessage(response.message, '#1d1d1d', 'flex-end');
-      console.log(response);
-    });
-  }
+	response() {
+		// Simulate a response by adding a message from the bot
+		get('').then((response) => {
+			this.addMessage(response.message, '#1d1d1d', 'flex-end')
+			console.log(response)
+		})
+	}
 
-  addMessage(message: string, color = 'blueviolet', align = 'flex-start') {
-    const messageElement = document.createElement('div');
-    messageElement.style.alignSelf = align;
-    messageElement.style.backgroundColor = color;
-    messageElement.style.borderRadius = '5px';
-    messageElement.style.margin = '0px';
-    messageElement.style.width = 'calc(100% - 120px)';
-    messageElement.style.right = '0 px';
-    messageElement.textContent = `${message}`;
-    this.conversationElement.appendChild(messageElement);
-    this.scrollToBottom();
-  }
+	addMessage(message: string, color = 'blueviolet', align = 'flex-start') {
+		const messageElement = document.createElement('div')
+		messageElement.style.alignSelf = align
+		messageElement.style.backgroundColor = color
+		messageElement.style.borderRadius = '5px'
+		messageElement.style.margin = '0px'
+		messageElement.style.width = 'calc(100% - 120px)'
+		messageElement.style.right = '0 px'
+		messageElement.textContent = `${message}`
+		this.conversationElement.appendChild(messageElement)
+		this.scrollToBottom()
+	}
 
-  scrollToBottom() {
-    this.conversationElement.scrollTop = this.conversationElement.scrollHeight;
-  }
+	scrollToBottom() {
+		this.conversationElement.scrollTop = this.conversationElement.scrollHeight
+	}
 
-  connectedCallback() {
-    this.scrollToBottom();
-  }
+	connectedCallback() {
+		this.scrollToBottom()
+	}
 }
 
-customElements.define('chat-el', Chat);
+customElements.define('chat-el', Chat)

@@ -15,5 +15,5 @@
 			"*": ["node_modules/*"]
 		}
 	},
-	"include": ["src_frontend/**/*"]
+	"include": ["src_frontend/**/*", "implicit.types.d.ts"]
 }

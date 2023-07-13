@@ -1,6 +1,12 @@
 import './index.css'
 import './components/chat'
-import './three/demo'
+// import './three/demo'
+import { createScene } from './three/troika'
+
+// /*************************************************************
+//  * Three & Troika
+//  *************************************************************/
+createScene()
 
 // /*************************************************************
 //  * State

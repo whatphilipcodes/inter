@@ -1,19 +1,16 @@
-html {
-	height: 100%;
-	width: 100%;
-}
-
+html,
 body {
 	margin: 0;
-	overflow: hidden;
 	width: 100%;
 	height: 100%;
-	background-color: black;
 }
 
-canvas {
+#three {
 	position: fixed;
 	top: 0;
 	left: 0;
 	z-index: -1;
+	width: 100%;
+	height: 100%;
+	display: block;
 }

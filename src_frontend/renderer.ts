@@ -1,5 +1,6 @@
 import './index.css'
 import './components/chat'
+import './components/input'
 // import './three/demo'
 import { createScene } from './three/troika'
 

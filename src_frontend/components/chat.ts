@@ -84,6 +84,7 @@ class Chat extends HTMLElement {
 		this.messageInputElement = this.shadowRoot.getElementById(
 			'messageInput'
 		) as HTMLInputElement
+
 		this.sendButtonElement = this.shadowRoot.getElementById(
 			'sendButton'
 		) as HTMLButtonElement

@@ -8,6 +8,9 @@ import {
 } from 'electron'
 import net from 'node:net'
 
+// debugging
+import config from './front.config'
+
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow: BrowserWindow | null = null
 
@@ -26,9 +29,6 @@ if (require('electron-squirrel-startup')) {
  *************************************************************/
 // Fix: https://github.com/electron/electron/issues/38790
 app.commandLine.appendSwitch('disable-features', 'WidgetLayering')
-
-// Prevent fullscreen and enable dev tools in in testbuild
-const isTestbuild = true
 
 /*************************************************************
  * Env Setup
@@ -89,9 +89,9 @@ const createWindow = () => {
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
 		autoHideMenuBar: true, // toggle the menu bar using alt (win)
-		fullscreen: fullScreen(),
+		fullscreen: config.fullScreen,
 		webPreferences: {
-			devTools: devTools(),
+			devTools: config.devTools,
 			preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
 		},
 	})
@@ -101,16 +101,6 @@ const createWindow = () => {
 
 	// Open the DevTools.
 	mainWindow.webContents.openDevTools()
-}
-
-const devTools = (): boolean => {
-	if (isDev || isTestbuild) return true
-	return false
-}
-
-const fullScreen = (): boolean => {
-	if (isDev || isTestbuild) return false
-	return true
 }
 
 // This method will be called when Electron has finished
@@ -133,7 +123,7 @@ app.whenReady().then(async () => {
 		do {
 			el_url = await getURL('localhost')
 		} while (el_url.href === uvi_url.href)
-		if (isTestbuild) console.log('el_url: ' + el_url.href)
+		if (config.debug) console.log('el_url: ' + el_url.href)
 	}
 
 	if (isWin) startPythonAPI(uvi_url, el_url)
@@ -238,7 +228,7 @@ else Menu.setApplicationMenu(buildMenu)
 const sendToRenderer = (channel: string, data: string) => {
 	const mainWindow = BrowserWindow.getAllWindows()[0]
 	mainWindow.webContents.send(channel, data)
-	if (isDev) console.log(`Sent ${data} over c-'${channel}' to renderer`)
+	if (config.debug) console.log(`Sent ${data} over c-'${channel}' to renderer`)
 }
 
 /*************************************************************

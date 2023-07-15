@@ -3,7 +3,6 @@ import './index.css'
 // components -> index.html
 import './components/chat'
 import './components/input'
-
 // components types
 import type Input from './components/input'
 
@@ -14,6 +13,20 @@ import { initAPI } from './utils/api'
 
 // three
 import SceneManager from './three/_sceneManager'
+
+// debugging
+import config from './front.config'
+import Stats from 'three/examples/jsm/libs/stats.module.js'
+
+// /*************************************************************
+//  * Debugging
+//  *************************************************************/
+let stats: Stats
+if (config.stats) {
+	stats = new Stats()
+	stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
+	document.body.appendChild(stats.dom)
+}
 
 // /*************************************************************
 //  * Components
@@ -34,9 +47,11 @@ const sceneManager = new SceneManager(canvas)
 
 // Render Loop
 function animate() {
+	if (config.stats) stats.begin()
 	sceneManager.update()
 	requestAnimationFrame(animate)
 	input.focusInput()
+	if (config.stats) stats.end()
 }
 // Start Loop
 animate()

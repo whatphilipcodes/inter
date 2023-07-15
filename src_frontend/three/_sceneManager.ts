@@ -3,17 +3,23 @@
 import * as THREE from 'three'
 import SceneSubject from './_sceneSubject'
 
+import { Store } from '../state/store'
+// import { appState } from '../utils/enums'
+
 // Import SceneSubjects
 import TroikaTest from './troika'
-import ThreeDemo from './demo'
+// import ThreeDemo from './demo'
 
 export default class SceneManager {
 	// Props
 	clock: THREE.Clock
+	state: Store
+
 	canvas: HTMLCanvasElement
 	renderer: THREE.WebGLRenderer
 	camera: THREE.PerspectiveCamera
 	scene: THREE.Scene
+
 	sceneSubjects: SceneSubject[]
 
 	// Init
@@ -26,10 +32,14 @@ export default class SceneManager {
 		this.sceneSubjects = this.buildSceneSubjects()
 	}
 
+	initThree(globalState: Store) {
+		this.state = globalState
+	}
+
 	// Methods
 	buildScene() {
 		const scene = new THREE.Scene()
-		scene.background = new THREE.Color('#A9CBB7')
+		scene.background = new THREE.Color('#000')
 		return scene
 	}
 
@@ -57,7 +67,7 @@ export default class SceneManager {
 	buildSceneSubjects() {
 		const sceneSubjects = [
 			new TroikaTest('TroikaTest', this.scene),
-			new ThreeDemo('ThreeDemo', this.scene),
+			// new ThreeDemo('ThreeDemo', this.scene),
 		]
 		return sceneSubjects
 	}

@@ -1,8 +1,13 @@
 import './index.css'
 
-// components
+// components -> index.html
 import './components/chat'
 import './components/input'
+
+// state
+import { Store } from './state/store'
+// inits for modules that need access to the global state
+import { initAPI } from './utils/api'
 
 // three
 import SceneManager from './three/_sceneManager'
@@ -33,16 +38,12 @@ window.addEventListener(
 // /*************************************************************
 //  * State
 //  *************************************************************/
-import { Store } from './state/store'
-
-// inits for all modules that need access to the global state
-import { initAPI } from './utils/api'
-
 // create global (renderer process) state
 const globalState = new Store()
-
 // init all modules that need access to the global state
 initAPI(globalState)
+// init all class instances that need access to the global state
+sceneManager.initThree(globalState)
 
 // /*************************************************************
 //  * IPC from main process

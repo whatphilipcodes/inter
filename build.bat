@@ -4,4 +4,4 @@ rem Build Python Backend
 pyinstaller entry.spec --noconfirm
 
 rem Build Electron Frontend
-yarn run make
+npm run make

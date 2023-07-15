@@ -1,10 +1,11 @@
 import * as THREE from 'three'
 
-export default class SceneSubject {
+export default class SceneSubject extends THREE.Group {
 	name: string
 	scene: THREE.Scene
 
 	constructor(name: string, scene: THREE.Scene) {
+		super()
 		this.name = name
 		this.scene = scene
 	}

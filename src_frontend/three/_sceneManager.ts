@@ -20,7 +20,7 @@ export default class SceneManager {
 		this.clock = new THREE.Clock()
 		this.canvas = canvas
 		this.scene = this.buildScene()
-		this.renderer = this.buildRender()
+		this.renderer = this.buildRenderer()
 		this.camera = this.buildCamera()
 		this.sceneSubjects = this.buildSceneSubjects()
 	}
@@ -32,7 +32,7 @@ export default class SceneManager {
 		return scene
 	}
 
-	buildRender() {
+	buildRenderer() {
 		const renderer = new THREE.WebGLRenderer({ canvas: this.canvas })
 		renderer.setSize(this.canvas.width, this.canvas.height)
 		return renderer

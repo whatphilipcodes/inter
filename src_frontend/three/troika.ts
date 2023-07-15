@@ -1,12 +1,14 @@
 import * as THREE from 'three'
 import { Text } from 'troika-three-text'
 
-export default class TroikaTest extends THREE.Scene {
-	// Troika Instance
-	text
+import SceneSubject from './_sceneSubject'
 
-	constructor() {
-		super()
+export default class TroikaTest extends SceneSubject {
+	// Props
+	text // Troika instance does not support ts
+
+	constructor(name: string, scene: THREE.Scene) {
+		super(name, scene)
 
 		// Create a Troika Text
 		this.text = new Text()
@@ -18,7 +20,7 @@ export default class TroikaTest extends THREE.Scene {
 		this.text.sync()
 
 		// Add the text to the scene
-		this.add(this.text)
+		this.scene.add(this.text)
 	}
 
 	update() {

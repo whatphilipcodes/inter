@@ -1,50 +1,34 @@
 import './index.css'
-import * as THREE from 'three'
 
 // components
 import './components/chat'
 import './components/input'
 
 // three
-// import './three/demo'
-import TroikaTest from './three/troika'
+import SceneManager from './three/_sceneManager'
 
 // /*************************************************************
 //  * Rendering
 //  *************************************************************/
-
-// Renderer
+// Create sceneManager
 const canvas = document.getElementById('three') as HTMLCanvasElement
-const renderer = new THREE.WebGLRenderer({ canvas })
-renderer.setSize(window.innerWidth, window.innerHeight)
+canvas.width = window.innerWidth
+canvas.height = window.innerHeight
+const sceneManager = new SceneManager(canvas)
 
-// Camera
-const camera = new THREE.PerspectiveCamera(
-	75,
-	window.innerWidth / window.innerHeight,
-	0.1,
-	1000
-)
-camera.position.z = 5
-
-const scene = new TroikaTest()
-
-// Renderloop
+// Render Loop
 function animate() {
-	scene.update()
+	sceneManager.update()
 	requestAnimationFrame(animate)
-	renderer.render(scene, camera)
 }
 animate()
 
-// Window Resizing (for testing)
-window.addEventListener('resize', onWindowResize, false)
-function onWindowResize() {
-	camera.aspect = window.innerWidth / window.innerHeight
-	camera.updateProjectionMatrix()
-
-	renderer.setSize(window.innerWidth, window.innerHeight)
-}
+// Event Callbacks
+window.addEventListener(
+	'resize',
+	() => sceneManager.onWindowResize(window.innerWidth, window.innerHeight),
+	false
+)
 
 // /*************************************************************
 //  * State

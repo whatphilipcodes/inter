@@ -1,8 +1,11 @@
+import { Store } from '../state/store'
 import * as THREE from 'three'
 
 export default class SceneSubject extends THREE.Group {
 	name: string
 	scene: THREE.Scene
+
+	updateState?(state: Store): void
 
 	constructor(name: string, scene: THREE.Scene) {
 		super()

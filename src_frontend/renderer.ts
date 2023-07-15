@@ -4,6 +4,9 @@ import './index.css'
 import './components/chat'
 import './components/input'
 
+// components types
+import type Input from './components/input'
+
 // state
 import { Store } from './state/store'
 // inits for modules that need access to the global state
@@ -11,6 +14,14 @@ import { initAPI } from './utils/api'
 
 // three
 import SceneManager from './three/_sceneManager'
+
+// /*************************************************************
+//  * Components
+//  *************************************************************/
+// Get references to all custom elements in index.html
+// const chat = document.getElementById('testChatModule') as any
+const input = document.getElementById('textInput') as Input
+console.log(input.id)
 
 // /*************************************************************
 //  * Rendering
@@ -25,7 +36,9 @@ const sceneManager = new SceneManager(canvas)
 function animate() {
 	sceneManager.update()
 	requestAnimationFrame(animate)
+	input.focusInput()
 }
+// Start Loop
 animate()
 
 // Event Callbacks
@@ -44,6 +57,7 @@ const globalState = new Store()
 initAPI(globalState)
 // init all class instances that need access to the global state
 sceneManager.initThree(globalState)
+input.initInput(globalState)
 
 // /*************************************************************
 //  * IPC from main process

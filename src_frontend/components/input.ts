@@ -1,26 +1,35 @@
-class Input extends HTMLElement {
+import { Store } from '../state/store'
+
+export default class Input extends HTMLElement {
 	constructor() {
 		super()
 		this.attachShadow({ mode: 'open' })
 		const template = document.createElement('template')
 		template.innerHTML = /*html*/ `
             <style>
-                /*
-                #hiddenImport {
-                    display: none;
+                #hiddenInput {
+					opacity: 0%;
                 }
-                */
             </style>
             <div>
-                <input id="hiddenImport" type="text" placeholder="Type your message..." />
+                <input id="hiddenInput" type="text" />
             </div>
         `
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
-		this.focusInput()
+	}
+
+	// connect input to global state
+	initInput(state: Store) {
+		this.shadowRoot
+			.getElementById('hiddenInput')
+			.addEventListener('input', (e: Event) => {
+				const target = e.target as HTMLInputElement
+				state.mutate({ input: target.value })
+			})
 	}
 
 	focusInput() {
-		this.shadowRoot.getElementById('hiddenImport').focus()
+		this.shadowRoot.getElementById('hiddenInput').focus()
 	}
 }
 

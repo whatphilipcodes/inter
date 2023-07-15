@@ -6,13 +6,16 @@ export class Store {
 	elURL: URL
 	uviURL: URL
 	api: AxiosInstance
+	input: string
 
 	private initialState = {
 		applicationState: appState.loading,
+		input: 'Start Typing...',
 	}
 
 	constructor() {
 		Object.assign(this, this.initialState)
+		console.log('Store initialized')
 	}
 
 	mutate(newState: Partial<Store>): void {

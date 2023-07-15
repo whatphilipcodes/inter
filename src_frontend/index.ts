@@ -142,9 +142,13 @@ app.whenReady().then(async () => {
 	setupCSP(uvi_url)
 
 	createWindow()
-	mainWindow.once('ready-to-show', () => {
+	// mainWindow.once('ready-to-show', () => {
+	// 	sendToRenderer('backend-url', uvi_url.href)
+	// })
+	// #TODO: make renderer request backend url
+	setTimeout(() => {
 		sendToRenderer('backend-url', uvi_url.href)
-	})
+	}, 10000)
 })
 
 // kill child process when quitting

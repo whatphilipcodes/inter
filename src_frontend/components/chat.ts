@@ -1,6 +1,6 @@
 import { get } from '../utils/api'
 
-class Chat extends HTMLElement {
+export default class Chat extends HTMLElement {
 	conversationElement: HTMLElement
 	messageInputElement: HTMLInputElement
 	sendButtonElement: HTMLButtonElement

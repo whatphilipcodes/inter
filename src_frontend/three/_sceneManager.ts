@@ -7,7 +7,8 @@ import { Store } from '../state/store'
 // import { appState } from '../utils/enums'
 
 // Import SceneSubjects
-import TroikaTest from './troika'
+import InputDisplay from './inputDisplay'
+// import TroikaTest from './troika'
 // import ThreeDemo from './demo'
 
 export default class SceneManager {
@@ -30,10 +31,6 @@ export default class SceneManager {
 		this.renderer = this.buildRenderer()
 		this.camera = this.buildCamera()
 		this.sceneSubjects = this.buildSceneSubjects()
-	}
-
-	initThree(globalState: Store) {
-		this.state = globalState
 	}
 
 	// Methods
@@ -66,8 +63,9 @@ export default class SceneManager {
 
 	buildSceneSubjects() {
 		const sceneSubjects = [
-			new TroikaTest('TroikaTest', this.scene),
+			// new TroikaTest('TroikaTest', this.scene),
 			// new ThreeDemo('ThreeDemo', this.scene),
+			new InputDisplay('InputDisplay', this.scene, this.state),
 		]
 		return sceneSubjects
 	}
@@ -77,9 +75,17 @@ export default class SceneManager {
 		const elTime = this.clock.getElapsedTime()
 		const deltaTime = this.clock.getDelta()
 		const curFrame = this.renderer.info.render.frame
-		for (let i = 0; i < this.sceneSubjects.length; i++)
-			this.sceneSubjects[i].update(elTime, curFrame, deltaTime)
+		for (const subject of this.sceneSubjects)
+			subject.update(elTime, curFrame, deltaTime)
 		this.renderer.render(this.scene, this.camera)
+	}
+
+	initThree(state: Store) {
+		this.state = state
+		for (const subject of this.sceneSubjects) {
+			subject.updateState?.(state)
+		}
+		console.log(this.state.input)
 	}
 
 	onWindowResize(width: number, height: number) {

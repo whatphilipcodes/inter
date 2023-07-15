@@ -5,6 +5,7 @@ import SceneSubject from './_sceneSubject'
 
 // Import SceneSubjects
 import TroikaTest from './troika'
+import ThreeDemo from './demo'
 
 export default class SceneManager {
 	// Props
@@ -54,15 +55,20 @@ export default class SceneManager {
 	}
 
 	buildSceneSubjects() {
-		const sceneSubjects = [new TroikaTest('TroikaTest', this.scene)]
+		const sceneSubjects = [
+			new TroikaTest('TroikaTest', this.scene),
+			new ThreeDemo('ThreeDemo', this.scene),
+		]
 		return sceneSubjects
 	}
 
 	// Callbacks
 	update() {
-		const deltaTime = this.clock.getElapsedTime()
+		const elTime = this.clock.getElapsedTime()
+		const deltaTime = this.clock.getDelta()
+		const curFrame = this.renderer.info.render.frame
 		for (let i = 0; i < this.sceneSubjects.length; i++)
-			this.sceneSubjects[i].update(deltaTime)
+			this.sceneSubjects[i].update(elTime, curFrame, deltaTime)
 		this.renderer.render(this.scene, this.camera)
 	}
 

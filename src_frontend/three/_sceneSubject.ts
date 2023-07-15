@@ -9,8 +9,12 @@ export default class SceneSubject {
 		this.scene = scene
 	}
 
-	update(deltaTime: number) {
-		console.log('deltaTime: ' + deltaTime)
+	update(elTime: number, curFrame: number, deltaTime: number) {
+		console.log(
+			'elTime: ' + elTime,
+			'curFrame: ' + curFrame,
+			'deltaTime: ' + deltaTime
+		)
 		throw new Error('update() not implemented on SceneSubject: ' + this.name)
 	}
 }

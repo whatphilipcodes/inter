@@ -9,8 +9,9 @@ export default class Postprocessor {
 
 	constructor(renderer: THREE.WebGLRenderer) {
 		const options: AsciiEffectOptions = {
-			resolution: 0.28, // default 0.15
+			resolution: 0.25, // default 0.15
 			invert: true,
+			block: false,
 		}
 		this.asci = new AsciiEffect(renderer, ' 0123456789', options)
 		const resolution = renderer.getSize(new THREE.Vector2())

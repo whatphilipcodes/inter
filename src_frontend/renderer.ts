@@ -39,10 +39,11 @@ const input = document.getElementById('textInput') as Input
 //  * Rendering
 //  *************************************************************/
 // Create sceneManager
-const canvas = document.getElementById('three') as HTMLCanvasElement
-canvas.width = window.innerWidth
-canvas.height = window.innerHeight
-const sceneManager = new SceneManager(canvas)
+const initialResolution = {
+	width: window.innerWidth,
+	height: window.innerHeight,
+}
+const sceneManager = new SceneManager(initialResolution)
 
 // Render Loop
 function animate() {

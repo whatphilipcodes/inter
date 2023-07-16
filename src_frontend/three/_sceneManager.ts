@@ -11,6 +11,9 @@ import InputDisplay from './inputDisplay'
 // import TroikaTest from './troika'
 // import ThreeDemo from './demo'
 
+// Import Postprocessor
+import Postprocessor from './postprocessor'
+
 export default class SceneManager {
 	// Props
 	clock: THREE.Clock
@@ -22,15 +25,31 @@ export default class SceneManager {
 	scene: THREE.Scene
 
 	sceneSubjects: SceneSubject[]
+	postprocessor: Postprocessor
 
 	// Init
-	constructor(canvas: HTMLCanvasElement) {
+	constructor(initRes: { width: number; height: number }) {
+		this.canvas = this.buildCanvas(initRes.width, initRes.height)
 		this.clock = new THREE.Clock()
-		this.canvas = canvas
 		this.scene = this.buildScene()
 		this.renderer = this.buildRenderer()
 		this.camera = this.buildCamera()
 		this.sceneSubjects = this.buildSceneSubjects()
+		this.postprocessor = new Postprocessor(this.renderer)
+
+		this.init()
+	}
+
+	buildCanvas(width: number, height: number) {
+		const canvas = document.createElement('canvas')
+		canvas.width = width
+		canvas.height = height
+		canvas.id = 'THREE.WebGLRenderer'
+		canvas.style.position = 'fixed'
+		canvas.style.top = '0'
+		canvas.style.left = '0'
+		canvas.style.zIndex = '-1'
+		return canvas
 	}
 
 	// Methods
@@ -71,6 +90,9 @@ export default class SceneManager {
 	}
 
 	// Callbacks
+	init() {
+		if (!this.postprocessor) document.body.appendChild(this.renderer.domElement)
+	}
 	update() {
 		const elTime = this.clock.getElapsedTime()
 		const deltaTime = this.clock.getDelta()
@@ -78,6 +100,7 @@ export default class SceneManager {
 		for (const subject of this.sceneSubjects)
 			subject.update(elTime, curFrame, deltaTime)
 		this.renderer.render(this.scene, this.camera)
+		this.postprocessor?.render(this.scene, this.camera)
 	}
 
 	initThree(state: Store) {
@@ -91,5 +114,6 @@ export default class SceneManager {
 		this.camera.aspect = width / height
 		this.camera.updateProjectionMatrix()
 		this.renderer.setSize(width, height)
+		this.postprocessor?.onWindowResize(width, height)
 	}
 }

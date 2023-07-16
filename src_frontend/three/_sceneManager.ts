@@ -85,7 +85,6 @@ export default class SceneManager {
 		for (const subject of this.sceneSubjects) {
 			subject.updateState?.(state)
 		}
-		console.log(this.state.input)
 	}
 
 	onWindowResize(width: number, height: number) {

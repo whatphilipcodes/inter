@@ -34,7 +34,6 @@ if (config.stats) {
 // Get references to all custom elements in index.html
 // const chat = document.getElementById('testChatModule') as any
 const input = document.getElementById('textInput') as Input
-console.log(input.id)
 
 // /*************************************************************
 //  * Rendering

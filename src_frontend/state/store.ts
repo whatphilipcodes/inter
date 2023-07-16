@@ -15,7 +15,6 @@ export class Store {
 
 	constructor() {
 		Object.assign(this, this.initialState)
-		console.log('Store initialized')
 	}
 
 	mutate(newState: Partial<Store>): void {

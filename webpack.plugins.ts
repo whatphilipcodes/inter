@@ -11,6 +11,6 @@ export const plugins = [
 		logger: 'webpack-infrastructure',
 	}),
 	new CopyWebpackPlugin({
-		patterns: [{ from: 'src_frontend/assets/sharetechmono.ttf', to: 'assets' }],
+		patterns: [{ from: 'src_frontend/assets', to: 'assets' }],
 	}),
 ]

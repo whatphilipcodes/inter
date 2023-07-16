@@ -17,8 +17,8 @@ export default class InputDisplay extends SceneSubject {
 
 		// Create a Troika Text
 		this.text = new Text()
-		this.text.font = 'assets/sharetechmono.ttf'
-		this.text.fontSize = 1.0
+		this.text.font = './assets/cascadiamono.ttf'
+		this.text.fontSize = 0.1
 		this.text.color = 0xffffff
 		this.text.anchorX = 'center'
 		this.text.anchorY = 'middle'

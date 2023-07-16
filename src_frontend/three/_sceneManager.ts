@@ -35,7 +35,7 @@ export default class SceneManager {
 		this.renderer = this.buildRenderer()
 		this.camera = this.buildCamera()
 		this.sceneSubjects = this.buildSceneSubjects()
-		// this.postprocessor = new Postprocessor(this.renderer)
+		// this.postprocessor = new Postprocessor(this.renderer) // line distance is to big
 
 		this.init()
 	}

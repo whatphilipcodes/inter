@@ -40,7 +40,7 @@ export default class SceneManager {
 
 		this.camera = new Camera(this.canvas)
 		this.camera.buildOrthoCam()
-
+		// this.camera.buildPerspCam()
 		this.init()
 	}
 

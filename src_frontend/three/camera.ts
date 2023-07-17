@@ -58,7 +58,7 @@ export default class Camera {
 			)
 			.name('Position Z')
 		gui
-			.add(camera, 'fov', this.valBounds.fov.min, this.valBounds.fov.min)
+			.add(camera, 'fov', this.valBounds.fov.min, this.valBounds.fov.max)
 			.name('FOV')
 		gui
 			.add(camera, 'near', this.valBounds.near.min, this.valBounds.near.max)

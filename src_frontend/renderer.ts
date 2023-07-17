@@ -22,7 +22,7 @@ import Stats from 'three/examples/jsm/libs/stats.module.js'
 //  * Debugging
 //  *************************************************************/
 let stats: Stats
-if (config.stats) {
+if (config.devUI) {
 	stats = new Stats()
 	stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
 	document.body.appendChild(stats.dom)
@@ -47,11 +47,11 @@ const sceneManager = new SceneManager(initialResolution)
 
 // Render Loop
 function animate() {
-	if (config.stats) stats.begin()
+	if (config.devUI) stats.begin()
 	sceneManager.update()
 	requestAnimationFrame(animate)
-	input.focusInput()
-	if (config.stats) stats.end()
+	if (!config.devUI) input.focusInput()
+	if (config.devUI) stats.end()
 }
 // Start Loop
 animate()

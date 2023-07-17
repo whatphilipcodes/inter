@@ -11,8 +11,8 @@ import InputDisplay from './inputDisplay'
 // import TroikaTest from './troika'
 // import ThreeDemo from './demo'
 
-// Import Postprocessor
-import Postprocessor from './postprocessor'
+import Postprocessor from './postProcessor'
+import Camera from './camera'
 
 export default class SceneManager {
 	// Props
@@ -21,7 +21,7 @@ export default class SceneManager {
 
 	canvas: HTMLCanvasElement
 	renderer: THREE.WebGLRenderer
-	camera: THREE.PerspectiveCamera
+	camera: Camera
 	scene: THREE.Scene
 
 	sceneSubjects: SceneSubject[]
@@ -31,11 +31,15 @@ export default class SceneManager {
 	constructor(initRes: { width: number; height: number }) {
 		this.canvas = this.buildCanvas(initRes.width, initRes.height)
 		this.clock = new THREE.Clock()
+
 		this.scene = this.buildScene()
-		this.renderer = this.buildRenderer()
-		this.camera = this.buildCamera()
 		this.sceneSubjects = this.buildSceneSubjects()
+
+		this.renderer = this.buildRenderer()
 		// this.postprocessor = new Postprocessor(this.renderer) // line distance is to big
+
+		this.camera = new Camera(this.canvas)
+		this.camera.buildOrthoCam()
 
 		this.init()
 	}
@@ -65,21 +69,6 @@ export default class SceneManager {
 		return renderer
 	}
 
-	buildCamera() {
-		const aspectRatio = this.canvas.width / this.canvas.height
-		const fieldOfView = 75
-		const nearPlane = 0.1
-		const farPlane = 1000
-		const camera = new THREE.PerspectiveCamera(
-			fieldOfView,
-			aspectRatio,
-			nearPlane,
-			farPlane
-		)
-		camera.position.z = 5
-		return camera
-	}
-
 	buildSceneSubjects() {
 		const sceneSubjects = [
 			// new TroikaTest('TroikaTest', this.scene),
@@ -93,14 +82,15 @@ export default class SceneManager {
 	init() {
 		if (!this.postprocessor) document.body.appendChild(this.renderer.domElement)
 	}
+
 	update() {
 		const elTime = this.clock.getElapsedTime()
 		const deltaTime = this.clock.getDelta()
 		const curFrame = this.renderer.info.render.frame
 		for (const subject of this.sceneSubjects)
 			subject.update(elTime, curFrame, deltaTime)
-		this.renderer.render(this.scene, this.camera)
-		this.postprocessor?.render(this.scene, this.camera)
+		this.renderer.render(this.scene, this.camera.link())
+		this.postprocessor?.render(this.scene, this.camera.link())
 	}
 
 	initThree(state: Store) {
@@ -111,8 +101,7 @@ export default class SceneManager {
 	}
 
 	onWindowResize(width: number, height: number) {
-		this.camera.aspect = width / height
-		this.camera.updateProjectionMatrix()
+		this.camera.updateAspect(width, height)
 		this.renderer.setSize(width, height)
 		this.postprocessor?.onWindowResize(width, height)
 	}

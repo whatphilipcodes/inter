@@ -6,7 +6,8 @@ import SceneSubject from './_sceneSubject'
 
 export default class InputDisplay extends SceneSubject {
 	// Props
-	text // Troika instance does not support ts
+	troika // Troika instance does not support ts
+
 	state: Store
 
 	constructor(name: string, scene: THREE.Scene, state: Store) {
@@ -16,20 +17,22 @@ export default class InputDisplay extends SceneSubject {
 		this.state = state
 
 		// Create a Troika Text
-		this.text = new Text()
-		this.text.font = './assets/cascadiamono.ttf'
-		this.text.fontSize = 0.1
-		this.text.color = 0xffffff
-		this.text.anchorX = 'center'
-		this.text.anchorY = 'middle'
+		this.troika = new Text()
+		this.troika.font = './assets/cascadiamono.ttf'
+		this.troika.fontSize = 1
 
-		// Add the text to the scene
-		this.scene.add(this.text)
+		this.troika.sdfGlyphSize = 64
+		this.troika.color = 0xffffff
+		this.troika.anchorX = 'center'
+		this.troika.anchorY = 'middle'
+
+		// Add the troika to the scene
+		this.scene.add(this.troika)
 	}
 
 	update() {
-		this.text.text = this.state?.input
-		this.text.sync()
+		this.troika.text = this.state?.input
+		this.troika.sync()
 	}
 
 	updateState(state: Store): void {

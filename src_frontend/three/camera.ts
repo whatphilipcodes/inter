@@ -14,9 +14,8 @@ export default class Camera {
 		frustum: { min: 2, max: 30 },
 	}
 
-	constructor(canvas: HTMLCanvasElement, frustumSize?: number) {
+	constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas
-		this.frustumSize = frustumSize || 10
 	}
 
 	buildPerspCam() {
@@ -58,14 +57,14 @@ export default class Camera {
 			)
 			.name('Position Z')
 		gui
-			.add(camera, 'fov', this.valBounds.fov.min, this.valBounds.fov.max)
-			.name('FOV')
-		gui
 			.add(camera, 'near', this.valBounds.near.min, this.valBounds.near.max)
 			.name('Near')
 		gui
 			.add(camera, 'far', this.valBounds.far.min, this.valBounds.far.max)
 			.name('Far')
+		gui
+			.add(camera, 'fov', this.valBounds.fov.min, this.valBounds.fov.max)
+			.name('FOV')
 
 		gui.onChange(() => {
 			this.updatePerspCamera(camera, this.canvas.width, this.canvas.height)
@@ -73,7 +72,8 @@ export default class Camera {
 		gui.open()
 	}
 
-	buildOrthoCam() {
+	buildOrthoCam(frustumSize?: number) {
+		this.frustumSize = frustumSize || 10
 		const aspect = this.canvas.width / this.canvas.height
 		const camera = new THREE.OrthographicCamera(
 			(-this.frustumSize * aspect) / 2,

@@ -2,14 +2,17 @@
 
 import * as THREE from 'three'
 import SceneSubject from './_sceneSubject'
-
 import { Store } from '../state/store'
 // import { appState } from '../utils/enums'
 
-// Import SceneSubjects
+// SceneSubjects
 import InputDisplay from './inputDisplay'
 // import TroikaTest from './troika'
 // import ThreeDemo from './demo'
+
+// Debugging
+import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
+import config from '../front.config'
 
 import Postprocessor from './postProcessor'
 import Camera from './camera'
@@ -42,6 +45,8 @@ export default class SceneManager {
 		this.camera.buildOrthoCam()
 		// this.camera.buildPerspCam()
 		this.init()
+
+		if (config.devUI) this.buildDevUI()
 	}
 
 	buildCanvas(width: number, height: number) {
@@ -76,6 +81,14 @@ export default class SceneManager {
 			new InputDisplay('InputDisplay', this.scene, this.state),
 		]
 		return sceneSubjects
+	}
+
+	buildDevUI() {
+		const gui = new GUI({ title: 'Dev UI' })
+		this.camera.buildDevUI(gui)
+		for (const subject of this.sceneSubjects) {
+			subject.buildDevUI?.(gui)
+		}
 	}
 
 	// Callbacks

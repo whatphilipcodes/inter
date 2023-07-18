@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { Text } from 'troika-three-text'
+import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 
 import { Store } from '../state/store'
 import SceneSubject from './_sceneSubject'
@@ -28,6 +29,15 @@ export default class InputDisplay extends SceneSubject {
 
 		// Add the troika to the scene
 		this.scene.add(this.troika)
+	}
+
+	buildDevUI(gui: GUI) {
+		const folder = gui.addFolder('Input Display')
+		folder.add(this.troika, 'fontSize', 0.01, 1).name('Font Size')
+		folder.add(this.troika, 'sdfGlyphSize', 0, 256).name('SDF Glyph Size')
+		folder.addColor(this.troika, 'color').name('Color')
+		this.troika.sync()
+		gui.open()
 	}
 
 	update() {

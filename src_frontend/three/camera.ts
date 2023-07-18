@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
-import config from '../front.config'
 
 export default class Camera {
 	canvas: HTMLCanvasElement
@@ -18,6 +17,14 @@ export default class Camera {
 		this.canvas = canvas
 	}
 
+	buildDevUI(ui: GUI) {
+		if (this.camera instanceof THREE.PerspectiveCamera) {
+			this.buildPerspCamUI(this.camera, ui)
+		} else if (this.camera instanceof THREE.OrthographicCamera) {
+			this.buildOrthoCamUI(this.camera, ui)
+		}
+	}
+
 	buildPerspCam() {
 		const camera = new THREE.PerspectiveCamera(
 			75,
@@ -27,12 +34,11 @@ export default class Camera {
 		)
 		camera.position.z = 5
 		this.camera = camera
-		if (config.devUI) this.buildPerspCamUI(this.camera)
 	}
 
-	buildPerspCamUI(camera: THREE.PerspectiveCamera) {
-		const gui = new GUI({ title: 'Perspective Camera' })
-		gui
+	buildPerspCamUI(camera: THREE.PerspectiveCamera, gui: GUI) {
+		const folder = gui.addFolder('Perspective Camera')
+		folder
 			.add(
 				camera.position,
 				'x',
@@ -40,7 +46,7 @@ export default class Camera {
 				this.valBounds.position.max
 			)
 			.name('Position X')
-		gui
+		folder
 			.add(
 				camera.position,
 				'y',
@@ -48,7 +54,7 @@ export default class Camera {
 				this.valBounds.position.max
 			)
 			.name('Position Y')
-		gui
+		folder
 			.add(
 				camera.position,
 				'z',
@@ -56,13 +62,13 @@ export default class Camera {
 				this.valBounds.position.max
 			)
 			.name('Position Z')
-		gui
+		folder
 			.add(camera, 'near', this.valBounds.near.min, this.valBounds.near.max)
 			.name('Near')
-		gui
+		folder
 			.add(camera, 'far', this.valBounds.far.min, this.valBounds.far.max)
 			.name('Far')
-		gui
+		folder
 			.add(camera, 'fov', this.valBounds.fov.min, this.valBounds.fov.max)
 			.name('FOV')
 
@@ -85,12 +91,11 @@ export default class Camera {
 		)
 		camera.position.z = 5
 		this.camera = camera
-		if (config.devUI) this.buildOrthoCamUI(this.camera)
 	}
 
-	buildOrthoCamUI(camera: THREE.OrthographicCamera) {
-		const gui = new GUI({ title: 'Orthographic Camera' })
-		gui
+	buildOrthoCamUI(camera: THREE.OrthographicCamera, gui: GUI) {
+		const folder = gui.addFolder('Orthographic Camera')
+		folder
 			.add(
 				camera.position,
 				'x',
@@ -98,7 +103,7 @@ export default class Camera {
 				this.valBounds.position.max
 			)
 			.name('Position X')
-		gui
+		folder
 			.add(
 				camera.position,
 				'y',
@@ -106,7 +111,7 @@ export default class Camera {
 				this.valBounds.position.max
 			)
 			.name('Position Y')
-		gui
+		folder
 			.add(
 				camera.position,
 				'z',
@@ -114,13 +119,13 @@ export default class Camera {
 				this.valBounds.position.max
 			)
 			.name('Position Z')
-		gui
+		folder
 			.add(camera, 'near', this.valBounds.near.min, this.valBounds.near.max)
 			.name('Near')
-		gui
+		folder
 			.add(camera, 'far', this.valBounds.far.min, this.valBounds.far.max)
 			.name('Far')
-		gui
+		folder
 			.add(
 				this,
 				'frustumSize',

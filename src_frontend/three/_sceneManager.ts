@@ -7,8 +7,8 @@ import { Store } from '../state/store'
 
 // SceneSubjects
 import InputDisplay from './inputDisplay'
-// import TroikaTest from './troika'
-// import ThreeDemo from './demo'
+// import TroikaDemo from './demoTroika'
+// import ThreeDemo from './demoCube'
 
 // Debugging
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
@@ -76,7 +76,7 @@ export default class SceneManager {
 
 	buildSceneSubjects() {
 		const sceneSubjects = [
-			// new TroikaTest('TroikaTest', this.scene),
+			// new TroikaTest('TroikaDemo', this.scene),
 			// new ThreeDemo('ThreeDemo', this.scene),
 			new InputDisplay('InputDisplay', this.scene, this.state),
 		]

@@ -34,9 +34,8 @@ export default class InputDisplay extends SceneSubject {
 	buildDevUI(gui: GUI) {
 		const folder = gui.addFolder('Input Display')
 		folder.add(this.troika, 'fontSize', 0.01, 1).name('Font Size')
-		folder.add(this.troika, 'sdfGlyphSize', 0, 256).name('SDF Glyph Size')
 		folder.addColor(this.troika, 'color').name('Color')
-		this.troika.sync()
+		gui.onChange(() => this.troika.sync())
 		gui.open()
 	}
 

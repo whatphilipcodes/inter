@@ -123,7 +123,7 @@ app.whenReady().then(async () => {
 		do {
 			el_url = await getURL('localhost')
 		} while (el_url.href === uvi_url.href)
-		if (config.debug) console.log('el_url: ' + el_url.href)
+		if (config.debugMsg) console.log('el_url: ' + el_url.href)
 	}
 
 	if (isWin) startPythonAPI(uvi_url, el_url)
@@ -228,7 +228,8 @@ else Menu.setApplicationMenu(buildMenu)
 const sendToRenderer = (channel: string, data: string) => {
 	const mainWindow = BrowserWindow.getAllWindows()[0]
 	mainWindow.webContents.send(channel, data)
-	if (config.debug) console.log(`Sent ${data} over c-'${channel}' to renderer`)
+	if (config.debugMsg)
+		console.log(`Sent ${data} over c-'${channel}' to renderer`)
 }
 
 /*************************************************************

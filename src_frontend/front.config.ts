@@ -3,8 +3,9 @@ const config = {
 	devTools: true,
 	fullScreen: false,
 	hideCursor: false,
-	debug: true,
+	debugMsg: true,
 	maxInputLength: 128,
+	showHiddenInput: false,
 }
 
 export default config

@@ -54,7 +54,6 @@ function animate() {
 	if (config.devUI) stats.begin()
 	sceneManager.update()
 	requestAnimationFrame(animate)
-	if (!config.devUI) input.focusInput()
 	if (config.devUI) stats.end()
 }
 // Start Loop

@@ -2,6 +2,7 @@ import { Store } from '../state/store'
 import config from '../front.config'
 
 export default class Input extends HTMLElement {
+	textarea: HTMLTextAreaElement
 	constructor() {
 		super()
 		this.attachShadow({ mode: 'open' })
@@ -9,14 +10,27 @@ export default class Input extends HTMLElement {
 		template.innerHTML = /*html*/ `
             <style>
                 #hiddenInput {
-					opacity: 0%;
+					opacity: ${config.showHiddenInput ? 100 : 0};
+					position: absolute;
+					bottom: 0;
+					left: 0;
+					pointer-events: none;
                 }
             </style>
             <div>
-                <textarea id="hiddenInput" type="text" autocomplete="off" autocorrect="off" maxlength="${config.maxInputLength}"></textarea>
+                <textarea id="hiddenInput" type="text" autocomplete="off" autocorrect="off" maxlength="${
+									config.maxInputLength
+								}"></textarea>
             </div>
         `
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
+		this.textarea = this.shadowRoot.getElementById(
+			'hiddenInput'
+		) as HTMLTextAreaElement
+		this.textarea.addEventListener('blur', () => {
+			this.textarea.focus()
+		})
+		this.textarea.focus()
 	}
 
 	// connect input to global state
@@ -27,10 +41,6 @@ export default class Input extends HTMLElement {
 				const target = e.target as HTMLInputElement
 				state.mutate({ input: target.value })
 			})
-	}
-
-	focusInput() {
-		this.shadowRoot.getElementById('hiddenInput').focus()
 	}
 }
 

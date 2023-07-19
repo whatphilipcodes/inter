@@ -6,7 +6,7 @@ export default class Camera {
 	camera: THREE.PerspectiveCamera | THREE.OrthographicCamera
 	frustumSize: number
 	valBounds = {
-		position: { min: -5, max: 5 },
+		position: { min: -10, max: 10 },
 		fov: { min: 35, max: 100 },
 		near: { min: 0, max: 100 },
 		far: { min: 0, max: 1000 },
@@ -25,15 +25,15 @@ export default class Camera {
 		}
 	}
 
-	buildPerspCam() {
+	buildPerspCam(position?: THREE.Vector3) {
 		const camera = new THREE.PerspectiveCamera(
 			75,
 			this.canvas.width / this.canvas.height,
 			0.1,
 			1000
 		)
-		camera.position.z = 5
 		this.camera = camera
+		this.position(position || new THREE.Vector3(0, 0, 0))
 	}
 
 	buildPerspCamUI(camera: THREE.PerspectiveCamera, gui: GUI) {
@@ -78,7 +78,7 @@ export default class Camera {
 		gui.open()
 	}
 
-	buildOrthoCam(frustumSize?: number) {
+	buildOrthoCam(frustumSize?: number, position?: THREE.Vector3) {
 		this.frustumSize = frustumSize || 10
 		const aspect = this.canvas.width / this.canvas.height
 		const camera = new THREE.OrthographicCamera(
@@ -86,11 +86,11 @@ export default class Camera {
 			(this.frustumSize * aspect) / 2,
 			this.frustumSize / 2,
 			-this.frustumSize / 2,
-			0.1,
-			1000
+			0,
+			100
 		)
-		camera.position.z = 5
 		this.camera = camera
+		this.position(position || new THREE.Vector3(0, 0, 0))
 	}
 
 	buildOrthoCamUI(camera: THREE.OrthographicCamera, gui: GUI) {
@@ -140,7 +140,7 @@ export default class Camera {
 		gui.open()
 	}
 
-	link() {
+	instance() {
 		return this.camera
 	}
 
@@ -150,6 +150,10 @@ export default class Camera {
 		} else {
 			this.updateOrthoCamera(this.camera, width, height)
 		}
+	}
+
+	position(pos: THREE.Vector3) {
+		this.camera.position.set(pos.x, pos.y, pos.z)
 	}
 
 	updateOrthoCamera(

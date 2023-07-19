@@ -10,6 +10,9 @@ import InputDisplay from './inputDisplay'
 // import TroikaDemo from './demoTroika'
 // import ThreeDemo from './demoCube'
 
+// Utils
+import { screenToWorld } from '../utils/threeUtil'
+
 // Debugging
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 import config from '../front.config'
@@ -35,21 +38,22 @@ export default class SceneManager {
 		this.canvas = this.buildCanvas(initRes.width, initRes.height)
 		this.clock = new THREE.Clock()
 
-		this.scene = this.buildScene()
-		this.sceneSubjects = this.buildSceneSubjects()
-
 		this.renderer = this.buildRenderer()
 		// this.postprocessor = new Postprocessor(this.renderer) // line distance is to big
 
 		this.camera = new Camera(this.canvas)
 		this.camera.buildOrthoCam()
 		// this.camera.buildPerspCam()
+
+		this.scene = this.buildScene()
+		this.sceneSubjects = this.buildSceneSubjects()
+
 		this.init()
 
 		if (config.devUI) this.buildDevUI()
 	}
 
-	buildCanvas(width: number, height: number) {
+	buildCanvas(width: number, height: number): HTMLCanvasElement {
 		const canvas = document.createElement('canvas')
 		canvas.width = width
 		canvas.height = height
@@ -62,28 +66,34 @@ export default class SceneManager {
 	}
 
 	// Methods
-	buildScene() {
+	buildScene(): THREE.Scene {
 		const scene = new THREE.Scene()
 		scene.background = new THREE.Color('#000')
 		return scene
 	}
 
-	buildRenderer() {
+	buildRenderer(): THREE.WebGLRenderer {
 		const renderer = new THREE.WebGLRenderer({ canvas: this.canvas })
 		renderer.setSize(this.canvas.width, this.canvas.height)
 		return renderer
 	}
 
-	buildSceneSubjects() {
+	buildSceneSubjects(): SceneSubject[] {
+		console.log(screenToWorld(this.camera.instance(), 0, 0))
 		const sceneSubjects = [
 			// new TroikaTest('TroikaDemo', this.scene),
 			// new ThreeDemo('ThreeDemo', this.scene),
-			new InputDisplay('InputDisplay', this.scene, this.state),
+			new InputDisplay(
+				'InputDisplay',
+				this.scene,
+				this.state,
+				screenToWorld(this.camera.instance(), -1, 1)
+			),
 		]
 		return sceneSubjects
 	}
 
-	buildDevUI() {
+	buildDevUI(): void {
 		const gui = new GUI({ title: 'Dev UI' })
 		this.camera.buildDevUI(gui)
 		for (const subject of this.sceneSubjects) {
@@ -92,30 +102,33 @@ export default class SceneManager {
 	}
 
 	// Callbacks
-	init() {
+	init(): void {
 		if (!this.postprocessor) document.body.appendChild(this.renderer.domElement)
 	}
 
-	update() {
+	update(): void {
 		const elTime = this.clock.getElapsedTime()
 		const deltaTime = this.clock.getDelta()
 		const curFrame = this.renderer.info.render.frame
 		for (const subject of this.sceneSubjects)
 			subject.update(elTime, curFrame, deltaTime)
-		this.renderer.render(this.scene, this.camera.link())
-		this.postprocessor?.render(this.scene, this.camera.link())
+		this.renderer.render(this.scene, this.camera.instance())
+		this.postprocessor?.render(this.scene, this.camera.instance())
 	}
 
-	initThree(state: Store) {
+	initThree(state: Store): void {
 		this.state = state
 		for (const subject of this.sceneSubjects) {
 			subject.updateState?.(state)
 		}
 	}
 
-	onWindowResize(width: number, height: number) {
+	onWindowResize(width: number, height: number): void {
 		this.camera.updateAspect(width, height)
 		this.renderer.setSize(width, height)
 		this.postprocessor?.onWindowResize(width, height)
+		for (const subject of this.sceneSubjects) {
+			subject.updateOrigin?.(screenToWorld(this.camera.instance(), -1, 1))
+		}
 	}
 }

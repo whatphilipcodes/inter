@@ -8,14 +8,20 @@ import SceneSubject from './_sceneSubject'
 export default class InputDisplay extends SceneSubject {
 	// Props
 	troika // Troika instance does not support ts
-
 	state: Store
+	origin: THREE.Vector3
 
-	constructor(name: string, scene: THREE.Scene, state: Store) {
+	constructor(
+		name: string,
+		scene: THREE.Scene,
+		state: Store,
+		origin: THREE.Vector3
+	) {
 		super(name, scene)
 
-		// Get State Reference
+		// Get References
 		this.state = state
+		this.origin = origin
 
 		// Create a Troika Text
 		this.troika = new Text()
@@ -24,10 +30,11 @@ export default class InputDisplay extends SceneSubject {
 
 		this.troika.sdfGlyphSize = 64
 		this.troika.color = 0xffffff
-		this.troika.anchorX = 'center'
-		this.troika.anchorY = 'middle'
+		this.troika.anchorX = 'left'
+		this.troika.anchorY = 'top'
 
 		// Add the troika to the scene
+		this.troika.position.set(origin.x, origin.y, origin.z)
 		this.scene.add(this.troika)
 	}
 
@@ -45,5 +52,10 @@ export default class InputDisplay extends SceneSubject {
 
 	updateState(state: Store): void {
 		this.state = state
+	}
+
+	updateOrigin(origin: THREE.Vector3): void {
+		this.origin = origin
+		this.troika.position.set(origin.x, origin.y, origin.z)
 	}
 }

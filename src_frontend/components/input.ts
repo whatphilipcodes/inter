@@ -9,7 +9,7 @@ export default class Input extends HTMLElement {
 		template.innerHTML = /*html*/ `
             <style>
                 #hiddenInput {
-					opacity: 10%;
+					opacity: 0%;
                 }
             </style>
             <div>

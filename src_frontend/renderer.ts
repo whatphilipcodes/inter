@@ -28,6 +28,10 @@ if (config.devUI) {
 	document.body.appendChild(stats.dom)
 }
 
+if (config.hideCursor) {
+	document.body.style.cursor = 'none'
+}
+
 // /*************************************************************
 //  * Components
 //  *************************************************************/

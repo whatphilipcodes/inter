@@ -5,7 +5,7 @@ const config = {
 	hideCursor: false,
 	debugMsg: true,
 	maxInputLength: 128,
-	showHiddenInput: false,
+	showHiddenInput: true,
 }
 
 export default config

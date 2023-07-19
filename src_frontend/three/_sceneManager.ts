@@ -75,11 +75,11 @@ export default class SceneManager {
 	buildRenderer(): THREE.WebGLRenderer {
 		const renderer = new THREE.WebGLRenderer({ canvas: this.canvas })
 		renderer.setSize(this.canvas.width, this.canvas.height)
+		renderer.setPixelRatio(window.devicePixelRatio)
 		return renderer
 	}
 
 	buildSceneSubjects(): SceneSubject[] {
-		console.log(screenToWorld(this.camera.instance(), 0, 0))
 		const sceneSubjects = [
 			// new TroikaTest('TroikaDemo', this.scene),
 			// new ThreeDemo('ThreeDemo', this.scene),

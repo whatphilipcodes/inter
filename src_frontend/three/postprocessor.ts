@@ -10,10 +10,11 @@ export default class Postprocessor {
 	constructor(renderer: THREE.WebGLRenderer) {
 		const options: AsciiEffectOptions = {
 			resolution: 0.25, // default 0.15
+			scale: 1, // default 1
 			invert: true,
 			block: false,
 		}
-		this.asci = new AsciiEffect(renderer, ' 0123456789', options)
+		this.asci = new AsciiEffect(renderer, ' .+^0123456789', options)
 		const resolution = renderer.getSize(new THREE.Vector2())
 		this.asci.setSize(resolution.width, resolution.height)
 		this.asci.domElement.style.color = 'white'

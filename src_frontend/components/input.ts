@@ -14,7 +14,7 @@ export default class Input extends HTMLElement {
 					position: absolute;
 					bottom: 0;
 					left: 0;
-					pointer-events: none;
+					pointer-events: ${config.showHiddenInput ? 'auto' : 'none'};
                 }
             </style>
             <div>
@@ -27,20 +27,39 @@ export default class Input extends HTMLElement {
 		this.textarea = this.shadowRoot.getElementById(
 			'hiddenInput'
 		) as HTMLTextAreaElement
-		this.textarea.addEventListener('blur', () => {
+
+		// keep focused
+		if (!config.showHiddenInput) {
+			this.textarea.addEventListener('blur', () => {
+				this.textarea.focus()
+			})
 			this.textarea.focus()
-		})
-		this.textarea.focus()
+		}
 	}
 
 	// connect input to global state
 	initInput(state: Store) {
-		this.shadowRoot
-			.getElementById('hiddenInput')
-			.addEventListener('input', (e: Event) => {
-				const target = e.target as HTMLInputElement
-				state.mutate({ input: target.value })
+		this.textarea.addEventListener('input', (e: Event) => {
+			const target = e.target as HTMLTextAreaElement
+			state.mutate({ input: target.value })
+		})
+		this.textarea.addEventListener('keyup', (e: Event) => {
+			const target = e.target as HTMLTextAreaElement
+			state.mutate({ cursorPos: target.selectionStart })
+			if (target.selectionStart == target.selectionEnd) {
+				state.mutate({ selectionActive: false })
+			}
+		})
+		this.textarea.addEventListener('select', (e: Event) => {
+			const target = e.target as HTMLTextAreaElement
+			state.mutate({
+				selection: {
+					start: target.selectionStart,
+					end: target.selectionEnd,
+				},
+				selectionActive: target.selectionStart !== target.selectionEnd,
 			})
+		})
 	}
 }
 

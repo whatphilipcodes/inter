@@ -1,4 +1,5 @@
 import { Store } from '../state/store'
+import config from '../front.config'
 
 export default class Input extends HTMLElement {
 	constructor() {
@@ -8,11 +9,11 @@ export default class Input extends HTMLElement {
 		template.innerHTML = /*html*/ `
             <style>
                 #hiddenInput {
-					opacity: 0%;
+					opacity: 10%;
                 }
             </style>
             <div>
-                <input id="hiddenInput" type="text" />
+                <textarea id="hiddenInput" type="text" autocomplete="off" autocorrect="off" maxlength="${config.maxInputLength}"></textarea>
             </div>
         `
 		this.shadowRoot.appendChild(template.content.cloneNode(true))

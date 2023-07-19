@@ -1,7 +1,7 @@
 import './index.css'
 
 // components -> index.html
-import './components/chat'
+import './components/demoChat'
 import './components/input'
 // components types
 import type Input from './components/input'

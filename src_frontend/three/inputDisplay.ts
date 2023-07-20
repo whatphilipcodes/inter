@@ -41,7 +41,7 @@ export default class InputDisplay extends SceneSubject {
 		this.scene.add(this.troika)
 
 		// Cursor
-		this.dynCor = new Cursor('testin', this.scene, this.origin, resolution)
+		this.dynCor = new Cursor('testin', this.scene, this.origin /*resolution*/)
 	}
 
 	buildDevUI(gui: GUI) {
@@ -54,6 +54,7 @@ export default class InputDisplay extends SceneSubject {
 	update() {
 		this.troika.text = this.state?.input
 		this.troika.sync()
+		this.dynCor.update()
 	}
 
 	updateState(state: Store): void {

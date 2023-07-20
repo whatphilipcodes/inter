@@ -1,11 +1,5 @@
 import * as THREE from 'three'
-import {
-	MeshLine,
-	MeshLineGeometry,
-	MeshLineMaterial,
-} from '@lume/three-meshline'
-
-import RectLineBuilder from './rectLineBuilder'
+import { AniPath } from './aniPath'
 
 enum Behavior {
 	// input
@@ -25,7 +19,7 @@ export default class Cursor {
 	name: string
 	scene: THREE.Scene
 	anchor: THREE.Vector3
-	material: MeshLineMaterial
+	material: THREE.MeshBasicMaterial
 	behavior: Behavior
 
 	// Points
@@ -37,15 +31,18 @@ export default class Cursor {
 
 	// MeshLine
 	points: THREE.Vector3[]
-	geometry: MeshLineGeometry
-	line: RectLineBuilder
+	geometry: THREE.BufferGeometry
+	line: THREE.Mesh
+	test: AniPath
+	t: number
 
 	constructor(
 		name: string,
 		scene: THREE.Scene,
-		origin: THREE.Vector3,
-		resolution: THREE.Vector2
+		origin: THREE.Vector3
+		// resolution: THREE.Vector2
 	) {
+		this.t = 0
 		this.name = name
 		this.scene = scene
 		this.anchor = origin
@@ -53,60 +50,60 @@ export default class Cursor {
 		this.behavior = Behavior.HIDDEN
 
 		// testing stuff
+		this.material = new THREE.MeshBasicMaterial({
+			// white color
+			color: 0xffffff,
+		})
+
 		this.cursorTop = new THREE.Vector3(0, 1, origin.z)
 		this.cursorEnd = new THREE.Vector3(0, -1, origin.z)
 		this.pointBase = new THREE.Vector3(0, -2, origin.z)
 		this.pointCorn = new THREE.Vector3(-2, -2, origin.z)
 		this.pointDest = new THREE.Vector3(-2, 1, origin.z)
 
-		// this.points = [
-		// 	this.cursorTop,
-		// 	this.cursorEnd,
-		// 	this.pointBase,
-		// 	this.pointCorn,
-		// 	this.pointDest,
-		// ]
 		this.points = [
-			new THREE.Vector3(0, 0, 0),
-			new THREE.Vector3(1, 0, 0),
-			new THREE.Vector3(0, 1, 0),
+			this.cursorTop,
+			this.cursorEnd,
+			this.pointBase,
+			this.pointCorn,
+			this.pointDest,
 		]
 
-		this.line = new RectLineBuilder(
-			this.scene,
-			this.points,
-			0.1,
-			false,
-			0xffffff
-		)
-		this.line.createGeometry()
-		this.line.animate(0, 1)
+		this.test = new AniPath(this.points, 0.4)
 
-		// this.line = new RectLineBuilder(
-		// 	this.scene,
-		// 	this.points,
-		// 	0.1,
-		// 	false,
-		// 	0xffffff
+		// this.geometry = new THREE.BufferGeometry()
+
+		// const vertices = new Float32Array([
+		// 	-1.0,
+		// 	-1.0,
+		// 	origin.z, // v0
+		// 	1.0,
+		// 	-1.0,
+		// 	origin.z, // v1
+		// 	1.0,
+		// 	1.0,
+		// 	origin.z, // v2
+		// 	-1.0,
+		// 	1.0,
+		// 	origin.z, // v3
+		// ])
+
+		// const indices = [0, 1, 2, 2, 3, 0]
+
+		// this.geometry.setIndex(indices)
+		// this.geometry.setAttribute(
+		// 	'position',
+		// 	new THREE.BufferAttribute(vertices, 3)
 		// )
-		// this.line.createGeometry()
-		// this.line.animate(0, 1)
+		// this.line = new THREE.Mesh(this.geometry, this.material)
 
-		// this.geometry = new MeshLineGeometry()
-		// this.geometry.setPoints(this.points)
+		// this.scene.add(this.line)
+	}
 
-		// const options = {
-		// 	resolution: resolution,
-		// 	color: new THREE.Color('#fff'),
-		// 	opacity: 1,
-		// 	useDash: false,
-		// 	sizeAttenuation: false,
-		// 	lineWidth: 14,
-		// 	visibility: 1,
-		// } as THREE.ShaderMaterialParameters & MeshLineMaterial
-		// this.material = new MeshLineMaterial(options)
-
-		// this.line = new MeshLine(this.geometry, this.material)
-		// scene.add(this.line)
+	update() {
+		this.t += 0.01
+		const value = (Math.sin(this.t) + 1) * 0.5
+		this.test.update(value, value + 0.2)
+		// TODO
 	}
 }

@@ -7,8 +7,6 @@ import { Store } from '../state/store'
 
 // SceneSubjects
 import InputDisplay from './inputDisplay'
-// import TroikaDemo from './demoTroika'
-// import ThreeDemo from './demoCube'
 
 // Utils
 import { screenToWorld } from '../utils/threeUtil'
@@ -43,7 +41,6 @@ export default class SceneManager {
 
 		this.camera = new Camera(this.canvas)
 		this.camera.buildOrthoCam()
-		// this.camera.buildPerspCam()
 
 		this.scene = this.buildScene()
 		this.sceneSubjects = this.buildSceneSubjects()
@@ -81,13 +78,12 @@ export default class SceneManager {
 
 	buildSceneSubjects(): SceneSubject[] {
 		const sceneSubjects = [
-			// new TroikaTest('TroikaDemo', this.scene),
-			// new ThreeDemo('ThreeDemo', this.scene),
 			new InputDisplay(
 				'InputDisplay',
 				this.scene,
 				this.state,
-				screenToWorld(this.camera.instance(), -1, 1)
+				screenToWorld(this.camera.instance(), -1, 1),
+				new THREE.Vector2(this.canvas.width, this.canvas.height)
 			),
 		]
 		return sceneSubjects

@@ -4,18 +4,21 @@ import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 
 import { Store } from '../state/store'
 import SceneSubject from './_sceneSubject'
+import Cursor from './dynamicCursor'
 
 export default class InputDisplay extends SceneSubject {
 	// Props
 	troika // Troika instance does not support ts
 	state: Store
 	origin: THREE.Vector3
+	dynCor: Cursor
 
 	constructor(
 		name: string,
 		scene: THREE.Scene,
 		state: Store,
-		origin: THREE.Vector3
+		origin: THREE.Vector3,
+		resolution: THREE.Vector2
 	) {
 		super(name, scene)
 
@@ -36,6 +39,9 @@ export default class InputDisplay extends SceneSubject {
 		// Add the troika to the scene
 		this.troika.position.set(origin.x, origin.y, origin.z)
 		this.scene.add(this.troika)
+
+		// Cursor
+		this.dynCor = new Cursor('testin', this.scene, this.origin, resolution)
 	}
 
 	buildDevUI(gui: GUI) {

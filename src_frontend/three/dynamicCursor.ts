@@ -69,7 +69,8 @@ export default class Cursor {
 			this.pointDest,
 		]
 
-		this.test = new AniPath(this.points, 0.4)
+		this.test = new AniPath(this.points, 1)
+		this.scene.add(this.test.line)
 
 		// this.geometry = new THREE.BufferGeometry()
 

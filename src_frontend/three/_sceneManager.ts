@@ -70,7 +70,10 @@ export default class SceneManager {
 	}
 
 	buildRenderer(): THREE.WebGLRenderer {
-		const renderer = new THREE.WebGLRenderer({ canvas: this.canvas })
+		const renderer = new THREE.WebGLRenderer({
+			canvas: this.canvas,
+			antialias: true,
+		})
 		renderer.setSize(this.canvas.width, this.canvas.height)
 		renderer.setPixelRatio(window.devicePixelRatio)
 		return renderer

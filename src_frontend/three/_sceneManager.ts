@@ -8,14 +8,11 @@ import { Store } from '../state/store'
 // SceneSubjects
 import InputDisplay from './inputDisplay'
 
-// Utils
-import { screenToWorld } from '../utils/threeUtil'
-
 // Debugging
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 import config from '../front.config'
 
-import Postprocessor from './postProcessor'
+import Postprocessor from './postprocessor'
 import Camera from './camera'
 
 export default class SceneManager {
@@ -85,8 +82,7 @@ export default class SceneManager {
 				'InputDisplay',
 				this.scene,
 				this.state,
-				screenToWorld(this.camera.instance(), -1, 1),
-				new THREE.Vector2(this.canvas.width, this.canvas.height)
+				this.camera.instance() as THREE.OrthographicCamera
 			),
 		]
 		return sceneSubjects
@@ -127,7 +123,7 @@ export default class SceneManager {
 		this.renderer.setSize(width, height)
 		this.postprocessor?.onWindowResize(width, height)
 		for (const subject of this.sceneSubjects) {
-			subject.updateOrigin?.(screenToWorld(this.camera.instance(), -1, 1))
+			subject.onWindowResize?.()
 		}
 	}
 }

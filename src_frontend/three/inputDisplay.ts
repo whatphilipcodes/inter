@@ -1,12 +1,9 @@
-import * as THREE from 'three'
-import { Text, getCaretAtPoint, getSelectionRects } from 'troika-three-text'
-import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
-
 import { Store } from '../state/store'
 import SceneSubject from './_sceneSubject'
+import * as THREE from 'three'
+import { Text, getCaretAtPoint, getSelectionRects } from 'troika-three-text'
 import Cursor from './dynamicCursor'
-
-// Utils
+import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 import { screenToWorld } from '../utils/threeUtil'
 
 export default class InputDisplay extends SceneSubject {
@@ -15,8 +12,9 @@ export default class InputDisplay extends SceneSubject {
 	camera: THREE.OrthographicCamera
 	// Props
 	origin: THREE.Vector3
-	troika //: troika-three-text
 	dynCor: Cursor
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	troika: any
 
 	constructor(
 		name: string,
@@ -67,7 +65,6 @@ export default class InputDisplay extends SceneSubject {
 	update() {
 		this.troika.text = this.state?.input
 		this.troika.sync()
-		// this.dynCor.update()
 	}
 
 	onSyncComplete() {
@@ -82,6 +79,7 @@ export default class InputDisplay extends SceneSubject {
 	onWindowResize(): void {
 		this.origin = screenToWorld(this.camera, -1, 1)
 		this.troika.position.set(this.origin.x, this.origin.y, this.origin.z)
+		this.troika.maxWidth = this.camera.right - this.camera.left
 	}
 
 	testCaretPos(): void {

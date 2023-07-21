@@ -8,21 +8,25 @@ export default class Input extends HTMLElement {
 		this.attachShadow({ mode: 'open' })
 		const template = document.createElement('template')
 		template.innerHTML = /*html*/ `
-            <style>
-                #hiddenInput {
+			<style>
+				#hiddenInput {
 					opacity: ${config.showHiddenInput ? 100 : 0};
 					position: absolute;
 					bottom: 0;
 					left: 0;
 					pointer-events: ${config.showHiddenInput ? 'auto' : 'none'};
-                }
-            </style>
-            <div>
-                <textarea id="hiddenInput" type="text" autocomplete="off" autocorrect="off" maxlength="${
-									config.maxInputLength
-								}"></textarea>
-            </div>
-        `
+				}
+			</style>
+			<div>
+				<textarea
+					id="hiddenInput"
+					type="text"
+					autocomplete="off"
+					autocorrect="off"
+					maxlength="${config.maxInputLength}"
+				></textarea>
+			</div>
+		`
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
 		this.textarea = this.shadowRoot.getElementById(
 			'hiddenInput'
@@ -35,6 +39,24 @@ export default class Input extends HTMLElement {
 			})
 			this.textarea.focus()
 		}
+
+		// prevent key holding
+		const keys: { [key: string]: boolean } = {}
+		this.textarea.addEventListener('keydown', function (e) {
+			if (e.key === 'Backspace') return
+			if (e.key === 'ArrowUp') return
+			if (e.key === 'ArrowDown') return
+			if (e.key === 'ArrowLeft') return
+			if (e.key === 'ArrowRight') return
+			if (keys[e.key]) {
+				e.preventDefault()
+			} else {
+				keys[e.key] = true
+			}
+		})
+		this.textarea.addEventListener('keyup', function (e) {
+			keys[e.key] = false
+		})
 	}
 
 	// connect input to global state

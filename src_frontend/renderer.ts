@@ -40,6 +40,16 @@ if (config.hideCursor) {
 const input = document.getElementById('textInput') as Input
 
 // /*************************************************************
+//  * State
+//  *************************************************************/
+// create global (renderer process) state
+const globalState = new Store()
+// init all modules that need access to the global state
+initAPI(globalState)
+// init all component instances that need access to the global state
+input.initInput(globalState)
+
+// /*************************************************************
 //  * Rendering
 //  *************************************************************/
 // Create sceneManager
@@ -47,7 +57,7 @@ const initialResolution = {
 	width: window.innerWidth,
 	height: window.innerHeight,
 }
-const sceneManager = new SceneManager(initialResolution)
+const sceneManager = new SceneManager(initialResolution, globalState)
 
 // Render Loop
 function animate() {
@@ -65,17 +75,6 @@ window.addEventListener(
 	() => sceneManager.onWindowResize(window.innerWidth, window.innerHeight),
 	false
 )
-
-// /*************************************************************
-//  * State
-//  *************************************************************/
-// create global (renderer process) state
-const globalState = new Store()
-// init all modules that need access to the global state
-initAPI(globalState)
-// init all class instances that need access to the global state
-sceneManager.initThree(globalState)
-input.initInput(globalState)
 
 // /*************************************************************
 //  * IPC from main process

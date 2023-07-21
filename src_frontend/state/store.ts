@@ -24,12 +24,24 @@ export class Store {
 		selectionActive: false,
 	}
 
+	private mutationCallbacks: { [key: string]: () => void }
+
 	constructor() {
 		Object.assign(this, this.initialState)
+		this.mutationCallbacks = {}
+	}
+
+	subscribe(key: string, callback: () => void): void {
+		this.mutationCallbacks[key] = callback
+	}
+
+	unsubscribe(key: string): void {
+		delete this.mutationCallbacks[key]
 	}
 
 	mutate(newState: Partial<Store>): void {
 		Object.assign(this, newState)
+		Object.values(this.mutationCallbacks).forEach((callback) => callback())
 	}
 
 	initAxios(baseURL: URL): void {

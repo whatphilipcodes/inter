@@ -29,7 +29,8 @@ export default class SceneManager {
 	postprocessor: Postprocessor
 
 	// Init
-	constructor(initRes: { width: number; height: number }) {
+	constructor(initRes: { width: number; height: number }, state: Store) {
+		this.state = state
 		this.canvas = this.buildCanvas(initRes.width, initRes.height)
 		this.clock = new THREE.Clock()
 
@@ -109,13 +110,6 @@ export default class SceneManager {
 			subject.update(elTime, curFrame, deltaTime)
 		this.renderer.render(this.scene, this.camera.instance())
 		this.postprocessor?.render(this.scene, this.camera.instance())
-	}
-
-	initThree(state: Store): void {
-		this.state = state
-		for (const subject of this.sceneSubjects) {
-			subject.updateState?.(state)
-		}
 	}
 
 	onWindowResize(width: number, height: number): void {

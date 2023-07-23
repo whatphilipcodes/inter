@@ -47,34 +47,37 @@ const globalState = new Store()
 // init all modules that need access to the global state
 initAPI(globalState)
 // init all component instances that need access to the global state
-input.initInput(globalState)
+if (!config.demoPlain) input.initInput(globalState)
 
 // /*************************************************************
 //  * Rendering
 //  *************************************************************/
-// Create sceneManager
-const initialResolution = {
-	width: window.innerWidth,
-	height: window.innerHeight,
-}
-const sceneManager = new SceneManager(initialResolution, globalState)
+if (!config.demoPlain) {
+	// Create sceneManager
+	const initialResolution = {
+		width: window.innerWidth,
+		height: window.innerHeight,
+	}
+	const sceneManager = new SceneManager(initialResolution, globalState)
 
-// Render Loop
-function animate() {
-	if (config.devUI) stats.begin()
-	sceneManager.update()
-	requestAnimationFrame(animate)
-	if (config.devUI) stats.end()
-}
-// Start Loop
-animate()
+	// Render Loop
+	// eslint-disable-next-line no-inner-declarations
+	function animate() {
+		if (config.devUI) stats.begin()
+		sceneManager.update()
+		requestAnimationFrame(animate)
+		if (config.devUI) stats.end()
+	}
+	// Start Loop
+	animate()
 
-// Event Callbacks
-window.addEventListener(
-	'resize',
-	() => sceneManager.onWindowResize(window.innerWidth, window.innerHeight),
-	false
-)
+	// Event Callbacks
+	window.addEventListener(
+		'resize',
+		() => sceneManager.onWindowResize(window.innerWidth, window.innerHeight),
+		false
+	)
+}
 
 // /*************************************************************
 //  * IPC from main process

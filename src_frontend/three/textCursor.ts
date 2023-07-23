@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import negative_frag from './shader/negative.frag'
+// import negative_frag from './shader/negative.frag'
 
 enum Behavior {
 	// input

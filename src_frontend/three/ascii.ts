@@ -4,7 +4,7 @@ import {
 	AsciiEffectOptions,
 } from 'three/examples/jsm/effects/AsciiEffect.js'
 
-export default class Postprocessor {
+export default class Ascii {
 	asci: AsciiEffect
 
 	constructor(renderer: THREE.WebGLRenderer) {

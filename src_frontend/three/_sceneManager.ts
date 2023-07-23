@@ -1,6 +1,7 @@
 // Thanks to https://pierfrancesco-soffritti.medium.com/how-to-organize-the-structure-of-a-three-js-project-77649f58fa3f
 
 import * as THREE from 'three'
+
 import SceneSubject from './_sceneSubject'
 import { Store } from '../state/store'
 // import { appState } from '../utils/enums'
@@ -12,8 +13,9 @@ import InputDisplay from './inputDisplay'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 import config from '../front.config'
 
-import Postprocessor from './postprocessor'
+import Ascii from './ascii'
 import Camera from './camera'
+import PostProcessor from './_postProcessor'
 
 export default class SceneManager {
 	// Props
@@ -22,11 +24,12 @@ export default class SceneManager {
 
 	canvas: HTMLCanvasElement
 	renderer: THREE.WebGLRenderer
+	postProcessor: PostProcessor
 	camera: Camera
 	scene: THREE.Scene
 
 	sceneSubjects: SceneSubject[]
-	postprocessor: Postprocessor
+	ascii: Ascii
 
 	// Init
 	constructor(initRes: { width: number; height: number }, state: Store) {
@@ -36,14 +39,19 @@ export default class SceneManager {
 		this.canvas = this.buildCanvas(initRes.width, initRes.height)
 		this.clock = new THREE.Clock()
 
-		this.renderer = this.buildRenderer()
-		// this.postprocessor = new Postprocessor(this.renderer) // line distance is to big
-
 		this.camera = new Camera(this.canvas)
 		this.camera.buildOrthoCam()
 
 		this.scene = this.buildScene()
 		this.sceneSubjects = this.buildSceneSubjects()
+
+		this.renderer = this.buildRenderer()
+		// this.postProcessor = new PostProcessor(
+		// 	this.renderer,
+		// 	this.scene,
+		// 	this.camera.instance() as THREE.Camera
+		// )
+		// this.ascii = new Ascii(this.renderer) // line distance is to big
 
 		this.init()
 
@@ -101,7 +109,7 @@ export default class SceneManager {
 
 	// Callbacks
 	init(): void {
-		if (!this.postprocessor) document.body.appendChild(this.renderer.domElement)
+		if (!this.ascii) document.body.appendChild(this.renderer.domElement)
 	}
 
 	update(): void {
@@ -111,7 +119,8 @@ export default class SceneManager {
 		for (const subject of this.sceneSubjects)
 			subject.update(elTime, curFrame, deltaTime)
 		this.renderer.render(this.scene, this.camera.instance())
-		this.postprocessor?.render(this.scene, this.camera.instance())
+		this.ascii?.render(this.scene, this.camera.instance())
+		this.postProcessor?.update()
 	}
 
 	onWindowResize(width: number, height: number): void {
@@ -119,7 +128,8 @@ export default class SceneManager {
 		this.state.screenHeight = height
 		this.camera.updateAspect(width, height)
 		this.renderer.setSize(width, height)
-		this.postprocessor?.onWindowResize(width, height)
+		this.postProcessor?.onWindowResize(width, height)
+		this.ascii?.onWindowResize(width, height)
 		for (const subject of this.sceneSubjects) {
 			subject.onWindowResize?.()
 		}

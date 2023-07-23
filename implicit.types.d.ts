@@ -1,4 +1,5 @@
 declare module 'troika-three-text'
+declare module 'three/examples/jsm/postprocessing/OutputPass.js'
 
 declare module '*.glsl' {
 	const file: string

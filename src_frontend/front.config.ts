@@ -6,6 +6,7 @@ const config = {
 	debugMsg: true,
 	maxInputLength: 128,
 	showHiddenInput: true,
+	demoPlain: true,
 }
 
 export default config

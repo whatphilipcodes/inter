@@ -13,6 +13,7 @@ export default class Chat extends HTMLElement {
         <style>
           :host * {
             color: white;
+            background-color: black;
             font-family: sans-serif;
             font-size: 14px;
             padding: 5px;

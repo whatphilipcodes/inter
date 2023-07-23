@@ -75,7 +75,6 @@ export default class Camera {
 		gui.onChange(() => {
 			this.updatePerspCamera(camera, this.canvas.width, this.canvas.height)
 		})
-		gui.open()
 	}
 
 	buildOrthoCam(frustumSize?: number, position?: THREE.Vector3) {
@@ -137,7 +136,6 @@ export default class Camera {
 		gui.onChange(() => {
 			this.updateOrthoCamera(camera, this.canvas.width, this.canvas.height)
 		})
-		gui.open()
 	}
 
 	instance() {

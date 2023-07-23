@@ -6,7 +6,7 @@ import {
 } from 'troika-three-text'
 import TextCursor from './textCursor'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
-import { screenToWorld } from '../utils/threeUtil'
+import { screenToWorld, worldToPixel } from '../utils/threeUtil'
 
 export default class InputDisplay extends SceneSubject {
 	// Refs
@@ -17,6 +17,8 @@ export default class InputDisplay extends SceneSubject {
 	textcursor: TextCursor
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	troika: any
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	caretPositions: any
 
 	constructor(
 		name: string,
@@ -34,13 +36,14 @@ export default class InputDisplay extends SceneSubject {
 		// Create Troika Text
 		this.troika = this.buildTroika()
 		this.scene.add(this.troika)
+		// this.setPixelWidth()
+		this.caretPositions = new Float32Array(0)
 
 		// Create Text Cursor
 		this.textcursor = new TextCursor(this.origin)
 		this.scene.add(this.textcursor.get())
 
 		this.state.subscribe('input', () => this.syncDisplay())
-		this.state.subscribe('cursorPos', () => this.setCaretPos())
 	}
 
 	buildTroika() {
@@ -52,7 +55,7 @@ export default class InputDisplay extends SceneSubject {
 		troika.anchorX = 'left'
 		troika.anchorY = 'top'
 		troika.maxWidth = this.camera.right - this.camera.left
-		troika.overflowWrap = 'normal'
+		troika.overflowWrap = 'break-word'
 		troika.whiteSpace = 'normal'
 		troika.position.set(this.origin.x, this.origin.y, this.origin.z)
 		return troika
@@ -62,16 +65,19 @@ export default class InputDisplay extends SceneSubject {
 		const folder = gui.addFolder('Input Display')
 		folder.add(this.troika, 'fontSize', 0.01, 1).name('Font Size')
 		folder.addColor(this.troika, 'color').name('Color')
-		gui.open()
 	}
 
 	update() {
-		//
+		this.setCaretPos()
 	}
 
 	syncDisplay(): void {
-		this.troika.text = this.state?.input
-		this.troika.sync()
+		this.troika.text = this.state.input
+		this.troika.sync(() => {
+			this.caretPositions = structuredClone(
+				this.troika.textRenderInfo.caretPositions
+			)
+		})
 	}
 
 	onWindowResize(): void {
@@ -82,25 +88,45 @@ export default class InputDisplay extends SceneSubject {
 	}
 
 	setCaretPos(): void {
-		if (this.state.cursorPos === 0) {
-			this.textcursor.update(new THREE.Vector2(0, 0))
-			return
-		}
-		// shift back by 1 since array index starts at 0
 		const currentPos = (this.state.cursorPos - 1) * 4
-		// console.log(this.troika.textRenderInfo.caretPositions)
 		// Float32Array contains n + 0: left, n + 1: right, n + 2: bottom, n + 3: top for each caret
 		// they are relative to the text's anchor point, so we need to add the text's position to them
-		// console.log(currentPos)
 		const currentCaretPos = {
-			left: this.troika.textRenderInfo.caretPositions[currentPos],
-			right: this.troika.textRenderInfo.caretPositions[currentPos + 1],
-			bottom: this.troika.textRenderInfo.caretPositions[currentPos + 2],
-			top: this.troika.textRenderInfo.caretPositions[currentPos + 3],
+			left: this.caretPositions[currentPos],
+			right: this.caretPositions[currentPos + 1],
+			bottom: this.caretPositions[currentPos + 2],
+			top: this.caretPositions[currentPos + 3],
 		}
-		// console.log(currentCaretPos)
 		this.textcursor.update(
 			new THREE.Vector2(currentCaretPos.right, currentCaretPos.top)
 		)
 	}
+
+	// async setFontSize(): Promise<void> {
+	// 	const height =
+	// 		this.troika.textRenderInfo.glyphBounds[0] -
+	// 		this.troika.textRenderInfo.glyphBounds[1]
+	// 	const pixelHeight = worldToPixel(
+	// 		this.camera,
+	// 		this.state.screenWidth,
+	// 		this.state.screenHeight,
+	// 		new THREE.Vector3(0, height, this.origin.z)
+	// 	)
+	// 	this.state.mutate({
+	// 		fontSize: pixelHeight.y,
+	// 	})
+	// }
+
+	// setPixelWidth(): void {
+	// 	const width = this.troika.maxWidth
+	// 	const pixelWidth = worldToPixel(
+	// 		this.camera,
+	// 		this.state.screenWidth,
+	// 		this.state.screenHeight,
+	// 		new THREE.Vector3(width, 0, this.origin.z)
+	// 	)
+	// 	this.state.mutate({
+	// 		inputWidth: pixelWidth.y,
+	// 	})
+	// }
 }

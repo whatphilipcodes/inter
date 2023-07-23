@@ -8,7 +8,7 @@ export default class Input extends HTMLElement {
 		this.attachShadow({ mode: 'open' })
 		const template = document.createElement('template')
 		template.innerHTML = /*html*/ `
-			<style>
+			<style scoped>
 				#hiddenInput {
 					opacity: ${config.showHiddenInput ? 100 : 0};
 					position: absolute;
@@ -17,15 +17,13 @@ export default class Input extends HTMLElement {
 					pointer-events: ${config.showHiddenInput ? 'auto' : 'none'};
 				}
 			</style>
-			<div>
-				<textarea
-					id="hiddenInput"
-					type="text"
-					autocomplete="off"
-					autocorrect="off"
-					maxlength="${config.maxInputLength}"
-				></textarea>
-			</div>
+			<textarea
+				id="hiddenInput"
+				type="text"
+				autocomplete="off"
+				autocorrect="off"
+				maxlength="${config.maxInputLength}"
+			></textarea>
 		`
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
 		this.textarea = this.shadowRoot.getElementById(
@@ -40,47 +38,66 @@ export default class Input extends HTMLElement {
 			this.textarea.focus()
 		}
 
-		// prevent key holding
-		const keys: { [key: string]: boolean } = {}
-		this.textarea.addEventListener('keydown', function (e) {
-			if (e.key === 'Backspace') return
-			if (e.key === 'ArrowUp') return
-			if (e.key === 'ArrowDown') return
-			if (e.key === 'ArrowLeft') return
-			if (e.key === 'ArrowRight') return
-			if (keys[e.key]) {
+		// prevent space as first char
+		this.textarea.addEventListener('keydown', function (e: KeyboardEvent) {
+			if (e.key === ' ' && this.selectionStart === 0) {
 				e.preventDefault()
-			} else {
-				keys[e.key] = true
 			}
 		})
-		this.textarea.addEventListener('keyup', function (e) {
-			keys[e.key] = false
-		})
+
+		// // prevent key holding
+		// const keys: { [key: string]: boolean } = {}
+		// this.textarea.addEventListener('keydown', function (e) {
+		// 	if (e.key === 'Backspace') return
+		// 	if (e.key === 'ArrowUp') return
+		// 	if (e.key === 'ArrowDown') return
+		// 	if (e.key === 'ArrowLeft') return
+		// 	if (e.key === 'ArrowRight') return
+		// 	if (keys[e.key]) {
+		// 		e.preventDefault()
+		// 	} else {
+		// 		keys[e.key] = true
+		// 	}
+		// })
+		// this.textarea.addEventListener('keyup', function (e) {
+		// 	keys[e.key] = false
+		// })
 	}
 
 	// connect input to global state
 	initInput(state: Store) {
+		// update input value
 		this.textarea.addEventListener('input', (e: Event) => {
 			const target = e.target as HTMLTextAreaElement
 			state.mutate({ input: target.value })
 		})
-		this.textarea.addEventListener('keyup', (e: Event) => {
-			const target = e.target as HTMLTextAreaElement
+
+		// update cursor position
+		this.textarea.addEventListener('keydown', async () => {
+			await new Promise((resolve) => setTimeout(resolve, 0))
+			const target = this.textarea
 			state.mutate({ cursorPos: target.selectionStart })
-			if (target.selectionStart == target.selectionEnd) {
+			if (target.selectionStart === target.selectionEnd) {
 				state.mutate({ selectionActive: false })
 			}
 		})
-		this.textarea.addEventListener('select', (e: Event) => {
-			const target = e.target as HTMLTextAreaElement
-			state.mutate({
-				selection: {
-					start: target.selectionStart,
-					end: target.selectionEnd,
-				},
-				selectionActive: target.selectionStart !== target.selectionEnd,
-			})
+
+		// // update selection
+		// this.textarea.addEventListener('select', async () => {
+		// 	await new Promise((resolve) => setTimeout(resolve, 0))
+		// 	const target = this.textarea
+		// 	state.mutate({ cursorPos: target.selectionStart })
+		// 	if (target.selectionStart === target.selectionEnd) {
+		// 		state.mutate({ selectionActive: false })
+		// 	}
+		// })
+
+		state.subscribe('inputWidth', () => {
+			this.textarea.style.width = `${state.inputWidth}px`
+		})
+
+		state.subscribe('fontSize', () => {
+			this.textarea.style.fontSize = `${state.fontSize}px`
 		})
 	}
 }

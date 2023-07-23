@@ -31,6 +31,8 @@ export default class SceneManager {
 	// Init
 	constructor(initRes: { width: number; height: number }, state: Store) {
 		this.state = state
+		this.state.screenWidth = initRes.width
+		this.state.screenHeight = initRes.height
 		this.canvas = this.buildCanvas(initRes.width, initRes.height)
 		this.clock = new THREE.Clock()
 
@@ -113,6 +115,8 @@ export default class SceneManager {
 	}
 
 	onWindowResize(width: number, height: number): void {
+		this.state.screenWidth = width
+		this.state.screenHeight = height
 		this.camera.updateAspect(width, height)
 		this.renderer.setSize(width, height)
 		this.postprocessor?.onWindowResize(width, height)

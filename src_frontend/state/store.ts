@@ -7,8 +7,14 @@ export class Store {
 	uviURL: URL
 	api: AxiosInstance
 
+	// screen dimensions
+	screenWidth: number
+	screenHeight: number
+
 	// textarea synced props
 	input: string
+	inputWidth: number
+	fontSize: number
 	cursorPos: number
 	selection: { start: number; end: number }
 	selectionActive: boolean
@@ -18,7 +24,6 @@ export class Store {
 		applicationState: appState.loading,
 
 		// textarea
-		input: 'Start Typing...',
 		cursorPos: 0,
 		selection: { start: 0, end: 0 },
 		selectionActive: false,
@@ -41,7 +46,11 @@ export class Store {
 
 	mutate(newState: Partial<Store>): void {
 		Object.assign(this, newState)
-		Object.values(this.mutationCallbacks).forEach((callback) => callback())
+		const keys = Object.keys(newState)
+		const filteredCallbacks = keys
+			.map((key) => this.mutationCallbacks[key])
+			.filter((callback) => typeof callback === 'function')
+		filteredCallbacks.forEach((callback) => callback && callback())
 	}
 
 	initAxios(baseURL: URL): void {

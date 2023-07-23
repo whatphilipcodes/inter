@@ -97,6 +97,9 @@ export default class InputDisplay extends SceneSubject {
 			bottom: this.caretPositions[currentPos + 2],
 			top: this.caretPositions[currentPos + 3],
 		}
+		// Due to async worker updates, the caret positions may not be set yet
+		if (currentCaretPos.left === undefined && this.state.input?.length > 0)
+			return
 		this.textcursor.update(
 			new THREE.Vector2(currentCaretPos.right, currentCaretPos.top)
 		)

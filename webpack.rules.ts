@@ -28,4 +28,8 @@ export const rules: Required<ModuleOptions>['rules'] = [
 			},
 		},
 	},
+	{
+		test: /\.glsl$|\.frag$|\.vert$/i,
+		use: ['raw-loader'],
+	},
 ]

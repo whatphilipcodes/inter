@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import negative_frag from './shader/negative.frag'
 
 enum Behavior {
 	// input
@@ -25,7 +26,7 @@ export default class TextCursor {
 	height: number
 
 	constructor(anchor: THREE.Vector3, width = 0.1, height = 1) {
-		this.behavior = Behavior.STATIC
+		this.behavior = Behavior.FLASH
 		this.posOffset = new THREE.Vector2(0, 0)
 		this.width = width
 		this.height = height

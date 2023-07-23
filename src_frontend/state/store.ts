@@ -12,10 +12,11 @@ export class Store {
 	screenHeight: number
 
 	// textarea synced props
+	// inputCols: number
+	// fontSize: number
 	input: string
-	inputWidth: number
-	fontSize: number
 	cursorPos: number
+	specialKeyPressed: string
 	selection: { start: number; end: number }
 	selectionActive: boolean
 

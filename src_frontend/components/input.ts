@@ -38,30 +38,13 @@ export default class Input extends HTMLElement {
 			this.textarea.focus()
 		}
 
-		// prevent space as first char
+		// prevent space or enter as first char
 		this.textarea.addEventListener('keydown', function (e: KeyboardEvent) {
-			if (e.key === ' ' && this.selectionStart === 0) {
+			if (this.value.length !== 0) return
+			if (e.key === ' ' || e.key === 'Enter') {
 				e.preventDefault()
 			}
 		})
-
-		// // prevent key holding
-		// const keys: { [key: string]: boolean } = {}
-		// this.textarea.addEventListener('keydown', function (e) {
-		// 	if (e.key === 'Backspace') return
-		// 	if (e.key === 'ArrowUp') return
-		// 	if (e.key === 'ArrowDown') return
-		// 	if (e.key === 'ArrowLeft') return
-		// 	if (e.key === 'ArrowRight') return
-		// 	if (keys[e.key]) {
-		// 		e.preventDefault()
-		// 	} else {
-		// 		keys[e.key] = true
-		// 	}
-		// })
-		// this.textarea.addEventListener('keyup', function (e) {
-		// 	keys[e.key] = false
-		// })
 	}
 
 	// connect input to global state
@@ -73,13 +56,27 @@ export default class Input extends HTMLElement {
 		})
 
 		// update cursor position
-		this.textarea.addEventListener('keydown', async () => {
+		this.textarea.addEventListener('keydown', async (e) => {
 			await new Promise((resolve) => setTimeout(resolve, 0))
-			const target = this.textarea
-			state.mutate({ cursorPos: target.selectionStart })
-			if (target.selectionStart === target.selectionEnd) {
-				state.mutate({ selectionActive: false })
+			switch (e.key) {
+				case 'ArrowUp':
+					e.preventDefault()
+					state.mutate({ specialKeyPressed: 'ArrowUp' })
+					this.textarea.setSelectionRange(state.cursorPos, state.cursorPos)
+					break
+				case 'ArrowDown':
+					e.preventDefault()
+					state.mutate({ specialKeyPressed: 'ArrowDown' })
+					this.textarea.setSelectionRange(state.cursorPos, state.cursorPos)
+					break
+				default:
+					state.mutate({ cursorPos: this.textarea.selectionStart })
+					break
 			}
+
+			// if (this.textarea.selectionStart === this.textarea.selectionEnd) {
+			// 	state.mutate({ selectionActive: false })
+			// }
 		})
 
 		// // update selection
@@ -91,14 +88,6 @@ export default class Input extends HTMLElement {
 		// 		state.mutate({ selectionActive: false })
 		// 	}
 		// })
-
-		state.subscribe('inputWidth', () => {
-			this.textarea.style.width = `${state.inputWidth}px`
-		})
-
-		state.subscribe('fontSize', () => {
-			this.textarea.style.fontSize = `${state.fontSize}px`
-		})
 	}
 }
 

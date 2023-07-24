@@ -225,6 +225,8 @@ else Menu.setApplicationMenu(buildMenu)
  * IPC Messages (only string data supported)
  *************************************************************/
 const getBackendURL = async (): Promise<string> => {
+	if (config.debugMsg)
+		console.log('Backend URL sent to renderer: ' + uvi_url.href)
 	return uvi_url.href
 }
 

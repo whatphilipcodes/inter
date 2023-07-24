@@ -83,7 +83,7 @@ if (!config.demoPlain) {
 //  * IPC from main process
 //  *************************************************************/
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(window as any).electronAPI.onBackURL((_event: unknown, data: string) => {
+;(window as any).electronAPI.getBackendURL().then((data: string) => {
 	try {
 		const url = new URL(data)
 		globalState.initAxios(url)

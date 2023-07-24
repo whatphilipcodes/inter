@@ -5,7 +5,7 @@ import os
 import asyncio
 
 # src
-from . import api
+from .api import API
 from . import async_chat as chat
 from . import async_trainf as trainf
 
@@ -19,9 +19,11 @@ def setup_env():
     # Prevent triton warning
     os.environ['XFORMERS_FORCE_DISABLE_TRITON'] = '1'
 
-async def main():
+def main():
     
     setup_env()
+    api = API()
+    api.start_server()
 
     '''
     ### Async Testing

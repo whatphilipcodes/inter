@@ -6,7 +6,7 @@ import torch
 
 # END IMPORT BLOCK ###########################################################
 
-def get_resource_path():
+def get_resource_path() -> str:
     '''
     Returns the path to the resources directory depending on wether the program is frozen or not\n
     ('resources' when frozen, 'resources_dev' when not)
@@ -17,7 +17,7 @@ def get_resource_path():
     else:
         return os.path.join(os.getcwd(), 'resources_dev')
     
-def get_cuda():
+def get_cuda() -> torch.device:
     '''
     Returns the device to use for training\n
     (GPU if available, CPU otherwise)

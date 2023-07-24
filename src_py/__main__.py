@@ -48,3 +48,6 @@ def main():
 
     print('# sucessfully ran main')
     
+
+# Since this project relies heavily on relative imports,
+# no idiomatic statement like `if __name__ == '__main__'` can be used.

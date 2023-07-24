@@ -69,5 +69,6 @@ class API:
             return {
                 "message": "Hello World"}
 
+    def start_server(self):
         ### Start FastAPI as Server
         uvicorn.run(self.app, host=self.uvi_host, port=self.uvi_port)

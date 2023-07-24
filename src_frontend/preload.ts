@@ -3,7 +3,9 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
 contextBridge.exposeInMainWorld('electronAPI', {
-    onBackURL: (callback: (event: Electron.IpcRendererEvent, data: string) => void) => {
-        ipcRenderer.on('backend-url', callback)
-    }
+	onBackURL: (
+		callback: (event: Electron.IpcRendererEvent, data: string) => void
+	) => {
+		ipcRenderer.on('backend-url', callback)
+	},
 })

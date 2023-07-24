@@ -1,19 +1,23 @@
-import type { Configuration } from 'webpack';
+import type { Configuration } from 'webpack'
+import path from 'path'
 
-import { rules } from './webpack.rules';
-import { plugins } from './webpack.plugins';
+import { rules } from './webpack.rules'
+import { plugins } from './webpack.plugins'
 
 rules.push({
-  test: /\.css$/,
-  use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
-});
+	test: /\.css$/,
+	use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
+})
 
 export const rendererConfig: Configuration = {
-  module: {
-    rules,
-  },
-  plugins,
-  resolve: {
-    extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
-  },
-};
+	module: {
+		rules,
+	},
+	plugins,
+	resolve: {
+		extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
+		alias: {
+			three: path.resolve(__dirname, 'node_modules/three'),
+		},
+	},
+}

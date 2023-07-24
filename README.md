@@ -30,8 +30,8 @@ python -m venv .env && .\.env\Scripts\activate
 pip install -r requirements.txt
 ```
 
-- Install Yarn Packages
+- Install NPM Packages
 
 ```shell
-yarn install
+npm install
 ```

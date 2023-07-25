@@ -1,52 +1,41 @@
 # IMPORT BLOCK ###############################################################
 
 # Lib Imports
-import os
-import asyncio
+import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 # src
-from .api import API
-from . import async_chat as chat
-from . import async_trainf as trainf
+from .utils import setup_env, get_uvi_info, get_host_info
 
 # END IMPORT BLOCK ###########################################################
 
-def setup_env():
-    '''
-    Sets up environment variables to prevent unnecessary warnings\n
-    which are not supported by the hardware.
-    '''
-    # Prevent triton warning
-    os.environ['XFORMERS_FORCE_DISABLE_TRITON'] = '1'
-
 def main():
-    
+
+    ### initialization
     setup_env()
-    api = API()
-    api.start_server()
+    uvi_port, uvi_host = get_uvi_info()
+    el_url = get_host_info()
 
-    '''
-    ### Async Testing
-    inference_queue = asyncio.Queue()
+    ### Create FastAPI app
+    app = FastAPI()
 
-    # Lists to hold all tasks
-    critical_tasks = []
-    side_tasks = []
+    ### Add Middleware
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[el_url],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-    # Create tasks
-    critical_tasks.append(asyncio.create_task(trainf.run(inference_queue)))
-    side_tasks.append(asyncio.create_task(chat.run(inference_queue)))
-    
-    # Await all critical (running until program is ended) tasks
-    await asyncio.gather(*critical_tasks)
+    ### API Routes
+    @app.get("/")
+    async def root():
+        return {"message": "Hello World"}
 
-    # Cancel all side tasks
-    for task in side_tasks:
-        task.cancel()
-
-    '''
-
-    print('# sucessfully ran main')
+    ### Start FastAPI as Server
+    uvicorn.run(app, host=uvi_host, port=uvi_port)
     
 
 # Since this project relies heavily on relative imports,

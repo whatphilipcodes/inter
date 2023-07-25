@@ -2,7 +2,7 @@
 
 Truth often implies a sense of objectiveness despite its ability of being highly subjective. What an individual considers to be true is the result of a decision making process involving societal context and personal experience. The transformative nature of both facilitates an understanding of truth as a fluid construct with the ability to evolve. Combining many of these singular impressions into one might reveal an unseen artifact somewhere in between subjectiveness and objectivity.
 
-# Prerequisites
+# Installation
 
 - Tested only using Windows 10 on a system with the following specs:
 
@@ -16,8 +16,12 @@ Truth often implies a sense of objectiveness despite its ability of being highly
 - Install Cuda 11.8<br>
   [Download from NVIDIA](https://developer.nvidia.com/cuda-11-8-0-download-archive)
 
-# Env Setup
+- Install the current Release<br>
+  [Download from GitHub](https://github.com/whatphilipcodes/inter/releases)
 
+# Dev Env Setup
+
+- Install Cuda as described above
 - create a file called '.env.development.local' in the root directory of the project
 - add the following to the file:
 

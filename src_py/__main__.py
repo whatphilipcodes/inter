@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # src
-from .utils import setup_env, get_uvi_info, get_host_info
+from .utils import setup_env, get_uvi_info, get_host_info, InputText
 
 # END IMPORT BLOCK ###########################################################
 
@@ -33,6 +33,11 @@ def main():
     @app.get("/")
     async def root():
         return {"message": "Hello World"}
+    
+    @app.post("/api/echo")
+    async def echo(input: InputText):
+        print("input:", input)
+        return input
 
     ### Start FastAPI as Server
     uvicorn.run(app, host=uvi_host, port=uvi_port)

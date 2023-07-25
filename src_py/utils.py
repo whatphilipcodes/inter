@@ -1,11 +1,11 @@
 # IMPORT BLOCK ###############################################################
-
 # Lib Imports
 import os, sys
 import torch
-
+from pydantic import BaseModel
 # END IMPORT BLOCK ###########################################################
 
+# FUNCTION BLOCK #############################################################
 def setup_env() -> None:
     '''
     Sets up environment variables to prevent unnecessary warnings\n
@@ -78,3 +78,10 @@ def get_host_info() -> str:
         print("EL_URL environment variable is not set.")
     
     return el_url
+# END FUNCTION BLOCK #########################################################
+
+# CLASSES BLOCK ##############################################################
+class InputText(BaseModel):
+    id: int
+    text: str
+# END CLASSES BLOCK ##########################################################

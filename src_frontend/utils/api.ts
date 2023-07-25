@@ -17,5 +17,16 @@ const get = async (url: string) => {
 	}
 }
 
+const post = async (url: string, data: unknown) => {
+	if (!state.api) throw new Error('Axios API not initialized')
+	try {
+		state.mutate({ applicationState: appState.idle })
+		const response = await state.api.post(url, data)
+		return response.data
+	} catch (error) {
+		console.error(error)
+	}
+}
+
 // exports
-export { get }
+export { get, post }

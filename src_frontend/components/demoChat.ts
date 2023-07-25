@@ -1,4 +1,5 @@
-import { get } from '../utils/api'
+import { post } from '../utils/api'
+import config from '../front.config'
 
 export default class Chat extends HTMLElement {
 	conversationElement: HTMLElement
@@ -109,14 +110,15 @@ export default class Chat extends HTMLElement {
 		this.addMessage(message)
 		this.messageInputElement.value = ''
 		this.messageInputElement.style.border = 'none' // Reset border style
-		this.response() // Call the response function to simulate a response
+		this.response(message) // Call the response function to simulate a response
 	}
 
-	response() {
+	response(msg: string) {
 		// Simulate a response by adding a message from the bot
-		get('').then((response) => {
-			this.addMessage(response.message, '#1d1d1d', 'flex-end')
-			console.log(response)
+		const data = { id: 0, text: msg }
+		post('/api/echo', data).then((response) => {
+			this.addMessage(response.text, '#1d1d1d', 'flex-end')
+			if (config.debugMsg) console.log(response)
 		})
 	}
 

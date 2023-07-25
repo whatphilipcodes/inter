@@ -2,7 +2,10 @@ import { Store } from '../state/store'
 import config from '../front.config'
 
 export default class Input extends HTMLElement {
+	state: Store
+
 	textarea: HTMLTextAreaElement
+
 	constructor() {
 		super()
 		this.attachShadow({ mode: 'open' })
@@ -48,11 +51,12 @@ export default class Input extends HTMLElement {
 	}
 
 	// connect input to global state
-	initInput(state: Store) {
+	initInput(globalState: Store) {
+		this.state = globalState
 		// update input value
 		this.textarea.addEventListener('input', (e: Event) => {
 			const target = e.target as HTMLTextAreaElement
-			state.mutate({ input: target.value })
+			this.state.mutate({ input: target.value })
 		})
 
 		// update cursor position
@@ -61,16 +65,22 @@ export default class Input extends HTMLElement {
 			switch (e.key) {
 				case 'ArrowUp':
 					e.preventDefault()
-					state.mutate({ specialKeyPressed: 'ArrowUp' })
-					this.textarea.setSelectionRange(state.cursorPos, state.cursorPos)
+					this.state.mutate({ specialKeyPressed: 'ArrowUp' })
+					this.textarea.setSelectionRange(
+						this.state.cursorPos,
+						this.state.cursorPos
+					)
 					break
 				case 'ArrowDown':
 					e.preventDefault()
-					state.mutate({ specialKeyPressed: 'ArrowDown' })
-					this.textarea.setSelectionRange(state.cursorPos, state.cursorPos)
+					this.state.mutate({ specialKeyPressed: 'ArrowDown' })
+					this.textarea.setSelectionRange(
+						this.state.cursorPos,
+						this.state.cursorPos
+					)
 					break
 				default:
-					state.mutate({ cursorPos: this.textarea.selectionStart })
+					this.state.mutate({ cursorPos: this.textarea.selectionStart })
 					break
 			}
 

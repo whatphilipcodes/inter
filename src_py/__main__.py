@@ -1,5 +1,4 @@
 # IMPORT BLOCK ###############################################################
-
 # Lib Imports
 import uvicorn
 from fastapi import FastAPI
@@ -7,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # src
 from .utils import setup_env, get_uvi_info, get_host_info, InputText
-
 # END IMPORT BLOCK ###########################################################
 
 def main():
@@ -30,12 +28,25 @@ def main():
     )
 
     ### API Routes
+    @app.get("/favicon.ico")
+    async def favicon():
+        return {}
+    
     @app.get("/")
     async def root():
-        return {"message": "Hello World"}
+        return { "message": "inter backend root. Head to '/docs' to test out routes in the browser." }
+    
+    @app.get("/status")
+    async def status():
+        return {}
     
     @app.post("/api/echo")
     async def echo(input: InputText):
+        print("input:", input)
+        return input
+    
+    @app.post("/api/infer")
+    async def infer(input: InputText):
         print("input:", input)
         return input
 
@@ -44,4 +55,4 @@ def main():
     
 
 # Since this project relies heavily on relative imports,
-# no idiomatic statement like `if __name__ == '__main__'` can be used.
+# no idiomatic statement like `if __name__ == '__main__'` is used.

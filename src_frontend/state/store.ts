@@ -1,19 +1,19 @@
 import { appState } from '../utils/enums'
-import axios, { AxiosInstance } from 'axios'
+import { API } from '../utils/api'
 
 export class Store {
 	applicationState: appState
+
 	elURL: URL
 	uviURL: URL
-	api: AxiosInstance
+
+	api: API
 
 	// screen dimensions
 	screenWidth: number
 	screenHeight: number
 
 	// textarea synced props
-	// inputCols: number
-	// fontSize: number
 	input: string
 	cursorPos: number
 	specialKeyPressed: string
@@ -54,14 +54,8 @@ export class Store {
 		filteredCallbacks.forEach((callback) => callback && callback())
 	}
 
-	initAxios(baseURL: URL): void {
-		this.api = axios.create({
-			baseURL: baseURL.origin,
-			timeout: 1000,
-			headers: {
-				'Access-Control-Allow-Origin': 'self',
-				'Content-Type': 'application/json',
-			},
-		})
+	async initAxios(baseURL: URL): Promise<void> {
+		this.api = new API(baseURL)
+		await this.api.checkStatus()
 	}
 }

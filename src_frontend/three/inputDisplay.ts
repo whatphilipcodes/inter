@@ -50,7 +50,7 @@ export default class InputDisplay extends SceneSubject {
 
 	buildTroika() {
 		const troika = new Text()
-		troika.font = './assets/cascadiacode/ttf/static/CascadiaMono-Regular.ttf'
+		troika.font = './assets/cascadiacode/CascadiaMono-Regular.ttf'
 		troika.fontSize = 1
 		troika.sdfGlyphSize = 64
 		troika.color = 0xffffff

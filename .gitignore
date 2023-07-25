@@ -267,5 +267,5 @@ resources/data/*
 # include .spec file for pyinstaller
 !entry.spec
 
-# ignore assets folder
-src_frontend/assets/
+# # ignore assets folder
+# src_frontend/assets/

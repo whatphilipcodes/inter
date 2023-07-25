@@ -20,6 +20,7 @@ const config: ForgeConfig = {
 	packagerConfig: {
 		asar: true,
 		extraResource: extraResources,
+		icon: './assets/icon/inter',
 	},
 	rebuildConfig: {},
 	makers: [new MakerSquirrel({}), new MakerZIP({})],

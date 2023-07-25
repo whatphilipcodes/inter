@@ -20,10 +20,13 @@ const config: ForgeConfig = {
 	packagerConfig: {
 		asar: true,
 		extraResource: extraResources,
-		icon: './assets/icon/inter',
+		icon: './src_frontend/assets/icon/inter.ico',
 	},
 	rebuildConfig: {},
-	makers: [new MakerSquirrel({}), new MakerZIP({})],
+	makers: [
+		new MakerSquirrel({ setupIcon: './src_frontend/assets/icon/inter.ico' }),
+		new MakerZIP({}),
+	],
 	publishers: [
 		{
 			name: '@electron-forge/publisher-github',

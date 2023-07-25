@@ -97,6 +97,7 @@ const createWindow = () => {
 			devTools: config.devTools,
 			preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
 		},
+		icon: './assets/icon/inter.ico',
 	})
 
 	// and load the index.html of the app.

@@ -18,6 +18,14 @@ Truth often implies a sense of objectiveness despite its ability of being highly
 
 # Env Setup
 
+- create a file called '.env.development.local' in the root directory of the project
+- add the following to the file:
+
+```shell
+GITHUB_TOKEN=pasteyourtokenhereforautorelease
+INCLUDE_BACKEND=true or false can be used to make quick testbuild including only the frontend
+```
+
 - Create & Activate venv (naming convention is important for devmode)
 
 ```shell

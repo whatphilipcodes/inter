@@ -17,16 +17,18 @@ export class API {
 
 	async checkStatus(): Promise<void> {
 		if (!this.api) throw new Error('Axios API not initialized')
-		return tryWithTimeout(() => this.api.get('/status'), 60000).then(
-			(response) => {
+		return tryWithTimeout(() => this.api.get('/status'), 60000)
+			.then((response) => {
 				if (response.status === 200) {
 					this.online = true
 				} else {
 					this.online = false
-					console.error(response.status)
 				}
-			}
-		)
+			})
+			.catch((error) => {
+				// Only log the error when all retries have failed.
+				console.error(error)
+			})
 	}
 
 	async get(url: string) {

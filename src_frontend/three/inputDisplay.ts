@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { Text, getSelectionRects, getCaretAtPoint } from 'troika-three-text'
 import TextCursor from './textCursor'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
-import { screenToWorld, worldToPixel } from '../utils/threeUtil'
+import { screenToWorld } from '../utils/threeUtil'
 
 export default class InputDisplay extends SceneSubject {
 	// Refs

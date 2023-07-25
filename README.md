@@ -22,7 +22,7 @@ Truth often implies a sense of objectiveness despite its ability of being highly
 # Dev Env Setup
 
 - Install Cuda as described above
-- create a file called '.env.development.local' in the root directory of the project and add the following:
+- Create a file called '.env.development.local' in the root directory of the project and add the following:
 
 ```shell
 GITHUB_TOKEN=pasteyourtokenhereforautorelease

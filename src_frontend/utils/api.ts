@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 import { tryWithTimeout } from './misc'
+import config from '../front.config'
 
 export class API {
 	api: AxiosInstance
@@ -7,7 +8,7 @@ export class API {
 	constructor(baseURL: URL) {
 		this.api = axios.create({
 			baseURL: baseURL.origin,
-			timeout: 60000,
+			timeout: config.apiTimeout,
 			headers: {
 				'Access-Control-Allow-Origin': 'self',
 				'Content-Type': 'application/json',
@@ -17,7 +18,7 @@ export class API {
 
 	async checkStatus(): Promise<void> {
 		if (!this.api) throw new Error('Axios API not initialized')
-		return tryWithTimeout(() => this.api.get('/status'), 60000)
+		return tryWithTimeout(() => this.api.get('/status'), config.apiTimeout)
 			.then((response) => {
 				if (response.status === 200) {
 					this.online = true

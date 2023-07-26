@@ -6,12 +6,17 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # src
 from .utils import setup_env, get_uvi_info, get_host_info, InputText
+from .loop import MainLoop
 # END IMPORT BLOCK ###########################################################
 
 def main():
 
-    ### initialization
+    ### Props
+    loop = MainLoop()
+
+    ### Initialization
     setup_env()
+    loop.start()
     uvi_port, uvi_host = get_uvi_info()
     el_url = get_host_info()
 

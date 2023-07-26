@@ -1,5 +1,7 @@
 import { Store } from '../state/store'
 import config from '../front.config'
+import { getTimestamp } from '../utils/misc'
+import { ConvoText, ConvoType } from '../utils/types'
 
 export default class Chat extends HTMLElement {
 	state: Store
@@ -122,8 +124,15 @@ export default class Chat extends HTMLElement {
 
 	response(msg: string) {
 		// Simulate a response by adding a message from the bot
-		const data = { id: 0, text: msg }
-		this.state.api.post('/api/infer', data).then((response) => {
+		const data: ConvoText = {
+			convoID: 0,
+			messageID: 0,
+			timestamp: getTimestamp(),
+			type: ConvoType.INPUT,
+			text: msg,
+		}
+		console.log(data)
+		this.state.api.post('/api/infer', data).then((response: ConvoText) => {
 			this.addMessage(response.text, '#1d1d1d', 'flex-end')
 			if (config.debugMsg) console.log(response)
 		})

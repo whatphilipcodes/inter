@@ -5,6 +5,7 @@ import datetime
 import threading
 
 # src
+from . import config
 from .utils import ConvoText
 # END IMPORT BLOCK ###########################################################
 
@@ -18,40 +19,51 @@ class MainLoop:
         self.__inference_queue = asyncio.Queue()
         self.__results: dict[int, ConvoText] = {}
         self._thread = threading.Thread(target=self._run_loop_in_thread)
-        self._thread.daemon = True  # to make sure to end the loop if the main thread ends
+        self._thread.daemon = True  # to end the loop if the main thread ends
+        self._paused = False
 
     async def _loop(self) -> None:
+        if config.DEBUG_MSG: print("Loop started...")
         while True:
-            # Actual Loop Code
-            await asyncio.sleep(1)
+            # only run MainLoop if not paused
+            if not self._paused:
+                # Actual MainLoop ################################################
+                await asyncio.sleep(1) # Simulate some work
+                # END Actual MainLoop ############################################
 
-            # Handle Pause/Resume
+            # handle Pause/Resume
             if not self.__inference_queue.empty():
-                print("Loop paused!")
-                input_data: ConvoText = await self.__inference_queue.get()
+                if config.DEBUG_MSG and not self._paused: print("Loop paused. Inference started...")
+                self._paused = True  # flag loop as paused
+                while not self.__inference_queue.empty():  # work through the queue
+                    input_data: ConvoText = await self.__inference_queue.get()
 
-                # # Exit condition
-                # if input_data == "bye":
-                #     print("Loop ended...")
-                #     break
+                    # Placeholder for actual inference code
+                    result = f"Inferred data from: {input_data.text}"
 
-                # Placeholder for actual inference code
-                result = f"Inferred data from: {input_data.text}"
+                    # TODO: Move the creation of the response ConvoText to the datamanager
+                    response = ConvoText(
+                        convoID=input_data.convoID,
+                        messageID=input_data.messageID + 1,
+                        text=result,
+                        timestamp=datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S:%f"),
+                        type=ConvoText.ConvoType.RESPONSE
+                        )
 
-                # TODO: Move the creation of the response ConvoText to the datamanger
-                response = ConvoText(
-                    convoID=input_data.convoID,
-                    messageID=input_data.messageID + 1,
-                    text=result,
-                    timestamp=datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S:%f"),
-                    type=ConvoText.ConvoType.RESPONSE
-                    )
+                    # make results available in the dictionary
+                    self.__results[input_data.messageID] = response
+                    self.__inference_queue.task_done()
 
-                # Save the result to the results dictionary
-                self.__results[input_data.messageID] = response
+                # await cooldown
+                self._paused = False
+                intervall = int(config.TRAIN_COUNTDOWN / .01)
+                for i in range(intervall):
+                    if not (self.__inference_queue.empty()):
+                        self._paused = True
+                        break
+                    await asyncio.sleep(.01)  # Check every 10 ms
 
-                self.__inference_queue.task_done()
-                print("Loop resumed!")
+                if config.DEBUG_MSG and not self._paused: print("Inference ended. Loop resumed...")
 
     def _run_loop_in_thread(self) -> None:
         loop = asyncio.new_event_loop()
@@ -63,11 +75,10 @@ class MainLoop:
         self._thread.start()
 
     async def infer(self, input: ConvoText) -> ConvoText:
-        # Put the input into the queue
+        # put the input into the queue
         await self.__inference_queue.put(input)
-
-        # Wait for the result to become available and return it
+        # wait for the result to become available and return it
         while input.messageID not in self.__results:
-            await asyncio.sleep(0.1)  # Check every 100 ms
-
+            await asyncio.sleep(0.1)  # Check every 100 m
+        # return the result and remove it from the dictionary
         return self.__results.pop(input.messageID)

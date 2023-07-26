@@ -7,7 +7,10 @@ export class Store {
 	elURL: URL
 	uviURL: URL
 
+	// api
 	api: API
+	convoID: number
+	messageID: number
 
 	// screen dimensions
 	screenWidth: number
@@ -28,6 +31,10 @@ export class Store {
 		cursorPos: 0,
 		selection: { start: 0, end: 0 },
 		selectionActive: false,
+
+		// api
+		convoID: 0,
+		messageID: 0,
 	}
 
 	private mutationCallbacks: { [key: string]: () => void }

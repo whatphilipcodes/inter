@@ -125,12 +125,13 @@ export default class Chat extends HTMLElement {
 	response(msg: string) {
 		// Simulate a response by adding a message from the bot
 		const data: ConvoText = {
-			convoID: 0,
-			messageID: 0,
+			convoID: this.state.convoID,
+			messageID: this.state.messageID,
 			timestamp: getTimestamp(),
 			type: ConvoType.INPUT,
 			text: msg,
 		}
+		this.state.mutate({ messageID: this.state.messageID + 1 })
 		console.log(data)
 		this.state.api.post('/api/infer', data).then((response: ConvoText) => {
 			this.addMessage(response.text, '#1d1d1d', 'flex-end')

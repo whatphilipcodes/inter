@@ -11,8 +11,8 @@ from .utils import ConvoText
 
 class MainLoop:
     '''
-    Runs the training steps and allows to interrupt for inference.\n
-    All models and data are managed here. FastAPI only calls the\n
+    Runs the training steps and allows to interrupt for inference.  
+    All models and data are managed here. FastAPI only calls the
     methods of this class.
     '''
     def __init__(self) -> None:
@@ -23,6 +23,11 @@ class MainLoop:
         self._paused = False
 
     async def _loop(self) -> None:
+        '''
+        Asynchronous method that defines the main loop.
+        - If the loop is not paused, it runs the main loop which simulates some work.
+        - If there are inference tasks in the queue, it pauses the loop, processes the inference tasks and resumes the loop.
+        '''
         if config.DEBUG_MSG: print("Loop started...")
         while True:
             # only run MainLoop if not paused
@@ -66,15 +71,30 @@ class MainLoop:
                 if config.DEBUG_MSG and not self._paused: print("Inference ended. Loop resumed...")
 
     def _run_loop_in_thread(self) -> None:
+        '''
+        Runs the main loop in a separate thread using asyncio's event loop.
+        It sets a new event loop, runs the main loop in this event loop,
+        and finally closes the event loop when the main loop completes.
+        '''
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.run_until_complete(self._loop())
         loop.close()
 
     def start(self) -> None:
+        '''
+        Starts the thread in which the main loop runs.
+        The main loop runs in the background, separate from the main thread.
+        '''
         self._thread.start()
 
     async def infer(self, input: ConvoText) -> ConvoText:
+        '''
+        Adds an input to the inference queue and waits for the result to become available.
+        - It puts the input into the inference queue.
+        - It waits for the result to become available.
+        - Once the result is available, it removes the result from the dictionary and returns it.
+        '''
         # put the input into the queue
         await self.__inference_queue.put(input)
         # wait for the result to become available and return it

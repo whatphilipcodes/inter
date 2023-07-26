@@ -1,4 +1,4 @@
-import { appState } from '../utils/enums'
+import { appState } from '../utils/types'
 import { API } from '../utils/api'
 
 export class Store {

@@ -14,10 +14,9 @@ export default class Chat extends HTMLElement {
 
 		const template = document.createElement('template')
 		template.innerHTML = /*html*/ `
-        <style>
+        <style scoped>
           :host * {
             color: white;
-            background-color: black;
             font-family: sans-serif;
             font-size: 14px;
             padding: 5px;
@@ -37,6 +36,7 @@ export default class Chat extends HTMLElement {
           }
 
           #container {
+			background-color: black;
             display: flex;
             flex-direction: column;
             padding: 0px;
@@ -68,7 +68,7 @@ export default class Chat extends HTMLElement {
           button {
             width: 100px;
             align-self: flex-end;
-            background-color: blueviolet;
+			background-color: blueviolet;
             border: none;
             border-radius: 5px;
             cursor: pointer;

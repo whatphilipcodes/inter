@@ -38,6 +38,11 @@ def get_cuda() -> torch.device:
         return torch.device('cpu')
     
 def get_uvi_info() -> tuple[int, str]:
+    '''
+    Returns the port number and host which the electron app defined\n
+    in the environment variables as (UVI_PORT) and the host (UVI_HOST).\n
+    port, host = get_uvi_info()
+    '''
     ### Get port number from electron app
     uvi_port = os.environ.get('UVI_PORT')
     if uvi_port is not None:
@@ -65,6 +70,10 @@ def get_uvi_info() -> tuple[int, str]:
     return uvi_port, uvi_host
 
 def get_host_info() -> str:
+    '''
+    Returns the host adress of the electron app\n
+    to whitelist it in the CORS middleware.
+    '''
     ### Get host from electron app
     el_url = os.environ.get('EL_URL')
     if el_url is not None:
@@ -82,6 +91,10 @@ def get_host_info() -> str:
 
 # CLASSES BLOCK ##############################################################
 class InputText(BaseModel):
+    '''
+    Data model shared between the FastAPI server and the Electron app.\n
+    This reflects the structure in which inputs and responses are exchanged.
+    '''
     id: int
     text: str
 # END CLASSES BLOCK ##########################################################

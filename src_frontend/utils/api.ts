@@ -7,7 +7,7 @@ export class API {
 	constructor(baseURL: URL) {
 		this.api = axios.create({
 			baseURL: baseURL.origin,
-			timeout: 1000,
+			timeout: 60000,
 			headers: {
 				'Access-Control-Allow-Origin': 'self',
 				'Content-Type': 'application/json',

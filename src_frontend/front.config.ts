@@ -7,6 +7,7 @@ const config = {
 	maxInputLength: 128,
 	showHiddenInput: true,
 	demoPlain: true,
+	apiTimeout: 60000,
 }
 
 export default config

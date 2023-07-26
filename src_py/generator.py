@@ -6,7 +6,7 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 
-from transformers import DebertaV2Tokenizer, DebertaV2ForSequenceClassification, DataCollatorWithPadding, get_scheduler, SchedulerType
+from transformers import  GPTNeoXForCausalLM, GPTNeoXTokenizerFast, DataCollatorWithPadding, get_scheduler, SchedulerType
 from datasets import load_dataset, DatasetDict, Dataset, IterableDatasetDict, IterableDataset
 import evaluate
 
@@ -16,7 +16,7 @@ from .utils import get_resource_path, get_cuda
 
 class Classifier:
 
-    def __init__(self, modelroot: str, dataroot: str):
+    def __init__(self, modelroot: str, dataroot: str) -> None:
 
         # File paths
         self.modelpath = os.path.join(get_resource_path(), 'models' , modelroot)
@@ -24,34 +24,16 @@ class Classifier:
 
         # Load infrastructure
         self.device = get_cuda()
-        self.model = DebertaV2ForSequenceClassification.from_pretrained(self.modelpath, num_labels=18).to(self.device)
-        self.tokenizer = DebertaV2Tokenizer.from_pretrained(self.modelpath)
+        self.model = GPTNeoXForCausalLM.from_pretrained(self.modelpath).to(self.device)
+        self.tokenizer = GPTNeoXTokenizerFast.from_pretrained(self.modelpath)
         self.data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
+
+        # special tokens
+        self.tok_input = '[INPUT]'
+        self.tok_response = '[RESPONSE]'
 
         # Load dataset
         self.dataset = load_dataset('parquet', data_dir=self.datapath)
-
-        #  Constants
-        self.encode_mappings = {
-            'cs': 0,
-            'da': 1,
-            'de': 2,
-            'es': 3,
-            'et': 4,
-            'fi': 5,
-            'fr': 6,
-            'hu': 7,
-            'it': 8,
-            'lt': 9,
-            'lv': 10,
-            'nl': 11,
-            'pl': 12,
-            'pt': 13,
-            'ro': 14,
-            'sk': 15,
-            'sl': 16,
-            'sv': 17
-        }
 
         self.num_epochs = 2
 
@@ -172,27 +154,100 @@ class Classifier:
 
         # Get predicted class
         predicted_class_id = logits.argmax().item()
+        
+        tokenized_input = self.tokenizer(text, return_tensors='pt')
+        tokenized_input = tokenized_input.to(self.device)
 
-        decode_mappings = {
-            0: 'Czech',
-            1: 'Danish',
-            2: 'German',
-            3: 'Spanish',
-            4: 'Estonian',
-            5: 'Finnish',
-            6: 'French',
-            7: 'Hungarian',
-            8: 'Italian',
-            9: 'Lithuanian',
-            10: 'Latvian',
-            11: 'Dutch',
-            12: 'Polish',
-            13: 'Portuguese',
-            14: 'Romanian',
-            15: 'Slovak',
-            16: 'Slovenian',
-            17: 'Swedish'
-            }
+        gen_tokens = self.model.generate(
+            input_ids=tokenized_input.input_ids,
+            attention_mask=tokenized_input.attention_mask,
+            pad_token_id=self.tokenizer.eos_token_id,
+            do_sample=True,
+            temperature=0.4,
+            max_new_tokens=25,
+        )
 
-        # Decode and return
-        return decode_mappings[predicted_class_id]
+        gen_text = self.tokenizer.batch_decode(gen_tokens)[0]
+        return gen_text.replace(text, '')  # Remove prompt from generated text
+'''   
+import torch
+from datasets import load_from_disk
+from transformers import GPTNeoXTokenizerFast, GPTNeoXForCausalLM, DataCollatorForLanguageModeling
+
+DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+
+tokenizer = GPTNeoXTokenizerFast.from_pretrained('EleutherAI/gpt-neox-1.3B')
+model = GPTNeoXForCausalLM.from_pretrained('EleutherAI/gpt-neox-1.3B').to(DEVICE)
+optimizer = torch.optim.Adam(model.parameters())
+
+# Assuming you have a parquet dataset
+dataset = load_from_disk("path_to_your_parquet_dataset")
+dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
+
+# Data collator will handle padding and batching
+data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
+
+model.train()
+
+for epoch in range(100):  # Train for 100 epochs
+    for batch in dataloader:  # Assuming you have a PyTorch DataLoader
+        # You might need to adjust this depending on the structure of your data
+        batch = tokenizer(batch["text"], truncation=True, padding='longest', return_tensors="pt")
+        batch = {k: v.to(DEVICE) for k, v in batch.items()}
+
+        optimizer.zero_grad()
+
+        outputs = model(**batch)
+        loss = outputs.loss
+        loss.backward()
+
+        optimizer.step()
+
+'''
+'''
+def infer(prompt):
+    tokenized_input = tokenizer(prompt, return_tensors='pt')
+    tokenized_input = tokenized_input.to(device)
+
+    gen_tokens = model.generate(
+        input_ids=tokenized_input.input_ids,
+        attention_mask=tokenized_input.attention_mask,
+        pad_token_id=tokenizer.eos_token_id,
+        do_sample=True,
+        temperature=0.4,
+        max_new_tokens=25,
+    )
+
+    gen_text = tokenizer.batch_decode(gen_tokens)[0]
+    return gen_text.replace(prompt, '')  # Remove prompt from generated text
+
+def end_conversation():
+    print("You ended the conversation.")
+    print("CONVERSATION HISTORY:")
+    print(conversation)
+
+    if not os.path.exists(CHATPATH):
+        os.makedirs(CHATPATH)
+    with open(os.path.join(CHATPATH, 'chat.json'), 'w') as fp:
+            json.dump(conversation, fp)
+
+def chat_interface():
+    print("Chat Interface loaded.")
+    print("Type 'bye' to quit")
+    
+    while True:
+        user_input = input("User: ")
+        
+        if user_input.lower() == 'bye':
+            end_conversation()
+            break
+        
+        prompt = tok_input + '\n' + user_input + '\n' + tok_response + '\n'
+
+        conversation.append(prompt)  # Save user input in the conversation
+        input_str = '\n'.join(conversation)
+        answer = infer(input_str)
+        conversation.append(answer)  # Save generated text in the conversation
+
+        print("Model: " + answer)
+'''

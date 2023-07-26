@@ -47,7 +47,6 @@ def main():
     
     @app.post("/api/infer")
     async def infer(input: InputText):
-        print("input:", input)
         return input
 
     ### Start FastAPI as Server

@@ -1,5 +1,5 @@
 import asyncio
-from .classifier import Classifier
+from ..classifier import Classifier
 
 async def run(inference_queue: asyncio.Queue):
 

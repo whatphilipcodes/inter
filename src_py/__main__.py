@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # src
-from .utils import setup_env, get_uvi_info, get_host_info, InputText
+from .utils import setup_env, get_uvi_info, get_host_info, ConvoText
 from .loop import MainLoop
 # END IMPORT BLOCK ###########################################################
 
@@ -46,16 +46,23 @@ def main():
         return {}
     
     @app.post("/api/echo")
-    async def echo(input: InputText):
+    async def echo(input: ConvoText):
         print("input:", input)
         return input
     
     @app.post("/api/infer")
-    async def infer(input: InputText):
-        return input
+    async def infer(input: ConvoText):
+        return await loop.infer(input)
+    
+    @app.post("/api/history")
+    async def history(start: int, end: int):
+        return '#TODO: return history from start to end'
 
     ### Start FastAPI as Server
-    uvicorn.run(app, host=uvi_host, port=uvi_port)
+    if uvi_port is None or uvi_host is None:
+        print("Launch arguments for FastAPI server are missing. Aborting...")
+    else:
+        uvicorn.run(app, host=uvi_host, port=uvi_port)
     
 
 # Since this project relies heavily on relative imports,

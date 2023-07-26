@@ -3,6 +3,8 @@
 import os, sys
 import torch
 from pydantic import BaseModel
+from typing import Optional
+from enum import Enum
 # END IMPORT BLOCK ###########################################################
 
 # FUNCTION BLOCK #############################################################
@@ -37,21 +39,22 @@ def get_cuda() -> torch.device:
         print('CUDA not available, using CPU')
         return torch.device('cpu')
     
-def get_uvi_info() -> tuple[int, str]:
+def get_uvi_info() -> tuple[int | None, str | None]:
     '''
     Returns the port number and host which the electron app defined\n
     in the environment variables as (UVI_PORT) and the host (UVI_HOST).\n
     port, host = get_uvi_info()
     '''
     ### Get port number from electron app
-    uvi_port = os.environ.get('UVI_PORT')
-    if uvi_port is not None:
+    uvi_port_str = os.environ.get('UVI_PORT')
+    uvi_port = None
+    if uvi_port_str is not None:
         try:
-            uvi_port = int(uvi_port)
+            uvi_port = int(uvi_port_str)
             # Use the uvi_port variable as an integer
             print("uvi_port number:", uvi_port)
         except ValueError:
-            print("Invalid uvi_port number:", uvi_port)
+            print("Invalid uvi_port number:", uvi_port_str)
     else:
         print("UVI_PORT environment variable is not set.")
 
@@ -69,7 +72,7 @@ def get_uvi_info() -> tuple[int, str]:
     
     return uvi_port, uvi_host
 
-def get_host_info() -> str:
+def get_host_info() -> str | None:
     '''
     Returns the host adress of the electron app\n
     to whitelist it in the CORS middleware.
@@ -90,11 +93,23 @@ def get_host_info() -> str:
 # END FUNCTION BLOCK #########################################################
 
 # CLASSES BLOCK ##############################################################
-class InputText(BaseModel):
+class ConvoText(BaseModel):
     '''
-    Data model shared between the FastAPI server and the Electron app.\n
+    Datamodel shared between the FastAPI server and the Electron app.\n
     This reflects the structure in which inputs and responses are exchanged.
     '''
-    id: int
+    class ConvoType(Enum):
+        '''
+        Enum for the different types of conversation data.
+        '''
+        INPUT = 0
+        RESPONSE = 1
+    
+    #  Props
+    convoID: int
+    messageID: int
+    timestamp: str
+    type: ConvoType
     text: str
+    tokens: Optional[list[str]] = None
 # END CLASSES BLOCK ##########################################################

@@ -8,6 +8,8 @@ import threading
 from . import config
 from .utils import ConvoText, LoopPatch
 
+from .generator import Generator
+
 # END IMPORT BLOCK ###########################################################
 
 
@@ -19,12 +21,16 @@ class MainLoop:
     """
 
     def __init__(self) -> None:
+        # Loop Props
         self.__inference_queue = asyncio.Queue()
         self.__results: dict[int, ConvoText] = {}
         self._thread = threading.Thread(target=self._run_loop_in_thread)
         self._thread.daemon = True  # to end the loop if the main thread ends
         self._show_status = True
         self.state = LoopPatch.State.loading
+
+        # Model Props
+        self._generator = Generator(config.GEN_ROOT)
 
     async def _loop(self) -> None:
         """
@@ -46,8 +52,7 @@ class MainLoop:
                     input_data: ConvoText = await self.__inference_queue.get()
 
                     # Placeholder for actual inference code
-                    result = f"Inferred data from: {input_data.text}"
-                    # TODO: Move to the datamanager
+                    result = self._generator.infer(input_data.text)
                     response = ConvoText(
                         convoID=input_data.convoID,
                         messageID=input_data.messageID,

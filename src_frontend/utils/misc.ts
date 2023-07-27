@@ -57,4 +57,31 @@ function getTimestamp(): string {
 	return `${year}-${month}-${day}_${hours}:${minutes}:${seconds}:${milliseconds}`
 }
 
-export { tryWithTimeout, getTimestamp }
+/**
+ * Starts a timer which will execute a callback function after a specified delay.
+ * The function also returns a stop function which can be used to abort the timer.
+ *
+ * @param callback - The function to be executed after the delay. This function should take no parameters and return void.
+ * @param delay - The delay in milliseconds after which the callback function should be executed.
+ *
+ * @returns A stop function that can be called to abort the timer.
+ *
+ * @example
+ *
+ * // Start a timer that logs 'Hello, world!' to the console after 5 seconds
+ * const stop = startTimer(() => console.log('Hello, world!'), 5000);
+ *
+ * // If needed, the timer can be stopped using the returned function
+ * stop();
+ */
+function startTimer(callback: () => void, delay: number): () => void {
+	const timerId = setTimeout(callback, delay)
+
+	const stop = () => {
+		clearTimeout(timerId)
+	}
+
+	return stop
+}
+
+export { tryWithTimeout, getTimestamp, startTimer }

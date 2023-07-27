@@ -9,6 +9,7 @@ import type DemoChat from './components/demoChat'
 
 // state
 import { Store } from './state/store'
+import { state, backendState, LoopPatch } from './utils/types'
 
 // three
 import SceneManager from './three/_sceneManager'
@@ -43,6 +44,38 @@ const input = document.getElementById('textInput') as Input
 //  *************************************************************/
 // create global (renderer process) state
 const globalState = new Store()
+
+// connect frontend state to backend state
+function updateBackendState(current: state): void {
+	let translation
+	switch (current) {
+		case state.loading:
+			translation = { state: backendState.loading }
+			break
+		case state.idle:
+			translation = { state: backendState.training }
+			break
+		case state.interaction:
+			translation = { state: backendState.inference }
+			break
+		case state.error:
+			translation = { state: backendState.error }
+			break
+		case state.exit:
+			translation = { state: backendState.exit }
+			break
+		default:
+			translation = { state: backendState.training }
+			break
+	}
+	globalState.api
+		.post('/api/update', translation)
+		.then((newState: LoopPatch) => {
+			if (config.debugMsg) console.log('Backend state updated:', newState.state)
+		})
+}
+globalState.subscribe('appState', updateBackendState)
+
 // init all component instances that need access to the global state
 if (!config.demoPlain) input.initInput(globalState)
 if (config.demoPlain) chat.initChat(globalState)
@@ -85,12 +118,20 @@ if (!config.demoPlain) {
 	try {
 		const url = new URL(data)
 		await globalState.initAxios(url)
-		if (config.debugMsg) {
-			if (globalState.api.online) {
-				console.log('Backend online & connected')
-			}
+		if (config.debugMsg && globalState.api.online) {
+			console.log('Backend online & connected')
+		}
+		if (globalState.api.online) {
+			globalState.mutate({
+				appState: state.idle,
+			})
 		}
 	} catch (error) {
 		console.error('Invalid URL:', error)
 	}
 })
+
+// /*************************************************************
+//  * Debugging
+//  *************************************************************/
+if (config.debugMsg) console.log('Frontend loaded')

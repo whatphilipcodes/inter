@@ -6,7 +6,7 @@ import threading
 
 # src
 from . import config
-from .utils import ConvoText
+from .utils import ConvoText, LoopPatch
 
 # END IMPORT BLOCK ###########################################################
 
@@ -23,60 +23,52 @@ class MainLoop:
         self.__results: dict[int, ConvoText] = {}
         self._thread = threading.Thread(target=self._run_loop_in_thread)
         self._thread.daemon = True  # to end the loop if the main thread ends
-        self._paused = False
+        self._show_status = True
+        self.state = LoopPatch.State.loading
 
     async def _loop(self) -> None:
         """
         Asynchronous method that defines the main loop.
-        - If the loop is not paused, it runs the main loop which simulates some work.
-        - If there are inference tasks in the queue, it pauses the loop, processes the inference tasks and resumes the loop.
         """
         if config.DEBUG_MSG:
             print("Loop started...")
         while True:
-            # only run MainLoop if not paused
-            if not self._paused:
-                # Actual MainLoop ################################################
-                await asyncio.sleep(1)  # Simulate some work
-                # END Actual MainLoop ############################################
+            if self.state == LoopPatch.State.training:
+                # TRAINING FLOW ##################################################
+                if config.DEBUG_MSG:
+                    print("Training...")
+                await asyncio.sleep(2)  # Simulate some work
+                # END TRAINING FLOW ##############################################
 
-            # handle Pause/Resume
-            if not self.__inference_queue.empty():
-                if config.DEBUG_MSG and not self._paused:
-                    print("Loop paused. Inference started...")
-                self._paused = True  # flag loop as paused
-                while not self.__inference_queue.empty():  # work through the queue
+            if self.state == LoopPatch.State.inference:
+                # INFERENCE FLOW #################################################
+                while not self.__inference_queue.empty():
                     input_data: ConvoText = await self.__inference_queue.get()
 
                     # Placeholder for actual inference code
                     result = f"Inferred data from: {input_data.text}"
-
-                    # TODO: Move the creation of the response ConvoText to the datamanager
+                    # TODO: Move to the datamanager
                     response = ConvoText(
                         convoID=input_data.convoID,
-                        messageID=input_data.messageID + 1,
+                        messageID=input_data.messageID,
                         text=result,
                         timestamp=datetime.datetime.now().strftime(
                             "%Y-%m-%d_%H:%M:%S:%f"
                         ),
-                        type=ConvoText.ConvoType.RESPONSE,
+                        type=ConvoText.ConvoType.response,
                     )
 
                     # make results available in the dictionary
                     self.__results[input_data.messageID] = response
                     self.__inference_queue.task_done()
+                # END INFERENCE FLOW #############################################
 
-                # await cooldown
-                self._paused = False
-                intervall = int(config.TRAIN_COUNTDOWN / 0.01)
-                for i in range(intervall):
-                    if not (self.__inference_queue.empty()):
-                        self._paused = True
-                        break
-                    await asyncio.sleep(0.01)  # Check every 10 ms
-
-                if config.DEBUG_MSG and not self._paused:
-                    print("Inference ended. Loop resumed...")
+            if self.state == LoopPatch.State.exit:
+                # EXIT FLOW ######################################################
+                if config.DEBUG_MSG:
+                    print("Loop ended...")
+                break
+                # END EXIT FLOW ##################################################
 
     def _run_loop_in_thread(self) -> None:
         """
@@ -96,6 +88,13 @@ class MainLoop:
         """
         self._thread.start()
 
+    async def update(self, patch: LoopPatch) -> LoopPatch:
+        """
+        Updates the state of the main loop.
+        """
+        self.state = patch.state
+        return LoopPatch(state=self.state)
+
     async def infer(self, input: ConvoText) -> ConvoText:
         """
         Adds an input to the inference queue and waits for the result to become available.
@@ -107,6 +106,6 @@ class MainLoop:
         await self.__inference_queue.put(input)
         # wait for the result to become available and return it
         while input.messageID not in self.__results:
-            await asyncio.sleep(0.1)  # Check every 100 m
+            await asyncio.sleep(0.1)  # Check every 100 ms
         # return the result and remove it from the dictionary
         return self.__results.pop(input.messageID)

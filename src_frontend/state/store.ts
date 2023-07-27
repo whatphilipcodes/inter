@@ -1,8 +1,8 @@
-import { appState } from '../utils/types'
+import { state } from '../utils/types'
 import { API } from '../utils/api'
 
 export class Store {
-	applicationState: appState
+	appState: state
 
 	elURL: URL
 	uviURL: URL
@@ -25,7 +25,7 @@ export class Store {
 
 	private initialState = {
 		// state
-		applicationState: appState.loading,
+		appState: state.loading,
 
 		// textarea
 		cursorPos: 0,
@@ -37,14 +37,19 @@ export class Store {
 		messageID: 0,
 	}
 
-	private mutationCallbacks: { [key: string]: () => void }
+	private mutationCallbacks: {
+		[key: string]: ((newVal?: unknown) => void) | (() => void)
+	}
 
 	constructor() {
 		Object.assign(this, this.initialState)
 		this.mutationCallbacks = {}
 	}
 
-	subscribe(key: string, callback: () => void): void {
+	subscribe(
+		key: string,
+		callback: ((newVal?: unknown) => void) | (() => void)
+	): void {
 		this.mutationCallbacks[key] = callback
 	}
 
@@ -58,7 +63,10 @@ export class Store {
 		const filteredCallbacks = keys
 			.map((key) => this.mutationCallbacks[key])
 			.filter((callback) => typeof callback === 'function')
-		filteredCallbacks.forEach((callback) => callback && callback())
+		filteredCallbacks.forEach(
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(callback, i) => callback && callback((newState as any)[keys[i]])
+		)
 	}
 
 	async initAxios(baseURL: URL): Promise<void> {

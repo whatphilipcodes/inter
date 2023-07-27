@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # src
-from .utils import setup_env, get_uvi_info, get_host_info, ConvoText
+from .utils import setup_env, get_uvi_info, get_host_info, ConvoText, LoopPatch
 from .loop import MainLoop
 
 # END IMPORT BLOCK ###########################################################
@@ -52,6 +52,10 @@ def main():
     async def echo(input: ConvoText):
         print("input:", input)
         return input
+
+    @app.post("/api/update")
+    async def update(patch: LoopPatch):
+        return await loop.update(patch)
 
     @app.post("/api/infer")
     async def infer(input: ConvoText):

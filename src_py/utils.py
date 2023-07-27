@@ -108,13 +108,13 @@ class ConvoText(BaseModel):
     This reflects the structure in which inputs and responses are exchanged.
     """
 
-    class ConvoType(Enum):
+    class ConvoType(str, Enum):
         """
         Enum for the different types of conversation data.
         """
 
-        INPUT = 0
-        RESPONSE = 1
+        input = "input"
+        response = "response"
 
     #  Props
     convoID: int
@@ -123,6 +123,26 @@ class ConvoText(BaseModel):
     type: ConvoType
     text: str
     tokens: Optional[list[str]] = None
+
+
+class LoopPatch(BaseModel):
+    """
+    Datamodel to control the state of the main loop.
+    """
+
+    class State(str, Enum):
+        """
+        Enum for the different types of loop states.
+        """
+
+        loading = "loading"
+        training = "training"
+        inference = "inference"
+        error = "error"
+        exit = "exit"
+
+    #  Props
+    state: State
 
 
 # END CLASSES BLOCK ##########################################################

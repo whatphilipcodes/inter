@@ -1,10 +1,11 @@
 import { Store } from '../state/store'
 import config from '../front.config'
-import { getTimestamp } from '../utils/misc'
-import { ConvoText, ConvoType } from '../utils/types'
+import { getTimestamp, startTimer } from '../utils/misc'
+import { ConvoText, ConvoType, state } from '../utils/types'
 
 export default class Chat extends HTMLElement {
 	state: Store
+	stopTimer: () => void
 
 	conversationElement: HTMLElement
 	messageInputElement: HTMLInputElement
@@ -98,6 +99,12 @@ export default class Chat extends HTMLElement {
 
 		this.sendButtonElement.addEventListener('click', () => this.sendMessage())
 		this.messageInputElement.addEventListener('keypress', (event) => {
+			if (this.stopTimer) {
+				this.stopTimer()
+				this.stopTimer = null
+			}
+			if (this.state.appState === state.idle)
+				this.state.mutate({ appState: state.interaction })
 			if (event.key === 'Enter') {
 				this.sendMessage()
 			}
@@ -109,6 +116,7 @@ export default class Chat extends HTMLElement {
 	}
 
 	sendMessage() {
+		if (this.state.appState !== state.interaction) return // Don't send messages if the app is not idle
 		const message = this.messageInputElement.value.trim() // Trim whitespace from the message
 		if (message === '') {
 			// Show visual feedback for empty message
@@ -123,18 +131,22 @@ export default class Chat extends HTMLElement {
 	}
 
 	response(msg: string) {
-		// Simulate a response by adding a message from the bot
+		// Creates a reply message
 		const data: ConvoText = {
 			convoID: this.state.convoID,
 			messageID: this.state.messageID,
 			timestamp: getTimestamp(),
-			type: ConvoType.INPUT,
+			type: ConvoType.input,
 			text: msg,
 		}
 		this.state.mutate({ messageID: this.state.messageID + 1 })
 		console.log(data)
 		this.state.api.post('/api/infer', data).then((response: ConvoText) => {
 			this.addMessage(response.text, '#1d1d1d', 'flex-end')
+			if (!this.stopTimer)
+				this.stopTimer = startTimer(() => {
+					this.state.mutate({ appState: state.idle })
+				}, config.idleTimeout)
 			if (config.debugMsg) console.log(response)
 		})
 	}

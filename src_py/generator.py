@@ -6,6 +6,7 @@ import torch
 from transformers import GPTNeoXForCausalLM, GPTNeoXTokenizerFast
 
 # Local Imports
+from . import __backend_config as config
 from .utils import get_resource_path, get_cuda, ConvoText
 
 # END IMPORT BLOCK ###########################################################
@@ -14,10 +15,9 @@ from .utils import get_resource_path, get_cuda, ConvoText
 class Generator:
     def __init__(
         self,
-        modelroot: str,
     ) -> None:
         # File paths
-        self.modelpath = os.path.join(get_resource_path(), "models", modelroot)
+        self.modelpath = os.path.join(get_resource_path(), "models", config.GEN_ROOT)
 
         # Config XXX ask if this is correct -> see tokenizer.json
         self.eos_token_id = 0
@@ -42,8 +42,8 @@ class Generator:
                 do_sample=True,
                 temperature=0.7,
                 max_new_tokens=100,
-                top_k=50,
-                top_p=0.95,
+                # top_k=50,
+                # top_p=0.95,
                 eos_token_id=self.eos_token_id,
                 pad_token_id=self.pad_token_id,
             )

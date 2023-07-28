@@ -30,7 +30,7 @@ class MainLoop:
         self.state = LoopPatch.State.loading
 
         # Model Props
-        self._generator = Generator(config.GEN_ROOT)
+        self._generator = Generator()
 
     async def _loop(self) -> None:
         """

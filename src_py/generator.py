@@ -3,10 +3,7 @@
 import os
 import torch
 
-from transformers import (
-    GPTNeoXForCausalLM,
-    GPTNeoXTokenizerFast,
-)
+from transformers import GPTNeoXForCausalLM, GPTNeoXTokenizerFast
 
 # Local Imports
 from .utils import get_resource_path, get_cuda, ConvoText
@@ -22,6 +19,10 @@ class Generator:
         # File paths
         self.modelpath = os.path.join(get_resource_path(), "models", modelroot)
 
+        # Config XXX ask if this is correct -> see tokenizer.json
+        self.eos_token_id = 0
+        self.pad_token_id = 1
+
         # Load infrastructure
         self.device = get_cuda()
         self.model = GPTNeoXForCausalLM.from_pretrained(self.modelpath).to(self.device)  # type: ignore
@@ -34,6 +35,8 @@ class Generator:
         inputs = self.tokenizer(input, return_tensors="pt")
         inputs.to(self.device)
 
+        print("eos token: ", self.tokenizer.decode(self.tokenizer.eos_token_id))
+
         # Run inference
         with torch.no_grad():
             generated_tokens = self.model.generate(
@@ -41,10 +44,11 @@ class Generator:
                 do_sample=True,
                 temperature=0.7,
                 max_new_tokens=100,
-                bos_token_id=0,
-                eos_token_id=2,
-                pad_token_id=0,  # TODO check if this is correct
+                top_k=50,
+                top_p=0.95,
+                eos_token_id=self.eos_token_id,
+                pad_token_id=self.pad_token_id,
             )
 
         # Decode and return the generated text
-        return self.tokenizer.decode(generated_tokens[0], skip_special_tokens=True)
+        return self.tokenizer.decode(generated_tokens[0], skip_special_tokens=False)

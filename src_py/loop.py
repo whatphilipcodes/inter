@@ -5,7 +5,7 @@ import datetime
 import threading
 
 # src
-from . import config
+from . import __backend_config as config
 from .utils import ConvoText, LoopPatch
 
 from .generator import Generator

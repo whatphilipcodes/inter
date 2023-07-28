@@ -7,12 +7,16 @@ from transformers import GPTNeoXForCausalLM, GPTNeoXTokenizerFast
 
 # Local Imports
 from . import __backend_config as config
-from .utils import get_resource_path, get_cuda, ConvoText
+from .utils import get_resource_path, get_cuda
 
 # END IMPORT BLOCK ###########################################################
 
 
 class Generator:
+    """
+    Generates text using a finetuned Pythia variant.
+    """
+
     def __init__(
         self,
     ) -> None:

@@ -62,7 +62,7 @@ def main():
         return await loop.infer(input)
 
     @app.post("/api/history")
-    async def history(start: int, end: int):
+    async def history(startID: int):
         return "#TODO: return history from start to end"
 
     ### Start FastAPI as Server

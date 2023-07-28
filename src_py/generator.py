@@ -35,8 +35,6 @@ class Generator:
         inputs = self.tokenizer(input, return_tensors="pt")
         inputs.to(self.device)
 
-        print("eos token: ", self.tokenizer.decode(self.tokenizer.eos_token_id))
-
         # Run inference
         with torch.no_grad():
             generated_tokens = self.model.generate(

@@ -40,8 +40,8 @@ class Generator:
             generated_tokens = self.model.generate(
                 **inputs,
                 do_sample=True,
-                temperature=0.7,
-                max_new_tokens=100,
+                temperature=0.8,
+                max_new_tokens=80,
                 # top_k=50,
                 # top_p=0.95,
                 eos_token_id=self.eos_token_id,

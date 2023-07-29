@@ -103,8 +103,10 @@ export default class Chat extends HTMLElement {
 				this.stopTimer()
 				this.stopTimer = null
 			}
-			if (this.state.appState === state.idle)
+			if (this.state.appState === state.idle) {
 				this.state.mutate({ appState: state.interaction })
+				this.response('')
+			}
 			if (event.key === 'Enter') {
 				this.sendMessage()
 			}
@@ -146,6 +148,7 @@ export default class Chat extends HTMLElement {
 			if (!this.stopTimer)
 				this.stopTimer = startTimer(() => {
 					this.state.mutate({ appState: state.idle })
+					this.state.convoID++
 				}, config.idleTimeout)
 			if (config.debugMsg) console.log(response)
 		})

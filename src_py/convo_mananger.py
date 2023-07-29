@@ -26,7 +26,7 @@ class ConvoManager:
         # props
         self.convoID = 0
         self.history = []
-        self.last_input = ""
+        self.current_input = ""
 
     # Public Methods ###########################################################
     def get_inference_string(self, input: ConvoText, mood=Mood.neutral) -> str:
@@ -38,33 +38,38 @@ class ConvoManager:
             self.convoID = input.convoID
             self.history = []
 
-        if input.text is None:
-            starter = self._get_convo_starter(mood)
-            if config.DEBUG_MSG:
-                print(f"Input string: {starter}")
-            return starter
+        # Check if the input is empty
+        if input.text == "":
+            input.text = self._get_convo_starter(mood)
 
-        else:
-            self.last_input = (
-                self.con_tok
-                + self._get_context(mood)
-                + self.inp_tok
-                + input.text
-                + self.res_tok
-            )
-            if config.DEBUG_MSG:
-                print(f"Input string: {self.last_input}")
-            return self.last_input
+        # Build the input string
+        self.current_input = (
+            self.con_tok
+            + self._get_context(mood)
+            + self._get_history()
+            + self.inp_tok
+            + input.text
+            + self.res_tok
+        )
+
+        # Update the history with the input
+        self._update_history(input.text)
+
+        # if config.DEBUG_MSG:
+        #     print(f"Input string:\n {self.current_input}")
+
+        return self.current_input
 
     def filter_response(self, response: str) -> str:
         """
         Filters out the special tokens from the response.
         Only works if get_inference_string() was called before on this instance.
         """
-        filtered = response.replace(self.last_input, "").replace(self.eos_tok, "")
+        filtered = response.replace(self.current_input, "").replace(self.eos_tok, "")
         processed = self._postprocess(filtered)
-        if config.DEBUG_MSG:
-            print(f"Filtered result: {processed}")
+        # if config.DEBUG_MSG:
+        #     print(f"Filtered result:\n {processed}")
+        self._update_history(processed)
         return processed
 
     def get_training_string(self, mood: str, input: str, response: str) -> str:
@@ -124,6 +129,30 @@ class ConvoManager:
             return random.choice(DOUBT)
         elif mood == Mood.lie:
             return random.choice(LIE)
+
+    def _update_history(self, append: str) -> None:
+        """
+        Updates the conversation history with the new input.
+        """
+        self.history.append(append)
+
+    def _get_history(self) -> str:
+        """
+        Returns the conversation history as a single string with input and response tokens alternating.
+        """
+
+        # Initialize an empty string to store the concatenated history
+        concatenated_history = ""
+
+        # Iterate through the history array
+        for i, entry in enumerate(self.history):
+            # Determine which token to use based on whether the index is even or odd
+            token = self.inp_tok if i % 2 == 0 else self.res_tok
+
+            # Append the token and entry to the concatenated_history
+            concatenated_history += token + entry
+
+        return concatenated_history
 
     def _postprocess(self, text: str) -> str:
         """

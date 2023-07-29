@@ -8,7 +8,7 @@ const config = {
 	showHiddenInput: true,
 	demoPlain: true,
 	apiTimeout: 60000,
-	idleTimeout: 3000,
+	idleTimeout: 20000,
 }
 
 export default config

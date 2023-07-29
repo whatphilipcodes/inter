@@ -37,8 +37,8 @@ class Generator:
 
         # Get input text and tokenize
         inputs = self.tokenizer(input, return_tensors="pt")
-        if config.DEBUG_MSG:
-            print(f"Input tokens: {inputs}")
+        # if config.DEBUG_MSG:
+        #     print(f"Input tokens:\n {inputs}")
         inputs.to(self.device)
 
         # Run inference
@@ -62,7 +62,7 @@ class Generator:
 
         raw = self.tokenizer.decode(generated_tokens[0], skip_special_tokens=False)
         if config.DEBUG_MSG:
-            print(f"Raw result: {raw}")
+            print(f"Raw result:\n {raw}")
 
         # Decode and return the generated text
         return raw

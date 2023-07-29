@@ -22,6 +22,7 @@ class ConvoManager:
         self.inp_tok = "<|input|>"
         self.res_tok = "<|response|>"
         self.eos_tok = "<|endoftext|>"
+        self.start_tok = "<|greet|>"
 
         # props
         self.convoID = 0
@@ -40,7 +41,7 @@ class ConvoManager:
 
         # Check if the input is empty
         if input.text == "":
-            input.text = self._get_convo_starter(mood)
+            input.text = self.start_tok
 
         # Build the input string
         self.current_input = (
@@ -72,23 +73,20 @@ class ConvoManager:
         self._update_history(processed)
         return processed
 
-    def get_training_string(self, mood: str, input: str, response: str) -> str:
-        return (
-            self.con_tok
-            + mood
-            + self.inp_tok
-            + input
-            + self.res_tok
-            + response
-            + self.eos_tok
-        )
+    # def get_training_example(self, mood: str, input: str, response: str) -> str:
+    #     return (
+    #         self.con_tok
+    #         + mood
+    #         + self.inp_tok
+    #         + input
+    #         + self.res_tok
+    #         + response
+    #         + self.eos_tok
+    #     )
 
     # END Public Methods #######################################################
 
     # PRIVATE METHODS ##########################################################
-    def _get_convo_starter(self, mood: Mood) -> str:
-        return "Not yet implemented."
-
     def _get_context(self, mood: Mood) -> str:
         """
         Returns a context string based on the mood.
@@ -161,12 +159,6 @@ class ConvoManager:
         This method checks if the text ends with a sentence-ending punctuation mark (".", "!", "?").
         If it doesn't, the method finds the last occurrence of a sentence-ending punctuation mark
         and truncates the text at that position.
-
-        Args:
-            text (str): The generated text to be post-processed.
-
-        Returns:
-            str: The post-processed text, which should end with a complete sentence.
         """
         if not text.endswith((".", "!", "?")):
             # Find the last occurrence of a sentence-ending punctuation mark

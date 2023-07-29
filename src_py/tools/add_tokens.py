@@ -20,7 +20,7 @@ model: GPTNeoXForCausalLM = GPTNeoXForCausalLM.from_pretrained(in_path)  # type:
 # - <|begoftext|> to indicate the start of the sequence # XXX not sure if this is needed
 # - <|unktoken|> to indicate unknown tokens # XXX not sure if this is needed
 
-SPECIAL_TOKENS_LIST: List = ["<|input|>", "<|response|>"]
+SPECIAL_TOKENS_LIST: List = ["<|context|>", "<|input|>", "<|response|>"]
 SPECIAL_TOKENS_DICT: dict = {"additional_special_tokens": SPECIAL_TOKENS_LIST}
 
 # Add the special tokens to the tokenizer

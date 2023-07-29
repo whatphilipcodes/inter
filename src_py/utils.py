@@ -101,7 +101,7 @@ def get_host_info() -> str | None:
 # END FUNCTION BLOCK #########################################################
 
 
-# CLASSES BLOCK ##############################################################
+# SHARED DATAMODELS ##########################################################
 class ConvoText(BaseModel):
     """
     Datamodel shared between the FastAPI server and the Electron app.\n
@@ -145,4 +145,20 @@ class LoopPatch(BaseModel):
     state: State
 
 
-# END CLASSES BLOCK ##########################################################
+# END SHARED DATAMODELS ######################################################
+
+
+# INTERNAL DATAMODELS ########################################################
+class Mood(str, Enum):
+    """
+    Internal datamodel to store classifier results.
+    """
+
+    forlang = "forlang"
+    neutral = "neutral"
+    truth = "truth"
+    doubt = "doubt"
+    lie = "lie"
+
+
+# END INTERNAL DATAMODELS ####################################################

@@ -4,10 +4,11 @@ import asyncio
 import datetime
 import threading
 
-# src
+# Local Imports
 from . import __backend_config as config
 from .utils import ConvoText, LoopPatch
 
+from .convo_mananger import ConvoManager
 from .generator import Generator
 
 # END IMPORT BLOCK ###########################################################
@@ -30,6 +31,7 @@ class MainLoop:
         self.state = LoopPatch.State.loading
 
         # Model Props
+        self._convo_manager = ConvoManager()
         self._generator = Generator()
 
     async def _loop(self) -> None:
@@ -51,8 +53,16 @@ class MainLoop:
                 while not self.__inference_queue.empty():
                     input_data: ConvoText = await self.__inference_queue.get()
 
-                    # Placeholder for actual inference code
-                    result = self._generator.infer(input_data.text)
+                    # get the input string from the convo manager
+                    input_str = self._convo_manager.get_inference_string(input_data)
+
+                    # run inference on input string
+                    raw = self._generator.infer(input_str)
+
+                    # filter out the input string from the result
+                    result = self._convo_manager.filter_response(raw)
+
+                    # create response object
                     response = ConvoText(
                         convoID=input_data.convoID,
                         messageID=input_data.messageID,

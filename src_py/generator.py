@@ -37,6 +37,8 @@ class Generator:
 
         # Get input text and tokenize
         inputs = self.tokenizer(input, return_tensors="pt")
+        if config.DEBUG_MSG:
+            print(f"Input tokens: {inputs}")
         inputs.to(self.device)
 
         # Run inference
@@ -59,29 +61,8 @@ class Generator:
             )
 
         raw = self.tokenizer.decode(generated_tokens[0], skip_special_tokens=False)
-        processed = self.postprocess(raw)
+        if config.DEBUG_MSG:
+            print(f"Raw result: {raw}")
 
         # Decode and return the generated text
-        return processed
-
-    def postprocess(self, text: str) -> str:
-        """
-        Post-process the generated text to ensure it ends with a complete sentence.
-
-        This method checks if the text ends with a sentence-ending punctuation mark (".", "!", "?").
-        If it doesn't, the method finds the last occurrence of a sentence-ending punctuation mark
-        and truncates the text at that position.
-
-        Args:
-            text (str): The generated text to be post-processed.
-
-        Returns:
-            str: The post-processed text, which should end with a complete sentence.
-        """
-        if not text.endswith((".", "!", "?")):
-            # Find the last occurrence of a sentence-ending punctuation mark
-            end_position = max(text.rfind("."), text.rfind("!"), text.rfind("?"))
-            if end_position != -1:
-                text = text[: end_position + 1]
-
-        return text.strip()
+        return raw

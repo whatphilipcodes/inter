@@ -9,6 +9,7 @@ const config = {
 	demoPlain: true,
 	apiTimeout: 60000,
 	idleTimeout: 20000,
+	botStarts: true,
 }
 
 export default config

@@ -105,7 +105,7 @@ export default class Chat extends HTMLElement {
 			}
 			if (this.state.appState === state.idle) {
 				this.state.mutate({ appState: state.interaction })
-				this.response('')
+				if (config.botStarts) this.response('')
 			}
 			if (event.key === 'Enter') {
 				this.sendMessage()

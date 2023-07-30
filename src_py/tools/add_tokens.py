@@ -5,7 +5,7 @@ import os
 from typing import List
 
 in_path = os.path.join("resources_dev", "models", "pythia-base")
-out_path = os.path.join("resources_dev", "models", "tokenizer-mod")
+out_path = os.path.join("resources_dev", "models", "pythia-mod")
 
 tokenizer: GPTNeoXTokenizerFast = GPTNeoXTokenizerFast.from_pretrained(in_path)
 model: GPTNeoXForCausalLM = GPTNeoXForCausalLM.from_pretrained(in_path)  # type: ignore

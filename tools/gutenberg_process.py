@@ -1,9 +1,10 @@
 import os
 import regex
+from src_py.utils import get_resource_path
 
-
-INPATH = "./resources_dev/data/raw/source"
-OUTPATH = "./resources_dev/data/raw/processed"
+FILE = "The Iron Heel by Jack London"
+INPATH = os.path.join(get_resource_path(), "data_raw", "generator")
+OUTPATH = os.path.join(get_resource_path(), "data", "processed")
 
 
 def open_txt_file(file_path):
@@ -79,7 +80,7 @@ def extract_dialog(lines, min_words=2, min_rounds=2):
 
 
 def main():
-    lines = open_txt_file(os.path.join(INPATH, "The Iron Heel by Jack London.txt"))
+    lines = open_txt_file(os.path.join(INPATH, FILE + ".txt"))
 
     lines = remove_footer(lines)
     dialogues = extract_dialog(lines, 4, 4)

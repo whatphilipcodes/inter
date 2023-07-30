@@ -1,11 +1,14 @@
 # idea -> https://medium.com/huggingface/how-to-build-a-state-of-the-art-conversational-ai-with-transfer-learning-2d818ac26313
 from transformers import GPTNeoXForCausalLM, GPTNeoXTokenizerFast
-import os
 
 from typing import List
+import os
 
-in_path = os.path.join("resources_dev", "models", "pythia-base")
-out_path = os.path.join("resources_dev", "models", "pythia-mod")
+# from src_py import __backend_config as cfg
+from src_py.utils import SpecTok, get_resource_path
+
+in_path = os.path.join(get_resource_path(), "models", "pythia-base")
+out_path = os.path.join(get_resource_path(), "models", "delete-this")
 
 tokenizer: GPTNeoXTokenizerFast = GPTNeoXTokenizerFast.from_pretrained(in_path)
 model: GPTNeoXForCausalLM = GPTNeoXForCausalLM.from_pretrained(in_path)  # type: ignore
@@ -20,7 +23,12 @@ model: GPTNeoXForCausalLM = GPTNeoXForCausalLM.from_pretrained(in_path)  # type:
 # - <|begoftext|> to indicate the start of the sequence # XXX not sure if this is needed
 # - <|unktoken|> to indicate unknown tokens # XXX not sure if this is needed
 
-SPECIAL_TOKENS_LIST: List = ["<|context|>", "<|input|>", "<|response|>", "<|greet|>"]
+SPECIAL_TOKENS_LIST: List = [
+    SpecTok.context,
+    SpecTok.input,
+    SpecTok.response,
+    SpecTok.greet,
+]
 SPECIAL_TOKENS_DICT: dict = {"additional_special_tokens": SPECIAL_TOKENS_LIST}
 
 # Add the special tokens to the tokenizer

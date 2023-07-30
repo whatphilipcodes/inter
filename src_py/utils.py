@@ -161,4 +161,24 @@ class Mood(str, Enum):
     lie = "lie"
 
 
+class SpecTok:
+    """
+    Internal datamodel to store special tokens.
+    """
+
+    context = "<|context|>"
+    input = "<|input|>"
+    response = "<|response|>"
+    greet = "<|greet|>"
+    endseq = "<|endoftext|>"
+
+
+class GenData:
+    pass
+
+
+class ClsData:
+    pass
+
+
 # END INTERNAL DATAMODELS ####################################################

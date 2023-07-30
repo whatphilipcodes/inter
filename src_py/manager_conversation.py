@@ -5,7 +5,7 @@ import random
 
 # Local Imports
 from . import __backend_config as config
-from .utils import ConvoText, Mood
+from .utils import ConvoText, Mood, SpecTok
 
 # END IMPORT BLOCK ###########################################################
 
@@ -17,13 +17,6 @@ class ConvoManager:
     """
 
     def __init__(self) -> None:
-        # special tokens -> special_tokens_map.json, tokenizer.json
-        self.con_tok = "<|context|>"
-        self.inp_tok = "<|input|>"
-        self.res_tok = "<|response|>"
-        self.eos_tok = "<|endoftext|>"
-        self.start_tok = "<|greet|>"
-
         # props
         self.convoID = 0
         self.history = []
@@ -41,16 +34,16 @@ class ConvoManager:
 
         # Check if the input is empty
         if input.text == "":
-            input.text = self.start_tok
+            input.text = SpecTok.greet
 
         # Build the input string
         self.current_input = (
-            self.con_tok
+            SpecTok.context
             + self._get_context(mood)
             + self._get_history()
-            + self.inp_tok
+            + SpecTok.input
             + input.text
-            + self.res_tok
+            + SpecTok.response
         )
 
         # Update the history with the input
@@ -66,7 +59,7 @@ class ConvoManager:
         Filters out the special tokens from the response.
         Only works if get_inference_string() was called before on this instance.
         """
-        filtered = response.replace(self.current_input, "").replace(self.eos_tok, "")
+        filtered = response.replace(self.current_input, "").replace(SpecTok.endseq, "")
         processed = self._postprocess(filtered)
         # if config.DEBUG_MSG:
         #     print(f"Filtered result:\n {processed}")
@@ -75,13 +68,13 @@ class ConvoManager:
 
     # def get_training_example(self, mood: str, input: str, response: str) -> str:
     #     return (
-    #         self.con_tok
+    #         S
     #         + mood
-    #         + self.inp_tok
+    #         + SpecTok
     #         + input
-    #         + self.res_tok
+    #         + SpecTok.response
     #         + response
-    #         + self.eos_tok
+    #         + SpecTok.endseq
     #     )
 
     # END Public Methods #######################################################
@@ -145,7 +138,7 @@ class ConvoManager:
         # Iterate through the history array
         for i, entry in enumerate(self.history):
             # Determine which token to use based on whether the index is even or odd
-            token = self.inp_tok if i % 2 == 0 else self.res_tok
+            token = SpecTok.input if i % 2 == 0 else SpecTok.response
 
             # Append the token and entry to the concatenated_history
             concatenated_history += token + entry

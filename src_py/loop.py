@@ -8,7 +8,7 @@ import threading
 from . import __backend_config as config
 from .utils import ConvoText, LoopPatch
 
-from .convo_mananger import ConvoManager
+from .manager_conversation import ConvoManager
 from .generator import Generator
 
 # END IMPORT BLOCK ###########################################################

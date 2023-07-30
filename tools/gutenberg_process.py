@@ -1,7 +1,7 @@
 import os
 import regex
 
-from .test import ImportMe
+from tools.test import ImportMe
 
 
 INPATH = "./resources_dev/data/raw/source"

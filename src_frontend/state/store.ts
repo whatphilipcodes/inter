@@ -11,6 +11,7 @@ export class Store {
 	api: API
 	convoID: number
 	messageID: number
+	startMsg: string
 
 	// screen dimensions
 	screenWidth: number

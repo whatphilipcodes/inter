@@ -6,6 +6,7 @@ import { ConvoText, ConvoType, state } from '../utils/types'
 export default class Chat extends HTMLElement {
 	state: Store
 	stopTimer: () => void
+	greet_message: string
 
 	conversationElement: HTMLElement
 	messageInputElement: HTMLInputElement
@@ -105,7 +106,8 @@ export default class Chat extends HTMLElement {
 			}
 			if (this.state.appState === state.idle) {
 				this.state.mutate({ appState: state.interaction })
-				if (config.botStarts) this.response('')
+				if (this.greet_message)
+					this.addMessage(this.greet_message, '#1d1d1d', 'flex-end')
 			}
 			if (event.key === 'Enter') {
 				this.sendMessage()
@@ -141,14 +143,28 @@ export default class Chat extends HTMLElement {
 			type: ConvoType.input,
 			text: msg,
 		}
+
 		this.state.mutate({ messageID: this.state.messageID + 1 })
 		console.log(data)
 		this.state.api.post('/api/infer', data).then((response: ConvoText) => {
 			this.addMessage(response.text, '#1d1d1d', 'flex-end')
 			if (!this.stopTimer)
 				this.stopTimer = startTimer(() => {
-					this.state.mutate({ appState: state.idle })
 					this.state.convoID++
+					this.state.messageID = 0
+					if (config.botStarts)
+						this.state.api
+							.post('/api/infer', {
+								convoID: this.state.convoID,
+								messageID: this.state.messageID,
+								timestamp: getTimestamp(),
+								type: ConvoType.input,
+								text: '',
+							})
+							.then((response: ConvoText) => {
+								this.greet_message = response.text
+								this.state.mutate({ appState: state.idle })
+							})
 				}, config.idleTimeout)
 			if (config.debugMsg) console.log(response)
 		})

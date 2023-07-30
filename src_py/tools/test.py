@@ -1,0 +1,2 @@
+class ImportMe:
+    lul = "lul"

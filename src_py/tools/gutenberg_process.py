@@ -1,6 +1,9 @@
 import os
 import regex
 
+from .test import ImportMe
+
+
 INPATH = "./resources_dev/data/raw/source"
 OUTPATH = "./resources_dev/data/raw/processed"
 

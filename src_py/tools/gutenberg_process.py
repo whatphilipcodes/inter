@@ -31,7 +31,7 @@ def remove_footer(lines):
     return lines
 
 
-def extract_dialog(lines, min_words=1, min_rounds=2):
+def extract_dialog(lines, min_words=2, min_rounds=2):
     dialogue_pattern = regex.compile(r"(?<=^|\s)(?:\"|\“)(.*?)(?:\"|\”)", regex.DOTALL)
     contexts_dialogues = []
 
@@ -48,6 +48,10 @@ def extract_dialog(lines, min_words=1, min_rounds=2):
 
         # Finding all dialogues within the context
         dialogues = dialogue_pattern.findall(context)
+
+        for dialog in dialogues:
+            if len(dialog.split()) < min_words:
+                dialogues.remove(dialog)
 
         # if the following dialogue starts lower case, join it to the previous one
         for index, dialogue in enumerate(dialogues):
@@ -72,12 +76,10 @@ def extract_dialog(lines, min_words=1, min_rounds=2):
 
 
 def main():
-    lines = open_txt_file(
-        os.path.join(INPATH, "The War of the Worlds by H. G. Wells.txt")
-    )
+    lines = open_txt_file(os.path.join(INPATH, "The Iron Heel by Jack London.txt"))
 
     lines = remove_footer(lines)
-    dialogues = extract_dialog(lines, 1)
+    dialogues = extract_dialog(lines)
 
     print(dialogues)
 

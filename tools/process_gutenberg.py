@@ -2,7 +2,7 @@ import os
 import regex
 from src_py.utils import get_resource_path
 
-FILE = "The Time Machine by H. G. Wells"
+FILE = "The War of the Worlds by H. G. Wells"
 INPATH = os.path.join(get_resource_path(), "data_raw", "generator")
 OUTPATH = os.path.join(get_resource_path(), "data_raw", "to-delete")
 
@@ -73,11 +73,12 @@ def find_dialogue(text):
     return dialogues
 
 
-def extract_conversations(text, min_words=2, min_turns=2):
+def extract_conversations(text, min_words=1, min_turns=2):
     conversations = []
 
     # Splitting text into contexts (paragraphs)
     contexts = regex.split(r"(?:\n){3,}", text)
+    print(f"Number of possible contexts: {len(contexts)}")
 
     for context in contexts:
         dialogues = find_dialogue(context)
@@ -98,13 +99,14 @@ def extract_conversations(text, min_words=2, min_turns=2):
         # append the extracted dialogues to the conversations list
         conversations.append(valid_dialogues)
 
+    print(f"Number of extracted conversations: {len(conversations)}")
     return conversations
 
 
 def main():
     file = read_file_as_string(os.path.join(INPATH, FILE + ".txt"))
     file = remove_footer(file)
-    conversations = extract_conversations(file, 2, 2)
+    conversations = extract_conversations(file, 1, 2)
 
     print(conversations)
 

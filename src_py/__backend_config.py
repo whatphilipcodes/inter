@@ -1,3 +1,3 @@
 DEBUG_MSG = True
-GEN_ROOT = "tokenizer-mod"
+GEN_ROOT = "pythia-mod"
 CLS_ROOT = ""

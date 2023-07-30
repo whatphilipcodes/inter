@@ -254,16 +254,6 @@ cython_debug/
 # exclude dev resources folder
 resources_dev/
 
-# manage resources folder includes
-resources/*
-!resources/models/
-!resources/data/
-
-resources/models/*
-resources/data/*
-!resources/models/model_name/
-!resources/data/dataset_name/
-
 # include .spec file for pyinstaller
 !entry.spec
 

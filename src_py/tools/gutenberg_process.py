@@ -42,9 +42,11 @@ def extract_dialog(lines, min_words=2, min_rounds=2):
     contexts = regex.split(r"(?:\n){3,}", text)
 
     for context in contexts:
-        # Removing unwanted tags and extra spaces
+        # Removing unwanted items
         context = context.replace("<i>", "").replace("</i>", "").replace("\n", " ")
         context = regex.sub(r"\s{2,}", " ", context)
+        context = regex.sub(r"(?:\[|\(|\{)(.*?)(?:\]|\)|\})", "", context)
+        context = regex.sub(r"(?:\*|\#|\-|\—|\_|\=|\+|\~|\^|\:|\;|\/|\\)", "", context)
 
         # Finding all dialogues within the context
         dialogues = dialogue_pattern.findall(context)
@@ -79,9 +81,9 @@ def main():
     lines = open_txt_file(os.path.join(INPATH, "The Iron Heel by Jack London.txt"))
 
     lines = remove_footer(lines)
-    dialogues = extract_dialog(lines)
+    dialogues = extract_dialog(lines, 4, 4)
 
-    print(dialogues)
+    print(dialogues[0:4])
 
 
 if __name__ == "__main__":

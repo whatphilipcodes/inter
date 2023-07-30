@@ -2,9 +2,9 @@ import os
 import regex
 from src_py.utils import get_resource_path
 
-FILE = "The Iron Heel by Jack London"
+FILE = "A Journey to the Centre of the Earth by Jules Verne"
 INPATH = os.path.join(get_resource_path(), "data_raw", "generator")
-OUTPATH = os.path.join(get_resource_path(), "data", "processed")
+OUTPATH = os.path.join(get_resource_path(), "data_raw", "to-delete")
 
 
 def open_txt_file(file_path):
@@ -33,9 +33,10 @@ def remove_footer(lines):
     return lines
 
 
-def extract_dialog(lines, min_words=2, min_rounds=2):
+def extract_dialog(lines, min_words=2, min_turns=2):
     dialogue_pattern = regex.compile(r"(?<=^|\s)(?:\"|\“)(.*?)(?:\"|\”)", regex.DOTALL)
-    contexts_dialogues = []
+    # context_pattern = regex.compile(r"(?:\n){3,}", regex.DOTALL)
+    conversations = []
 
     # Concatenating lines into a single string
     text = "".join(lines)
@@ -50,7 +51,7 @@ def extract_dialog(lines, min_words=2, min_rounds=2):
         context = regex.sub(r"(?:\[|\(|\{)(.*?)(?:\]|\)|\})", "", context)
         context = regex.sub(r"(?:\*|\#|\-|\—|\_|\=|\+|\~|\^|\:|\;|\/|\\)", "", context)
 
-        # Finding all dialogues within the context
+        # Find all dialogues within the current context
         dialogues = dialogue_pattern.findall(context)
 
         for dialog in dialogues:
@@ -68,15 +69,15 @@ def extract_dialog(lines, min_words=2, min_rounds=2):
             if len(dialogue.split()) >= min_words:
                 extracted_dialogues.append(dialogue)
 
-        # Appending extracted dialogues for the current context
-        contexts_dialogues.append(extracted_dialogues)
+        # append the extracted dialogues to the conversations list
+        conversations.append(extracted_dialogues)
 
-        # removing empty contexts
-        for context in contexts_dialogues:
-            if len(context) < min_rounds:
-                contexts_dialogues.remove(context)
+        # removing empty conversations
+        for convo in conversations:
+            if len(convo) < min_turns:
+                conversations.remove(convo)
 
-    return contexts_dialogues
+    return conversations
 
 
 def main():

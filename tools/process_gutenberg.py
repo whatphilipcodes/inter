@@ -61,6 +61,22 @@ def remove_footer(text):
     return modified_text
 
 
+def remove_header(text):
+    lines = text.splitlines()
+
+    # Look for the specified strings
+    for index, line in enumerate(lines):
+        if (
+            "START OF THIS PROJECT GUTENBERG EBOOK" in line.upper()
+            or "Start of this Project Gutenberg EBook" in line.upper()
+        ):
+            # Delete everything up to and including the line containing the target text
+            lines = lines[index + 1 :]
+            break
+
+    return "\n".join(lines)
+
+
 def filter_non_characters(context: str):
     # replace new line characters with a space
     context = context.replace("\n", " ")
@@ -197,6 +213,7 @@ def main():
         files.append(read_file_as_string(path))
 
     for file in files:
+        file = remove_header(file)
         file = remove_footer(file)
 
     pp = ParquetProcessor()

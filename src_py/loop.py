@@ -1,12 +1,11 @@
 # IMPORT BLOCK ###############################################################
 # Lib Imports
 import asyncio
-import datetime
 import threading
 
 # Local Imports
 from . import __backend_config as config
-from .utils import ConvoText, LoopPatch
+from .utils import ConvoText, LoopPatch, get_timestamp
 
 from .manager_conversation import ConvoManager
 from .generator import Generator
@@ -67,9 +66,7 @@ class MainLoop:
                         convoID=input_data.convoID,
                         messageID=input_data.messageID,
                         text=result,
-                        timestamp=datetime.datetime.now().strftime(
-                            "%Y-%m-%d_%H:%M:%S:%f"
-                        ),
+                        timestamp=get_timestamp(),
                         type=ConvoText.ConvoType.response,
                     )
 

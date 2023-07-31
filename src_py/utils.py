@@ -1,5 +1,6 @@
 # IMPORT BLOCK ###############################################################
 # Lib Imports
+import datetime
 import os, sys
 import torch
 from pydantic import BaseModel
@@ -98,6 +99,13 @@ def get_host_info() -> str | None:
     return el_url
 
 
+def get_timestamp() -> str:
+    """
+    Returns a timestamp in the format: YYYY-MM-DD_HH:MM:SS:MS
+    """
+    return datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S:%f")
+
+
 # END FUNCTION BLOCK #########################################################
 
 
@@ -173,12 +181,18 @@ class SpecTok:
     endseq = "<|endoftext|>"
 
 
-class GenData:
-    pass
+class InterData(BaseModel):
+    """
+    Internal datamodel to handle training data.
+    """
 
-
-class ClsData:
-    pass
+    timestamp: str
+    conID: int
+    msgID: int
+    context: str
+    input: str
+    response: str
+    mood: Mood
 
 
 # END INTERNAL DATAMODELS ####################################################

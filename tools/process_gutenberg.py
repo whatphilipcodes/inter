@@ -1,6 +1,7 @@
 import os
 import regex
-from src_py.utils import get_resource_path
+from typing import List
+from src_py.utils import get_resource_path, get_timestamp, InterData, Mood
 
 FILE = "The War of the Worlds by H. G. Wells"
 INPATH = os.path.join(get_resource_path(), "data_raw", "generator")
@@ -55,12 +56,15 @@ def filter_non_characters(context: str):
     context = regex.sub(r"\s{2,}", " ", context)
     # remove the comma at the end of the sentence
     context = regex.sub(r"(?=.*),$", "", context)
+    # strip()
+    context = context.strip()
     return context
 
 
-def find_dialogue(text):
+def find_dialogue(text) -> tuple[List[str], List[str]]:
     dialogue_pattern = regex.compile(r"(?<=^|\s)(?:\"|\“)(.*?)(?:\"|\”)", regex.DOTALL)
-    dialogues = dialogue_pattern.findall(text)
+    raw = dialogue_pattern.findall(text)
+    dialogues = list(raw)
 
     # if the following dialogue starts lower case, join it to the previous one
     for index, dialogue in enumerate(dialogues):
@@ -70,20 +74,84 @@ def find_dialogue(text):
     # remove the dialogues that start with a lower case
     dialogues = [dialogue for dialogue in dialogues if not dialogue[0].islower()]
 
-    return dialogues
+    return raw, dialogues
 
 
-def extract_conversations(text, min_words=1, min_turns=2):
+def find_context(text: str, prior_dialogue: str, num_paragraphs=1) -> str:
+    """
+    Finds num_paragraphs that precede the prior_dialogue in the text.
+    Only returns complete sentences.
+    """
+
+    # Splitting the text into paragraphs
+    paragraphs = text.split("\n\n")
+
+    # Finding the index of the paragraph containing the prior_dialogue
+    index_of_prior_dialogue = -1
+    for idx, paragraph in enumerate(paragraphs):
+        if prior_dialogue in paragraph:
+            index_of_prior_dialogue = idx
+            break
+
+    # If prior_dialogue is not found, return an empty string
+    if index_of_prior_dialogue == -1:
+        print(f"Error: Prior dialogue '{prior_dialogue}' not found.")
+        return ""
+
+    # Extracting the preceding paragraphs
+    start_index = max(0, index_of_prior_dialogue - num_paragraphs)
+    preceding_paragraphs = paragraphs[start_index:index_of_prior_dialogue]
+
+    # Joining the paragraphs into a single string
+    return "\n\n".join(preceding_paragraphs)
+
+
+def create_inter_data(
+    conID: int, context: str, conversation: List[str]
+) -> List[InterData]:
+    """
+    Creates a list of InterData objects from a conversation.
+    """
+    inter_data = []
+    for i, j in zip(
+        range(0, len(conversation) - 1, 1), range(0, len(conversation) - 1, 2)
+    ):
+        input_dialogue = conversation[j]
+        response_dialogue = conversation[j + 1]
+        if i == 0:
+            context = context
+        else:
+            context = ""
+        inter_data.append(
+            InterData(
+                timestamp=get_timestamp(),
+                conID=conID,
+                msgID=i,
+                context=context,
+                input=input_dialogue,
+                response=response_dialogue,
+                mood=Mood.neutral,
+            )
+        )
+    return inter_data
+
+
+def extract_conversations(text, min_words=1, min_turns=2) -> List:
     conversations = []
 
     # Splitting text into contexts (paragraphs)
-    contexts = regex.split(r"(?:\n){3,}", text)
-    print(f"Number of possible contexts: {len(contexts)}")
+    candidates = regex.split(r"(?:\n){3,}", text)
+    print(f"Number of possible candidates: {len(candidates)}")
 
-    for context in contexts:
-        dialogues = find_dialogue(context)
+    for candidate in candidates:
+        raw, dialogues = find_dialogue(candidate)
+
+        if len(dialogues) < 1:
+            continue
+
+        context = find_context(candidate, raw[0])
+        context = filter_non_characters(context)
         dialogues = [filter_non_characters(dialogue) for dialogue in dialogues]
-        dialogues = [dialogue.strip() for dialogue in dialogues]
 
         valid_dialogues = []
 
@@ -96,8 +164,9 @@ def extract_conversations(text, min_words=1, min_turns=2):
         if len(valid_dialogues) < min_turns:
             continue
 
-        # append the extracted dialogues to the conversations list
-        conversations.append(valid_dialogues)
+        conID = len(conversations)
+        inter_data = create_inter_data(conID, context, valid_dialogues)
+        conversations.append(inter_data)
 
     print(f"Number of extracted conversations: {len(conversations)}")
     return conversations

@@ -6,7 +6,22 @@ import tools.__tools_config as cfg
 from tools.classes.parquet_processor import ParquetProcessor
 from src_py.utils import get_timestamp, InterData, Mood
 
-FILE = "The War of the Worlds by H. G. Wells"
+
+def get_txt_in_directory(directory_path):
+    "Returns a list of txt files in a directory."
+    try:
+        files = [
+            os.path.join(directory_path, file)
+            for file in os.listdir(directory_path)
+            if file.endswith(".txt")
+        ]
+        return files
+    except FileNotFoundError:
+        print(f"Error: Directory '{directory_path}' not found.")
+        return []
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
 
 
 def read_file_as_string(file_path):
@@ -62,7 +77,7 @@ def filter_non_characters(context: str):
     return context
 
 
-def find_dialogue(text) -> tuple[List[str], List[str]]:
+def find_dialogue(text: str) -> tuple[List[str], List[str]]:
     dialogue_pattern = regex.compile(r"(?<=^|\s)(?:\"|\“)(.*?)(?:\"|\”)", regex.DOTALL)
     raw = dialogue_pattern.findall(text)
     dialogues = list(raw)
@@ -85,7 +100,7 @@ def find_context(text: str, prior_dialogue: str, num_paragraphs=1) -> str:
     """
 
     # Splitting the text into paragraphs
-    paragraphs = text.split("\n\n")
+    paragraphs = regex.split(r"(?:\n|\\n){2,}", text)
 
     # Finding the index of the paragraph containing the prior_dialogue
     index_of_prior_dialogue = -1
@@ -138,50 +153,54 @@ def create_inter_data(
 
 
 def extract_conversations(
-    text, parproc: ParquetProcessor, min_words=1, min_turns=2
+    text: List[str], parproc: ParquetProcessor, min_words=1, min_turns=2
 ) -> None:
-    conversations = []
+    for file in text:
+        # Splitting text into contexts (paragraphs)
+        candidates = regex.split(r"(\n{3,})|(\* +\* +\* +\* +\** *\n)", file)
 
-    # Splitting text into contexts (paragraphs)
-    candidates = regex.split(r"(?:\n){3,}", text)
-    print(f"Number of possible candidates: {len(candidates)}")
+        for candidate in candidates:
+            if candidate is None:
+                continue
 
-    for candidate in candidates:
-        raw, dialogues = find_dialogue(candidate)
+            raw, dialogues = find_dialogue(candidate)
+            if len(dialogues) < 1:
+                continue
 
-        if len(dialogues) < 1:
-            continue
+            context = find_context(candidate, raw[0])
+            context = filter_non_characters(context)
+            dialogues = [filter_non_characters(dialogue) for dialogue in dialogues]
 
-        context = find_context(candidate, raw[0])
-        context = filter_non_characters(context)
-        dialogues = [filter_non_characters(dialogue) for dialogue in dialogues]
+            valid_dialogues = []
 
-        valid_dialogues = []
+            # only keep dialogues with more than min_words
+            for dialogue in dialogues:
+                if len(dialogue.split()) >= min_words:
+                    valid_dialogues.append(dialogue)
 
-        # only keep dialogues with more than min_words
-        for dialogue in dialogues:
-            if len(dialogue.split()) >= min_words:
-                valid_dialogues.append(dialogue)
+            # discard emtpy dialogues
+            if len(valid_dialogues) < min_turns:
+                continue
 
-        # discard emtpy dialogues
-        if len(valid_dialogues) < min_turns:
-            continue
+            conID = parproc.get_convo_id()
+            inter_data = create_inter_data(conID, context, valid_dialogues)
 
-        conID = parproc.get_convo_id()
-        inter_data = create_inter_data(conID, context, valid_dialogues)
-
-        for x in inter_data:
-            parproc.add_row(x)
-
-    print(f"Number of extracted conversations: {len(conversations)}")
+            for x in inter_data:
+                parproc.add_row(x)
 
 
 def main():
-    file = read_file_as_string(os.path.join(cfg.IN_PATH_RAW_GENERATOR, FILE + ".txt"))
-    file = remove_footer(file)
-    #
+    filepaths = get_txt_in_directory(cfg.IN_PATH_RAW_GENERATOR)
+    files = []
+
+    for path in filepaths:
+        files.append(read_file_as_string(path))
+
+    for file in files:
+        file = remove_footer(file)
+
     pp = ParquetProcessor()
-    extract_conversations(file, pp)
+    extract_conversations(files, pp, 3)
     print(pp.get_preview(20))
     pp.save_dataframe("vintage-novelist", shuffle=True, split=True)
 

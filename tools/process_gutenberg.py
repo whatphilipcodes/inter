@@ -1,11 +1,12 @@
 import os
 import regex
 from typing import List
-from src_py.utils import get_resource_path, get_timestamp, InterData, Mood
+
+import tools.__tools_config as cfg
+from tools.classes.parquet_processor import ParquetProcessor
+from src_py.utils import get_timestamp, InterData, Mood
 
 FILE = "The War of the Worlds by H. G. Wells"
-INPATH = os.path.join(get_resource_path(), "data_raw", "generator")
-OUTPATH = os.path.join(get_resource_path(), "data_raw", "to-delete")
 
 
 def read_file_as_string(file_path):
@@ -136,7 +137,9 @@ def create_inter_data(
     return inter_data
 
 
-def extract_conversations(text, min_words=1, min_turns=2) -> List:
+def extract_conversations(
+    text, parproc: ParquetProcessor, min_words=1, min_turns=2
+) -> None:
     conversations = []
 
     # Splitting text into contexts (paragraphs)
@@ -164,20 +167,23 @@ def extract_conversations(text, min_words=1, min_turns=2) -> List:
         if len(valid_dialogues) < min_turns:
             continue
 
-        conID = len(conversations)
+        conID = parproc.get_convo_id()
         inter_data = create_inter_data(conID, context, valid_dialogues)
-        conversations.append(inter_data)
+
+        for x in inter_data:
+            parproc.add_row(x)
 
     print(f"Number of extracted conversations: {len(conversations)}")
-    return conversations
 
 
 def main():
-    file = read_file_as_string(os.path.join(INPATH, FILE + ".txt"))
+    file = read_file_as_string(os.path.join(cfg.IN_PATH_RAW_GENERATOR, FILE + ".txt"))
     file = remove_footer(file)
-    conversations = extract_conversations(file, 1, 2)
-
-    print(conversations)
+    #
+    pp = ParquetProcessor()
+    extract_conversations(file, pp)
+    print(pp.get_preview(20))
+    pp.save_dataframe("vintage-novelist", shuffle=True, split=True)
 
 
 if __name__ == "__main__":

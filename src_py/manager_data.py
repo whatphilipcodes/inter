@@ -98,7 +98,6 @@ class DataManager:
         return active_path, backup_path, fallback_path
 
     def _load(self) -> DatasetDict:
-        database = None
         try:
             database = DatasetDict.load_from_disk(self.active_path)
         except:

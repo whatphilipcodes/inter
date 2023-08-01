@@ -99,11 +99,27 @@ def get_host_info() -> str | None:
     return el_url
 
 
+# analogous to -> utils/misc.ts -> getTimestamp()
 def get_timestamp() -> str:
     """
     Returns a timestamp in the format: YYYY-MM-DD_HH:MM:SS:MS
     """
-    return datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S:%f")
+    return datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
+
+
+def remove_folder(path: str) -> None:
+    """
+    Removes a folder and all its contents recursively.
+    """
+    if os.path.isdir(path):
+        for entry in os.scandir(path):
+            if entry.is_file():
+                os.remove(entry.path)
+            else:
+                remove_folder(entry.path)
+        os.rmdir(path)
+    else:
+        print("Path is not a directory:", path)
 
 
 # END FUNCTION BLOCK #########################################################

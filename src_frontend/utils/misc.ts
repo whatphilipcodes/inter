@@ -54,7 +54,8 @@ function getTimestamp(): string {
 	const milliseconds = String(date.getMilliseconds()).padStart(6, '0')
 
 	// Combine the components to form the formatted timestamp
-	return `${year}-${month}-${day}_${hours}:${minutes}:${seconds}:${milliseconds}`
+	// analogous to -> utils.py -> get_timestamp()
+	return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}-${milliseconds}`
 }
 
 /**

@@ -35,6 +35,9 @@ class MainLoop:
         self._generator = Generator()
         self._classifier = None
 
+        # Loop Flags
+        self._enter_state = True
+
     async def _loop(self) -> None:
         """
         Asynchronous method that defines the main loop.
@@ -43,6 +46,9 @@ class MainLoop:
             print("Loop started...")
         while True:
             if self.state == LoopPatch.State.training:
+                # ENTER TRAINING FLOW ############################################
+                if self._enter_state:
+                    self._enter_training()
                 # TRAINING FLOW ##################################################
                 if config.DEBUG_MSG:
                     print("Training...")
@@ -50,6 +56,9 @@ class MainLoop:
                 # END TRAINING FLOW ##############################################
 
             if self.state == LoopPatch.State.inference:
+                # ENTER INFERENCE FLOW ###########################################
+                if self._enter_state:
+                    self._enter_inference()
                 # INFERENCE FLOW #################################################
                 while not self.__inference_queue.empty():
                     input_data: ConvoText = await self.__inference_queue.get()
@@ -62,6 +71,7 @@ class MainLoop:
                     # datapoint.mood = mood
 
                     # 2) instruct generator to create response -> response
+                    # get context for generator
                     context = self._convo_manager.get_context(Mood.neutral)
                     datapoint.context = context
 
@@ -73,7 +83,7 @@ class MainLoop:
                     # generator: run inference on input string
                     raw = self._generator.infer(input_str)
 
-                    # filter response
+                    # filter out response
                     response = self._convo_manager.filter_response(raw)
                     datapoint.response = response
 
@@ -89,7 +99,7 @@ class MainLoop:
                     # make results available in the dictionary
                     self.__results[input_data.messageID] = response_object
 
-                    # 3) add new datapoint to training database
+                    # 3) add new datapoint to training database & save
                     self._data_manager.add(datapoint)
 
                     self.__inference_queue.task_done()
@@ -125,6 +135,7 @@ class MainLoop:
         Updates the state of the main loop.
         """
         self.state = patch.state
+        self._enter_state = True
         return LoopPatch(state=self.state)
 
     async def infer(self, input: ConvoText) -> ConvoText:
@@ -141,3 +152,22 @@ class MainLoop:
             await asyncio.sleep(0.1)  # Check every 100 ms
         # return the result and remove it from the dictionary
         return self.__results.pop(input.messageID)
+
+    # ENTER STATE METHODS #####################################################
+    def _enter_training(self) -> None:
+        """
+        Run every time the loop enters the training state.
+        """
+        self._enter_state = False
+        if config.DEBUG_MSG:
+            print("Running training...")
+        # save new conversations to database
+        self._data_manager.save()
+
+    def _enter_inference(self) -> None:
+        """
+        Run every time the loop enters the inference state.
+        """
+        self._enter_state = False
+        if config.DEBUG_MSG:
+            print("Running inference...")

@@ -1,27 +1,26 @@
 # IMPORT BLOCK ###############################################################
 # Lib Imports
 import os
-import random
-
-# import torch
-
-# from torch.utils.data import DataLoader
-# from tqdm.auto import tqdm
-
-# from transformers import DataCollatorWithPadding, get_scheduler, SchedulerType
 from datasets import DatasetDict, disable_caching
 
 # Local Imports
 from . import __backend_config as config
-from .utils import get_resource_path, ConvoText, InterData, Mood
+from .utils import (
+    get_resource_path,
+    get_timestamp,
+    ConvoText,
+    InterData,
+    Mood,
+    remove_folder,
+)
 
 # END IMPORT BLOCK ###########################################################
 
 
 class DataManager:
     # Paths
+    data_path: str
     active_path: str
-    backup_path: str
     fallback_path: str
 
     # Data
@@ -29,8 +28,8 @@ class DataManager:
 
     def __init__(self) -> None:
         disable_caching()
-        self.active_path, self.backup_path, self.fallback_path = self._get_paths()
-        self.database = self._load()
+        self._setup_paths()
+        self._load_database()
         # print(self.database)
 
     # Public Methods ###########################################################
@@ -52,11 +51,11 @@ class DataManager:
             print("Added datapoint to database:", self.database["train"][-1])
 
     def save(self) -> None:
-        # switch slots
-        self.active_path, self.backup_path = self.backup_path, self.active_path
-        self.database.save_to_disk(self.active_path)
+        # save to disk
+        path = os.path.join(self.data_path, get_timestamp())
+        self.database.save_to_disk(path)
         if config.DEBUG_MSG:
-            print("Database saved to:", self.active_path)
+            print("Database saved to:", path)
 
     # def get_gen_step(self) -> InterData:
     #     pass
@@ -67,47 +66,63 @@ class DataManager:
     # END PUBLIC METHODS #######################################################
 
     # PRIVATE METHODS ##########################################################
-    def _get_paths(self) -> tuple[str, str, str]:
+    def _setup_paths(self) -> None:
         # check if data folder exists
-        data_path = os.path.join(get_resource_path(), *config.DATA_PATH)
-        if not os.path.exists(data_path):
-            os.makedirs(data_path)
+        self.data_path = os.path.join(get_resource_path(), *config.DATA_PATH)
+        if not os.path.exists(self.data_path):
+            raise Exception("Data folder not found. Please contact the developer.")
 
-        fallback_path = os.path.join(data_path, "base")
-        if not os.path.exists(fallback_path):
-            os.makedirs(fallback_path)
+        # check if base folder exists
+        self.fallback_path = os.path.join(self.data_path, "base")
+        if not os.path.exists(self.fallback_path):
+            raise Exception("Base data folder not found. Please contact the developer.")
 
-        # check slots
-        slots = [
-            os.path.join(data_path, "slot-a"),
-            os.path.join(data_path, "slot-b"),
-        ]
+        # look for subfolders
+        subfoldernames = os.listdir(self.data_path)
+        subfolders = []
+        for name in subfoldernames:
+            subfolders.append(os.path.join(self.data_path, name))
 
-        for folder in slots:
-            if not os.path.exists(folder):
-                os.makedirs(folder)
+        if len(subfolders) <= 1:
+            self.active_path = os.path.join(self.data_path, get_timestamp())
+            os.mkdir(self.active_path)
+        else:
+            # get most recent subfolder
+            subfolders.sort(key=lambda x: os.path.getmtime(x))
+            self.active_path = subfolders[-1]  # last element is the most recent
 
-        # get the one used last
-        slots.sort(key=lambda x: os.path.getmtime(x))
-        backup_path = slots[0]  # first element is the oldest
-        active_path = slots[-1]  # last element is the most recent
-
-        if config.DEBUG_MSG:
-            print("Loading database from:", active_path)
-
-        return active_path, backup_path, fallback_path
-
-    def _load(self) -> DatasetDict:
+    def _load_database(self) -> None:
+        path: str
         try:
-            database = DatasetDict.load_from_disk(self.active_path)
+            self.database = DatasetDict.load_from_disk(self.active_path)
+            path = self.active_path
         except:
             try:
-                database = DatasetDict.load_from_disk(self.fallback_path)
+                self.database = DatasetDict.load_from_disk(self.fallback_path)
+                path = self.fallback_path
             except Exception as e:
                 raise Exception(
                     "Something went really wrong. Please contact the developer.\nError: "
                     + str(e)
                 )
-        return database
+
+        if config.DEBUG_MSG:
+            print("Database loaded from:", path)
+
+        self._cleanup_datapath()
+
+    def _cleanup_datapath(self) -> None:
+        folders = 0
+        subfoldernames = os.listdir(self.data_path)
+        subfolders = []
+        for name in subfoldernames:
+            subfolders.append(os.path.join(self.data_path, name))
+        subfolders.sort(key=lambda x: os.path.getmtime(x))
+        if len(subfolders) > config.MAX_DATA_FOLDERS:
+            for folder in subfolders[: -config.MAX_DATA_FOLDERS]:
+                remove_folder(os.path.join(self.data_path, folder))
+                folders += 1
+        if config.DEBUG_MSG:
+            print(f"Data folder cleanup complete.\nRemoved {folders} folders.")
 
     # END PRIVATE METHODS ######################################################

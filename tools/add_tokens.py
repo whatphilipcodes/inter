@@ -2,7 +2,7 @@
 from transformers import GPTNeoXForCausalLM, GPTNeoXTokenizerFast
 from typing import List
 import tools.__tools_config as cfg
-from src_py.utils import SpecTok
+from src_py.utils import SpecialTokens
 
 tokenizer: GPTNeoXTokenizerFast = GPTNeoXTokenizerFast.from_pretrained(
     cfg.IN_PATH_TOKEN_MOD
@@ -20,10 +20,10 @@ model: GPTNeoXForCausalLM = GPTNeoXForCausalLM.from_pretrained(cfg.IN_PATH_TOKEN
 # - <|unktoken|> to indicate unknown tokens # XXX not sure if this is needed
 
 SPECIAL_TOKENS_LIST: List = [
-    SpecTok.context,
-    SpecTok.input,
-    SpecTok.response,
-    SpecTok.greet,
+    SpecialTokens.context,
+    SpecialTokens.input,
+    SpecialTokens.response,
+    SpecialTokens.greet,
 ]
 SPECIAL_TOKENS_DICT: dict = {"additional_special_tokens": SPECIAL_TOKENS_LIST}
 

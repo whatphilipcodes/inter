@@ -72,21 +72,21 @@ class ParquetProcessor:
     def open_dataframe(self, filename: str) -> None:
         self.dataset = pd.read_parquet(os.path.join(cfg.IN_DIR_PARQUET, filename))
 
-    def save_dataframe(self, filename: str, shuffle: bool, split: bool) -> None:
+    def save_dataframe(self, shuffle: bool, split: bool) -> None:
         if shuffle:
             self._shuffle_conversations()
         if split:
             # Optionally perform train-test split before saving
             train_data, test_data = self._split_dataset()
             train_data.to_parquet(
-                os.path.join(cfg.OUT_DIR_PARQUET, f"train_{filename}.parquet"),
+                os.path.join(cfg.OUT_DIR_PARQUET, f"train_.parquet"),
                 index=False,
             )
             test_data.to_parquet(
-                os.path.join(cfg.OUT_DIR_PARQUET, f"test_{filename}.parquet"),
+                os.path.join(cfg.OUT_DIR_PARQUET, f"test_.parquet"),
                 index=False,
             )
         else:
             self.dataset.to_parquet(
-                os.path.join(cfg.OUT_DIR_PARQUET, f"{filename}.parquet"), index=False
+                os.path.join(cfg.OUT_DIR_PARQUET, f"inter.parquet"), index=False
             )

@@ -2,6 +2,7 @@
 # Lib Imports
 import os
 import torch
+from typing import Any
 
 from transformers import GPTNeoXForCausalLM, GPTNeoXTokenizerFast
 
@@ -21,7 +22,7 @@ class Generator:
         self,
     ) -> None:
         # File paths
-        self.modelpath = os.path.join(get_resource_path(), "models", config.GEN_ROOT)
+        self.modelpath = os.path.join(get_resource_path(), *config.GEN_PATH)
 
         # Config XXX ask if this is correct -> see tokenizer.json
         self.eos_token_id = 0
@@ -32,7 +33,7 @@ class Generator:
         self.model = GPTNeoXForCausalLM.from_pretrained(self.modelpath).to(self.device)  # type: ignore
         self.tokenizer = GPTNeoXTokenizerFast.from_pretrained(self.modelpath)
 
-    def infer(self, input: str) -> str:
+    def infer(self, input: str, return_tokens: bool = False) -> str | Any:
         self.model.eval()
 
         # Get input text and tokenize
@@ -63,6 +64,9 @@ class Generator:
         raw = self.tokenizer.decode(generated_tokens[0], skip_special_tokens=False)
         if config.DEBUG_MSG:
             print(f"Raw result:\n {raw}")
+
+        if return_tokens:
+            return raw, generated_tokens
 
         # Decode and return the generated text
         return raw

@@ -5,9 +5,10 @@ import threading
 
 # Local Imports
 from . import __backend_config as config
-from .utils import ConvoText, LoopPatch, get_timestamp
+from .utils import ConvoText, LoopPatch, get_timestamp, Mood
 
 from .manager_conversation import ConvoManager
+from .manager_data import DataManager
 from .generator import Generator
 
 # END IMPORT BLOCK ###########################################################
@@ -26,12 +27,13 @@ class MainLoop:
         self.__results: dict[int, ConvoText] = {}
         self._thread = threading.Thread(target=self._run_loop_in_thread)
         self._thread.daemon = True  # to end the loop if the main thread ends
-        self._show_status = True
         self.state = LoopPatch.State.loading
 
         # Model Props
         self._convo_manager = ConvoManager()
+        self._data_manager = DataManager()
         self._generator = Generator()
+        self._classifier = None
 
     async def _loop(self) -> None:
         """
@@ -52,26 +54,44 @@ class MainLoop:
                 while not self.__inference_queue.empty():
                     input_data: ConvoText = await self.__inference_queue.get()
 
-                    # get the input string from the convo manager
-                    input_str = self._convo_manager.get_inference_string(input_data)
+                    # 0) get datapoint from data manager
+                    datapoint = self._data_manager.get_datapoint(input_data)
 
-                    # run inference on input string
+                    # 1) get classification for input_data -> mood
+                    # mood = self._classifier.infer(input_data.text)
+                    # datapoint.mood = mood
+
+                    # 2) instruct generator to create response -> response
+                    context = self._convo_manager.get_context(Mood.neutral)
+                    datapoint.context = context
+
+                    # get the input string for the generator
+                    input_str = self._convo_manager.get_gen_inference_str(
+                        input_data, Mood.neutral, context
+                    )
+
+                    # generator: run inference on input string
                     raw = self._generator.infer(input_str)
 
-                    # filter out the input string from the result
-                    result = self._convo_manager.filter_response(raw)
+                    # filter response
+                    response = self._convo_manager.filter_response(raw)
+                    datapoint.response = response
 
                     # create response object
-                    response = ConvoText(
+                    response_object = ConvoText(
                         convoID=input_data.convoID,
                         messageID=input_data.messageID,
-                        text=result,
+                        text=response,
                         timestamp=get_timestamp(),
                         type=ConvoText.ConvoType.response,
                     )
 
                     # make results available in the dictionary
-                    self.__results[input_data.messageID] = response
+                    self.__results[input_data.messageID] = response_object
+
+                    # 3) add new datapoint to training database
+                    self._data_manager.add(datapoint)
+
                     self.__inference_queue.task_done()
                 # END INFERENCE FLOW #############################################
 

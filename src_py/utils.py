@@ -169,7 +169,7 @@ class Mood(str, Enum):
     lie = "lie"
 
 
-class SpecTok:
+class SpecialTokens:
     """
     Internal datamodel to store special tokens.
     """

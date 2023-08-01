@@ -4,8 +4,7 @@ import datetime
 import random
 
 # Local Imports
-from . import __backend_config as config
-from .utils import ConvoText, Mood, SpecTok
+from .utils import ConvoText, Mood, SpecialTokens
 
 # END IMPORT BLOCK ###########################################################
 
@@ -23,64 +22,7 @@ class ConvoManager:
         self.current_input = ""
 
     # Public Methods ###########################################################
-    def get_inference_string(self, input: ConvoText, mood=Mood.neutral) -> str:
-        """
-        Returns the conversation history as a single string.
-        """
-        # Check if the conversation has changed
-        if input.convoID != self.convoID:
-            self.convoID = input.convoID
-            self.history = []
-
-        # Check if the input is empty
-        if input.text == "":
-            input.text = SpecTok.greet
-
-        # Build the input string
-        self.current_input = (
-            SpecTok.context
-            + self._get_context(mood)
-            + self._get_history()
-            + SpecTok.input
-            + input.text
-            + SpecTok.response
-        )
-
-        # Update the history with the input
-        self._update_history(input.text)
-
-        # if config.DEBUG_MSG:
-        #     print(f"Input string:\n {self.current_input}")
-
-        return self.current_input
-
-    def filter_response(self, response: str) -> str:
-        """
-        Filters out the special tokens from the response.
-        Only works if get_inference_string() was called before on this instance.
-        """
-        filtered = response.replace(self.current_input, "").replace(SpecTok.endseq, "")
-        processed = self._postprocess(filtered)
-        # if config.DEBUG_MSG:
-        #     print(f"Filtered result:\n {processed}")
-        self._update_history(processed)
-        return processed
-
-    # def get_training_example(self, mood: str, input: str, response: str) -> str:
-    #     return (
-    #         S
-    #         + mood
-    #         + SpecTok
-    #         + input
-    #         + SpecTok.response
-    #         + response
-    #         + SpecTok.endseq
-    #     )
-
-    # END Public Methods #######################################################
-
-    # PRIVATE METHODS ##########################################################
-    def _get_context(self, mood: Mood) -> str:
+    def get_context(self, mood: Mood) -> str:
         """
         Returns a context string based on the mood.
         """
@@ -121,6 +63,72 @@ class ConvoManager:
         elif mood == Mood.lie:
             return random.choice(LIE)
 
+    def get_gen_inference_str(
+        self, input: ConvoText, mood=Mood.neutral, context=None
+    ) -> str:
+        """
+        Returns the conversation with history as a single string.
+        """
+        # Get context if None
+        if context is None:
+            context = self.get_context(mood)
+
+        # Check if the conversation has changed
+        if input.convoID != self.convoID:
+            self.convoID = input.convoID
+            self.history = []
+
+        # Check if the input is empty
+        if input.text == "":
+            input.text = SpecialTokens.greet
+
+        # Build the input string
+        self.current_input = (
+            SpecialTokens.context
+            + context
+            + self._get_history()
+            + SpecialTokens.input
+            + input.text
+            + SpecialTokens.response
+        )
+
+        # Update the history with the input
+        self._update_history(input.text)
+
+        # if config.DEBUG_MSG:
+        #     print(f"Input string:\n {self.current_input}")
+
+        return self.current_input
+
+    def filter_response(self, response: str) -> str:
+        """
+        Filters out the special tokens from the response.
+        Only works if get_inference_string() was called before on this instance.
+        """
+        filtered = response.replace(self.current_input, "").replace(
+            SpecialTokens.endseq, ""
+        )
+        processed = self._postprocess(filtered)
+        # if config.DEBUG_MSG:
+        #     print(f"Filtered result:\n {processed}")
+        self._update_history(processed)
+        return processed
+
+    # def get_training_example(self, mood: str, input: str, response: str) -> str:
+    #     return (
+    #         S
+    #         + mood
+    #         + SpecTok
+    #         + input
+    #         + SpecTok.response
+    #         + response
+    #         + SpecTok.endseq
+    #     )
+
+    # END Public Methods #######################################################
+
+    # PRIVATE METHODS ##########################################################
+
     def _update_history(self, append: str) -> None:
         """
         Updates the conversation history with the new input.
@@ -138,7 +146,7 @@ class ConvoManager:
         # Iterate through the history array
         for i, entry in enumerate(self.history):
             # Determine which token to use based on whether the index is even or odd
-            token = SpecTok.input if i % 2 == 0 else SpecTok.response
+            token = SpecialTokens.input if i % 2 == 0 else SpecialTokens.response
 
             # Append the token and entry to the concatenated_history
             concatenated_history += token + entry

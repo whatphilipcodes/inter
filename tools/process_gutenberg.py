@@ -3,7 +3,7 @@ import regex
 from typing import List
 
 import tools.__tools_config as cfg
-from tools.classes.parquet_processor import ParquetProcessor
+from tools.parquet_processor import ParquetProcessor
 from src_py.utils import get_timestamp, InterData, Mood
 
 
@@ -127,7 +127,7 @@ def find_context(text: str, prior_dialogue: str, num_paragraphs=1) -> str:
 
     # If prior_dialogue is not found, return an empty string
     if index_of_prior_dialogue == -1:
-        print(f"Error: Prior dialogue '{prior_dialogue}' not found.")
+        # print(f"Error: Prior dialogue '{prior_dialogue}' not found.")
         return ""
 
     # Extracting the preceding paragraphs
@@ -212,6 +212,8 @@ def main():
     for path in filepaths:
         files.append(read_file_as_string(path))
 
+    print(f"Found {len(files)} files.")
+
     for file in files:
         file = remove_header(file)
         file = remove_footer(file)
@@ -219,7 +221,7 @@ def main():
     pp = ParquetProcessor()
     extract_conversations(files, pp, 3)
     print(pp.get_preview(20))
-    pp.save_dataframe("vintage-novelist", shuffle=True, split=True)
+    pp.save_dataframe(shuffle=True, split=True)
 
 
 if __name__ == "__main__":

@@ -113,15 +113,21 @@ class DataManager:
 
     def _cleanup_datapath(self) -> None:
         folders = 0
+
         subfoldernames = os.listdir(self.data_path)
         subfolders = []
         for name in subfoldernames:
+            if name == config.DATA_SUB_PROTECTED:
+                continue
             subfolders.append(os.path.join(self.data_path, name))
+
         subfolders.sort(key=lambda x: os.path.getmtime(x))
+
         if len(subfolders) > config.MAX_DATA_FOLDERS:
             for folder in subfolders[: -config.MAX_DATA_FOLDERS]:
                 remove_folder(os.path.join(self.data_path, folder))
                 folders += 1
+
         if config.DEBUG_MSG:
             print(f"Data folder cleanup complete.\nRemoved {folders} folders.")
 

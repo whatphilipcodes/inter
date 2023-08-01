@@ -62,11 +62,19 @@ class Generator:
             )
 
         raw = self.tokenizer.decode(generated_tokens[0], skip_special_tokens=False)
+
+        # handle encoding errors
+        try:
+            encoded_text = raw.encode("utf-8")
+        except UnicodeEncodeError as e:
+            # Handle the exception here (e.g., replace the problematic character)
+            encoded_text = raw.encode("utf-8", errors="replace")
+
         if config.DEBUG_MSG:
-            print(f"Raw result:\n {raw}")
+            print(f"Raw result:\n {encoded_text}")
 
         if return_tokens:
-            return raw, generated_tokens
+            return encoded_text, generated_tokens
 
         # Decode and return the generated text
         return raw

@@ -3,6 +3,8 @@
 import datetime
 import os, sys
 import torch
+from bidict import bidict
+
 from pydantic import BaseModel
 from typing import Optional
 from enum import Enum
@@ -195,6 +197,10 @@ class SpecialTokens:
     response = "<|response|>"
     greet = "<|greet|>"
     endseq = "<|endoftext|>"
+
+
+class ClassifierLabels:
+    dict = bidict({"forlang": 0, "neutral": 1, "truth": 2, "doubt": 3, "lie": 4})
 
 
 class InterData(BaseModel):

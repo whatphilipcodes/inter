@@ -38,7 +38,9 @@ class Classifier:
         self.device = get_cuda()
         self.model = DebertaV2ForSequenceClassification.from_pretrained(
             self.modelpath, num_labels=18
-        ).to(self.device)
+        ).to(  # type: ignore
+            self.device
+        )
         self.tokenizer = DebertaV2Tokenizer.from_pretrained(self.modelpath)
         self.data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
 
@@ -154,7 +156,7 @@ class Classifier:
         )
 
     # yes, i know how unneccesary the async is, but I hate this tqdm 'oh there was still one iteration left' ruining my console view
-    async def evaluate(self):
+    def evaluate(self):
         self.model.eval()
         print("Evaluating...")
         progress_bar = tqdm(range(len(self.eval_dataloader)))
@@ -172,7 +174,7 @@ class Classifier:
         results = self.metric.compute()
         return results
 
-    async def infer(self, text: str):
+    def infer(self, text: str):
         self.model.eval()
 
         # Get input text and tokenize

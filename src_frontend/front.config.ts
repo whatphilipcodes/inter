@@ -7,7 +7,7 @@ const config = {
 	maxInputLength: 128,
 	showHiddenInput: true,
 	demoPlain: true,
-	apiTimeout: 60000,
+	apiTimeout: 120000,
 	idleTimeout: 20000,
 	botStarts: true,
 }

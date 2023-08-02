@@ -9,6 +9,7 @@ from .utils import ConvoText, LoopPatch, get_timestamp, Mood
 
 from .manager_conversation import ConvoManager
 from .manager_data import DataManager
+from .classifier import Classifier
 from .generator import Generator
 
 # END IMPORT BLOCK ###########################################################
@@ -32,11 +33,14 @@ class MainLoop:
         # Model Props
         self._convo_manager = ConvoManager()
         self._data_manager = DataManager()
+        self._classifier = Classifier("deberta-lang", "europarl_select")
         self._generator = Generator()
-        self._classifier = None
 
         # Loop Flags
         self._enter_state = True
+
+        # Inference Props
+        self._active_split = self._data_manager.get_split()
 
     async def _loop(self) -> None:
         """
@@ -50,9 +54,9 @@ class MainLoop:
                 if self._enter_state:
                     self._enter_training()
                 # TRAINING FLOW ##################################################
-                if config.DEBUG_MSG:
-                    print("Training...")
-                await asyncio.sleep(2)  # Simulate some work
+                # TODO: get training data from data manager
+                self._classifier.training_step()
+                # self._generator.training_step()
                 # END TRAINING FLOW ##############################################
 
             if self.state == LoopPatch.State.inference:
@@ -67,7 +71,8 @@ class MainLoop:
                     datapoint = self._data_manager.get_datapoint(input_data)
 
                     # 1) get classification for input_data -> mood
-                    # mood = self._classifier.infer(input_data.text)
+                    mood = self._classifier.infer(input_data.text)
+                    print(mood)
                     # datapoint.mood = mood
 
                     # 2) instruct generator to create response -> response
@@ -100,7 +105,7 @@ class MainLoop:
                     self.__results[input_data.messageID] = response_object
 
                     # 3) add new datapoint to training database & save
-                    self._data_manager.add(datapoint)
+                    self._data_manager.add(datapoint, self._active_split)
 
                     self.__inference_queue.task_done()
                 # END INFERENCE FLOW #############################################
@@ -171,3 +176,5 @@ class MainLoop:
         self._enter_state = False
         if config.DEBUG_MSG:
             print("Running inference...")
+        # update the active split
+        self._active_split = self._data_manager.get_split()

@@ -81,10 +81,10 @@ class MainLoop:
                     )
 
                     # generator: run inference on input string
-                    raw = self._generator.infer(input_str)
+                    utf = self._generator.infer(input_str)
 
                     # filter out response
-                    response = self._convo_manager.filter_response(raw)
+                    response = self._convo_manager.filter_response(utf)
                     datapoint.response = response
 
                     # create response object

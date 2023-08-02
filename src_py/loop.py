@@ -50,7 +50,7 @@ class MainLoop:
             print("Loop started...")
         while True:
             if self.state == LoopPatch.State.training:
-                # ENTER TRAINING FLOW ############################################
+                # ENTER TRAINING CALLBACK ########################################
                 if self._enter_state:
                     self._enter_training()
                 # TRAINING FLOW ##################################################
@@ -60,7 +60,7 @@ class MainLoop:
                 # END TRAINING FLOW ##############################################
 
             if self.state == LoopPatch.State.inference:
-                # ENTER INFERENCE FLOW ###########################################
+                # ENTER INFERENCE CALLBACK #######################################
                 if self._enter_state:
                     self._enter_inference()
                 # INFERENCE FLOW #################################################

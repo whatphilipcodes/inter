@@ -10,7 +10,8 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification, Data
 from datasets import load_dataset, load_metric
 
 # Local Imports
-from src_py.utils import get_resource_path
+import tools.__tools_config as cfg
+from src_py.utils import get_resource_path, ClassifierLabels
 
 # END IMPORT BLOCK ###########################################################
 
@@ -21,37 +22,14 @@ def run():
     """
     print("Transformers at " + transformers.__version__)  # type: ignore
 
-    MODELPATH = os.path.join(get_resource_path(), "models", "deberta-v3-base")
-    DATAPATH = os.path.join(get_resource_path(), "data", "europarl_select")
-    OUTPUTPATH = os.path.join(get_resource_path(), "models", "forgot-to-name")
-
     # Load the dataset
-    dataset = load_dataset("parquet", data_dir=DATAPATH)
+    dataset = load_dataset("parquet", data_dir=cfg.CLS_DATA_DIR)
 
     # Load the tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(MODELPATH)
+    tokenizer = AutoTokenizer.from_pretrained(cfg.CLS_IN_DIR_MODEL)
 
     # Preprocess functions
-    encode_mappings = {
-        "cs": 0,
-        "da": 1,
-        "de": 2,
-        "es": 3,
-        "et": 4,
-        "fi": 5,
-        "fr": 6,
-        "hu": 7,
-        "it": 8,
-        "lt": 9,
-        "lv": 10,
-        "nl": 11,
-        "pl": 12,
-        "pt": 13,
-        "ro": 14,
-        "sk": 15,
-        "sl": 16,
-        "sv": 17,
-    }
+    encode_mappings = ClassifierLabels.dict
 
     def preprocess_function(example):
         output_dict = tokenizer(example["text"], max_length=128, truncation=True)
@@ -62,7 +40,9 @@ def run():
     tokenized_dataset = dataset.map(preprocess_function, batched=True, remove_columns=dataset["train"].column_names)  # type: ignore
 
     # Load the model
-    model = AutoModelForSequenceClassification.from_pretrained(MODELPATH, num_labels=18)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        cfg.CLS_IN_DIR_MODEL, num_labels=len(encode_mappings)
+    )
     data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
     # Define the metric
@@ -79,7 +59,7 @@ def run():
 
     # Define the training arguments
     training_args = TrainingArguments(
-        output_dir=OUTPUTPATH,
+        output_dir=cfg.CLS_OUT_DIR_MODEL,
         num_train_epochs=2,
         learning_rate=2e-5,
         warmup_steps=200,
@@ -103,3 +83,7 @@ def run():
     # Train the model
     train_metrics = trainer.train().metrics
     trainer.save_metrics("train", train_metrics)
+
+
+if __name__ == "__main__":
+    run()

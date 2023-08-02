@@ -14,8 +14,8 @@ IN_PATH_RAW_CLASSIFIER = os.path.join(
 )
 
 # classes/parquet_processor.py
-IN_DIR_PARQUET = os.path.join(get_resource_path(), "data", "vintage-novelist")
-OUT_DIR_PARQUET = os.path.join(get_resource_path(), "data", "vintage-novelist")
+IN_DIR_PARQUET = os.path.join(get_resource_path(), "data", "novelist")
+OUT_DIR_PARQUET = os.path.join(get_resource_path(), "data", "novelist")
 
 # convert_dataset.py
 OUT_DIR_SET = os.path.join(get_resource_path(), "data", "inter", "base")

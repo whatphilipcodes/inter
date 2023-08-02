@@ -104,7 +104,7 @@ def get_host_info() -> str | None:
 # analogous to -> utils/misc.ts -> getTimestamp()
 def get_timestamp() -> str:
     """
-    Returns a timestamp in the format: YYYY-MM-DD_HH:MM:SS:MS
+    Returns a timestamp in the format: YYYY-MM-DD_HH-MM-SS-MS
     """
     return datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f")
 
@@ -176,15 +176,21 @@ class LoopPatch(BaseModel):
 
 # INTERNAL DATAMODELS ########################################################
 class Mood(str, Enum):
-    """
-    Internal datamodel to store classifier results.
-    """
-
     forlang = "forlang"
     neutral = "neutral"
     truth = "truth"
     doubt = "doubt"
     lie = "lie"
+
+    def __str__(self):
+        return self.value
+
+    @classmethod
+    def from_string(cls, value_str):
+        for member in cls:
+            if member.value == value_str:
+                return member
+        raise ValueError(f"No enum member with the value '{value_str}' found.")
 
 
 class SpecialTokens:

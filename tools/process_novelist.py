@@ -7,6 +7,25 @@ from tools.parquet_processor import ParquetProcessor
 from src_py.utils import get_timestamp, InterData, Mood
 
 
+def main():
+    filepaths = get_txt_in_directory(cfg.IN_PATH_RAW_GENERATOR)
+    files = []
+
+    for path in filepaths:
+        files.append(read_file_as_string(path))
+
+    print(f"Found {len(files)} files.")
+
+    for file in files:
+        file = remove_header(file)
+        file = remove_footer(file)
+
+    pp = ParquetProcessor()
+    extract_conversations(files, pp, 3)
+    print(pp.get_preview(20))
+    pp.save_dataframe(shuffle=True, split=True)
+
+
 def get_txt_in_directory(directory_path):
     "Returns a list of txt files in a directory."
     try:
@@ -203,25 +222,6 @@ def extract_conversations(
 
             for x in inter_data:
                 parproc.add_row(x)
-
-
-def main():
-    filepaths = get_txt_in_directory(cfg.IN_PATH_RAW_GENERATOR)
-    files = []
-
-    for path in filepaths:
-        files.append(read_file_as_string(path))
-
-    print(f"Found {len(files)} files.")
-
-    for file in files:
-        file = remove_header(file)
-        file = remove_footer(file)
-
-    pp = ParquetProcessor()
-    extract_conversations(files, pp, 3)
-    print(pp.get_preview(20))
-    pp.save_dataframe(shuffle=True, split=True)
 
 
 if __name__ == "__main__":

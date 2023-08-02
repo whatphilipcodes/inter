@@ -32,7 +32,9 @@ class Classifier:
     def __init__(self, modelroot: str, dataroot: str):
         # File paths
         self.modelpath = os.path.join(get_resource_path(), "models", modelroot)
-        self.datapath = os.path.join(get_resource_path(), "data", dataroot)
+        self.datapath = os.path.join(
+            get_resource_path(), "data_raw", "classifier", dataroot
+        )
 
         # Load infrastructure
         self.device = get_cuda()

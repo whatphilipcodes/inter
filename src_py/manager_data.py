@@ -72,6 +72,7 @@ class DataManager:
         return selected_split
 
     def add(self, datapoint: InterData, split: str) -> None:
+        print(datapoint.dict())
         self.database[split] = self.database[split].add_item(datapoint.dict())  # type: ignore
         if config.DEBUG_MSG:
             print(f"Added datapoint {self.database[split][-1]} to split {split}.")

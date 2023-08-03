@@ -60,6 +60,25 @@ class ParquetProcessor:
             by=[self.conID_col_name, self.msgID_col_name], inplace=True
         )
 
+    def _split_by_col(
+        self, col: str, test_ratio: float = 0.2
+    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        unique_values = self.dataset[col].unique()
+
+        # Separate the dataset for each unique value in the column
+        datasets = [self.dataset[self.dataset[col] == value] for value in unique_values]
+
+        # Split each of the separated datasets into train and test sets
+        train_test_sets = [
+            train_test_split(dataset, test_size=test_ratio) for dataset in datasets
+        ]
+
+        # Concatenate the train sets and the test sets separately
+        train_data = pd.concat([train_set for train_set, test_set in train_test_sets])
+        test_data = pd.concat([test_set for train_set, test_set in train_test_sets])
+
+        return train_data, test_data
+
     def _split_dataset(
         self, test_ratio: float = 0.2, disregard_conversations: bool = False
     ) -> Tuple[pd.DataFrame, pd.DataFrame]:
@@ -88,19 +107,33 @@ class ParquetProcessor:
         self.dataset = pd.read_parquet(os.path.join(cfg.IN_DIR_PARQUET, filename))
 
     def save_dataframe(
-        self, shuffle: bool, split: bool, disregard_conversations: bool = False
+        self,
+        shuffle: bool,
+        split: bool,
+        split_col: str | None = None,
+        disregard_conversations: bool = False,
     ) -> None:
         self.check_folder(self.out_path)
         if shuffle:
             if not disregard_conversations:
                 self._shuffle_conversations()
-            else:
-                self.dataset = self.dataset.sample(frac=1).reset_index(drop=True)
         if split:
-            # Optionally perform train-test split before saving
-            train_data, test_data = self._split_dataset(
-                disregard_conversations=disregard_conversations
-            )
+            if split_col is not None:
+                train_data, test_data = self._split_by_col(split_col)
+                print(
+                    f"label distribution in train:\n{train_data.groupby(split_col).count()}"
+                )
+                print(
+                    f"label distribution in test:\n{test_data.groupby(split_col).count()}"
+                )
+                if disregard_conversations:
+                    train_data = self._shuffle(train_data)
+                    test_data = self._shuffle(test_data)
+            else:
+                # Optionally perform train-test split before saving
+                train_data, test_data = self._split_dataset(
+                    disregard_conversations=disregard_conversations
+                )
             train_data.to_parquet(
                 os.path.join(self.out_path, f"train_.parquet"),
                 index=False,
@@ -117,3 +150,6 @@ class ParquetProcessor:
     def check_folder(self, path: str) -> None:
         if not os.path.exists(path):
             os.makedirs(path)
+
+    def _shuffle(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        return dataset.sample(frac=1).reset_index(drop=True)

@@ -56,6 +56,9 @@ def main():
     )
 
     forlang_df = pd.concat([europal_select, rand_keystrokes_df], ignore_index=True)
+    # add "context" column
+    forlang_df["context"] = ""
+
     all_df = pd.concat([fever_select, forlang_df], ignore_index=True)
 
     print(all_df.head())
@@ -63,7 +66,6 @@ def main():
     print(all_df.groupby("mood").count())
 
     for entry in tqdm(all_df.itertuples(), total=len(all_df)):
-        # tqdm progress bar
         data = InterData(
             timestamp=get_timestamp(),
             conID=0,
@@ -76,7 +78,9 @@ def main():
         pp.add_row(data)
 
     pp.finalize_dataset()
-    pp.save_dataframe(True, True, True)
+    pp.save_dataframe(
+        shuffle=True, split=True, split_col="mood", disregard_conversations=True
+    )
 
 
 # create random keystrokes

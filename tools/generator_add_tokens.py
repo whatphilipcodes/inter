@@ -1,13 +1,16 @@
 # idea -> https://medium.com/huggingface/how-to-build-a-state-of-the-art-conversational-ai-with-transfer-learning-2d818ac26313
+import os
 from transformers import GPTNeoXForCausalLM, GPTNeoXTokenizerFast
 from typing import List
-import tools.__tools_config as cfg
 from src_py.utils import SpecialTokens
 
-tokenizer: GPTNeoXTokenizerFast = GPTNeoXTokenizerFast.from_pretrained(
-    cfg.IN_PATH_TOKEN_MOD
-)
-model: GPTNeoXForCausalLM = GPTNeoXForCausalLM.from_pretrained(cfg.IN_PATH_TOKEN_MOD)  # type: ignore
+# TOOL SETTINGS #################################################
+IN_MODEL = os.path.join("resources_dev", "models_origin", "pythia-1b-deduped")
+OUT_MODEL = os.path.join("resources_dev", "models_tuned", "inter-generator")
+#################################################################
+
+tokenizer: GPTNeoXTokenizerFast = GPTNeoXTokenizerFast.from_pretrained(IN_MODEL)
+model: GPTNeoXForCausalLM = GPTNeoXForCausalLM.from_pretrained(IN_MODEL)  # type: ignore
 
 # Mod Overview:
 # - <|endoftext|> to indicate the end of the sequence -> already in tokenizer.json
@@ -38,6 +41,6 @@ if num_added_tokens > 0:
 print(f"New number of tokens: {model.resize_token_embeddings().num_embeddings}")
 
 # Save the modified tokenizer and model
-tokenizer.save_pretrained(cfg.OUT_PATH_TOKEN_MOD)
-model.save_pretrained(cfg.OUT_PATH_TOKEN_MOD)
-print(f"Saved modified tokenizer and model to {cfg.OUT_PATH_TOKEN_MOD}")
+tokenizer.save_pretrained(OUT_MODEL)
+model.save_pretrained(OUT_MODEL)
+print(f"Saved modified tokenizer and model to {OUT_MODEL}")

@@ -2,19 +2,21 @@ import os
 import pandas as pd
 from src_py.utils import Mood, InterData, get_timestamp
 from tools.parquet_processor import ParquetProcessor
-import tools.__tools_config as cfg
 from tqdm import tqdm
+
+# TOOL SETTINGS #################################################
+IN_EUROPARL = os.path.join("resources_dev", "data_origin", "europarl_select")
+IN_FEVER = os.path.join("resources_dev", "data_origin", "nli_fever")
+OUT_PATH = os.path.join("resources_dev", "data_Sets", "wisdom-parquet")
+#################################################################
 
 
 def main():
     # Load Processor
-    print(cfg.OUT_PATH_WISDOM)
-    pp = ParquetProcessor(cfg.OUT_PATH_WISDOM)
+    pp = ParquetProcessor(OUT_PATH)
 
-    europal = pd.read_parquet(cfg.IN_PATH_RAW_EUROPARL)  # -> filtered langs, no english
-    fever = pd.read_json(
-        os.path.join(cfg.IN_PATH_RAW_FEVER, "train_fitems.jsonl"), lines=True
-    )
+    europal = pd.read_parquet(IN_EUROPARL)  # -> filtered langs, no english
+    fever = pd.read_json(os.path.join(IN_FEVER, "train_fitems.jsonl"), lines=True)
 
     # delete all columns except "query" and "label"
     fever.drop(["cid", "fid", "verifiable"], axis=1, inplace=True)

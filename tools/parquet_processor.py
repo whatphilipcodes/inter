@@ -3,8 +3,6 @@ import random
 import pandas as pd
 from typing import Tuple, List
 from sklearn.model_selection import train_test_split
-
-import tools.__tools_config as cfg
 from src_py.utils import InterData
 
 
@@ -16,14 +14,10 @@ class ParquetProcessor:
 
     rows_list: List[dict]  # List to store rows as dictionaries
 
-    def __init__(self, out_path: str, in_path: str | None = None) -> None:
-        if not in_path:
-            colums = getattr(InterData, "__annotations__", {})
-            self.dataset = pd.DataFrame(columns=list(colums.keys()))
-            self.rows_list = []  # Initializing the list to store rows
-        else:
-            self.open_dataframe(in_path)
-
+    def __init__(self, out_path: str) -> None:
+        colums = getattr(InterData, "__annotations__", {})
+        self.dataset = pd.DataFrame(columns=list(colums.keys()))
+        self.rows_list = []  # Initializing the list to store rows
         self.out_path = out_path
 
     def add_row(self, data: InterData) -> None:
@@ -102,9 +96,6 @@ class ParquetProcessor:
 
     def get_preview(self, n: int = 5) -> pd.DataFrame:
         return self.dataset.head(n)
-
-    def open_dataframe(self, filename: str) -> None:
-        self.dataset = pd.read_parquet(os.path.join(cfg.IN_DIR_PARQUET, filename))
 
     def save_dataframe(
         self,

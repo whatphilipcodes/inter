@@ -2,13 +2,17 @@ import os
 import regex
 from typing import List
 
-import tools.__tools_config as cfg
 from tools.parquet_processor import ParquetProcessor
 from src_py.utils import get_timestamp, InterData, Mood
 
+# TOOL SETTINGS #################################################
+IN_GUTENBERG = os.path.join("resources_dev", "gutenberg")
+OUT_PATH = os.path.join("resources_dev", "data_Sets", "novelist-parquet")
+#################################################################
+
 
 def main():
-    filepaths = get_txt_in_directory(cfg.IN_PATH_RAW_GENERATOR)
+    filepaths = get_txt_in_directory(IN_GUTENBERG)
     files = []
 
     for path in filepaths:
@@ -20,7 +24,7 @@ def main():
         file = remove_header(file)
         file = remove_footer(file)
 
-    pp = ParquetProcessor()
+    pp = ParquetProcessor(out_path=OUT_PATH)
     extract_conversations(files, pp, 3)
     print(pp.get_preview(20))
     pp.save_dataframe(shuffle=True, split=True)

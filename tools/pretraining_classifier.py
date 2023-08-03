@@ -1,19 +1,16 @@
-# IMPORT BLOCK ###############################################################
-
-# Lib Imports
 import os
 import numpy as np
 
 import transformers
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, DataCollatorWithPadding, TrainingArguments, Trainer  # type: ignore
-
 from datasets import load_dataset, load_metric
+from src_py.utils import ClassifierLabels
 
-# Local Imports
-import tools.__tools_config as cfg
-from src_py.utils import get_resource_path, ClassifierLabels
-
-# END IMPORT BLOCK ###########################################################
+# TOOL SETTINGS #################################################
+IN_MODEL = os.path.join("resources_dev", "models_origin", "deberta-v3-base")
+IN_DATA = os.path.join("resources_dev", "data_sets", "wisdom")
+OUT_MODEL = os.path.join("resources_dev", "models_tuned", "inter-classifier")
+#################################################################
 
 
 def run():
@@ -23,10 +20,10 @@ def run():
     print("Transformers at " + transformers.__version__)  # type: ignore
 
     # Load the dataset
-    dataset = load_dataset("parquet", data_dir=cfg.CLS_DATA_DIR)
+    dataset = load_dataset("parquet", data_dir=IN_DATA)
 
     # Load the tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(cfg.CLS_IN_DIR_MODEL)
+    tokenizer = AutoTokenizer.from_pretrained(IN_MODEL)
 
     # Preprocess functions
     encode_mappings = ClassifierLabels.dict
@@ -41,7 +38,7 @@ def run():
 
     # Load the model
     model = AutoModelForSequenceClassification.from_pretrained(
-        cfg.CLS_IN_DIR_MODEL, num_labels=len(encode_mappings)
+        IN_MODEL, num_labels=len(encode_mappings)
     )
     data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
@@ -59,7 +56,7 @@ def run():
 
     # Define the training arguments
     training_args = TrainingArguments(
-        output_dir=cfg.CLS_OUT_DIR_MODEL,
+        output_dir=OUT_MODEL,
         num_train_epochs=2,
         learning_rate=2e-5,
         warmup_steps=200,

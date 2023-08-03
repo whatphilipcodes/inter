@@ -132,16 +132,16 @@ class ParquetProcessor:
                     disregard_conversations=disregard_conversations
                 )
             train_data.to_parquet(
-                os.path.join(self.out_path, f"train_.parquet"),
+                os.path.join(self.out_path, f"train.parquet"),
                 index=False,
             )
             test_data.to_parquet(
-                os.path.join(self.out_path, f"test_.parquet"),
+                os.path.join(self.out_path, f"test.parquet"),
                 index=False,
             )
         else:
             self.dataset.to_parquet(
-                os.path.join(self.out_path, f"inter.parquet"), index=False
+                os.path.join(self.out_path, f"data.parquet"), index=False
             )
 
     def check_folder(self, path: str) -> None:

@@ -1,5 +1,6 @@
 import os
 import regex
+from tqdm import tqdm
 from typing import List
 
 from tools.parquet_processor import ParquetProcessor
@@ -193,9 +194,9 @@ def create_inter_data(
 
 
 def extract_conversations(
-    text: List[str], parproc: ParquetProcessor, min_words=1, min_turns=2
+    files: List[str], parproc: ParquetProcessor, min_words=1, min_turns=2
 ) -> None:
-    for file in text:
+    for file in tqdm(files, total=len(files)):
         # Splitting text into contexts (paragraphs)
         candidates = regex.split(r"(\n{3,})|(\* +\* +\* +\* +\** *\n)", file)
 

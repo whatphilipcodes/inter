@@ -6,8 +6,8 @@ from tools.parquet_processor import ParquetProcessor
 from src_py.utils import get_timestamp, InterData, Mood
 
 # TOOL SETTINGS #################################################
-IN_GUTENBERG = os.path.join("resources_dev", "gutenberg")
-OUT_PATH = os.path.join("resources_dev", "data_Sets", "novelist-parquet")
+IN_GUTENBERG = os.path.join("resources_dev", "data_origin", "gutenberg")
+OUT_PATH = os.path.join("resources_dev", "data_sets", "novelist-parquet")
 #################################################################
 
 
@@ -26,7 +26,8 @@ def main():
 
     pp = ParquetProcessor(out_path=OUT_PATH)
     extract_conversations(files, pp, 3)
-    print(pp.get_preview(20))
+    pp.finalize_dataset()
+    print("Preview:\n", pp.get_preview(20))
     pp.save_dataframe(shuffle=True, split=True)
 
 

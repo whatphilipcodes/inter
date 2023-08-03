@@ -30,8 +30,10 @@ class ParquetProcessor:
         self.rows_list = []  # Clearing the list to release memory
 
     def get_convo_id(self) -> int:
-        id = self.dataset[self.conID_col_name].max()
-        if pd.isna(id):
+        if len(self.rows_list) == 0:
+            return int(0)
+        id = self.rows_list[-1].get(self.conID_col_name)
+        if id is None:
             return int(0)
         return int(id) + 1
 
@@ -104,6 +106,10 @@ class ParquetProcessor:
         split_col: str | None = None,
         disregard_conversations: bool = False,
     ) -> None:
+        if (self.dataset is None) or (self.dataset.empty):
+            raise Exception(
+                "No data to save. Call the finalize_dataset() method before saving."
+            )
         self.check_folder(self.out_path)
         if shuffle:
             if not disregard_conversations:
@@ -144,3 +150,7 @@ class ParquetProcessor:
 
     def _shuffle(self, dataset: pd.DataFrame) -> pd.DataFrame:
         return dataset.sample(frac=1).reset_index(drop=True)
+
+
+if __name__ == "__main__":
+    print("This is script is supposed to be run as a module from other scripts.")

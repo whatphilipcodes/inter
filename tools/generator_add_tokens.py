@@ -6,7 +6,7 @@ from src_py.utils import SpecialTokens
 
 # TOOL SETTINGS #################################################
 IN_MODEL = os.path.join("resources_dev", "models_origin", "pythia-1b-deduped")
-OUT_MODEL = os.path.join("resources_dev", "models_tuned", "inter-generator")
+OUT_MODEL = os.path.join("resources_dev", "models_tuned", "pythia-tok-mod")
 #################################################################
 
 tokenizer: GPTNeoXTokenizerFast = GPTNeoXTokenizerFast.from_pretrained(IN_MODEL)

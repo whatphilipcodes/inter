@@ -9,7 +9,8 @@ from .utils import ConvoText, LoopPatch, get_timestamp, Mood
 
 from .manager_conversation import ConvoManager
 from .manager_data import DataManager
-from .classifier import Classifier
+
+# from .classifier import Classifier
 from .generator import Generator
 
 # END IMPORT BLOCK ###########################################################
@@ -33,7 +34,7 @@ class MainLoop:
         # Model Props
         self._convo_manager = ConvoManager()
         self._data_manager = DataManager()
-        self._classifier = Classifier("deberta-lang", "europarl_select")
+        # self._classifier = Classifier("deberta-lang", "europarl_select")
         self._generator = Generator()
 
         # Loop Flags
@@ -55,7 +56,7 @@ class MainLoop:
                     self._enter_training()
                 # TRAINING FLOW ##################################################
                 # TODO: get training data from data manager
-                self._classifier.training_step()
+                # self._classifier.training_step()
                 # self._generator.training_step()
                 # END TRAINING FLOW ##############################################
 
@@ -71,8 +72,8 @@ class MainLoop:
                     datapoint = self._data_manager.get_datapoint(input_data)
 
                     # 1) get classification for input_data -> mood
-                    mood = self._classifier.infer(input_data.text)
-                    print(mood)
+                    # mood = self._classifier.infer(input_data.text)
+                    # print(mood)
                     # datapoint.mood = mood
 
                     # 2) instruct generator to create response -> response

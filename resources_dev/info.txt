@@ -1,0 +1,2 @@
+This folder is used to manage data sources and other resources that are not directly used by the application.
+It is not part of the build process and the contents are not inlcuded in the repository.

@@ -251,11 +251,11 @@ cython_debug/
 
 ### Custom Excludes ####################################
 
-# exclude dev resources folder
-resources_dev/
-
 # include .spec file for pyinstaller
 !entry.spec
 
-# # ignore assets folder
-# src_frontend/assets/
+# exclude actual resources
+resources/*
+!resources/info.txt
+resources_dev/*
+!resources_dev/info.txt

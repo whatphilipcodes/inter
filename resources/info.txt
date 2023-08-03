@@ -1,0 +1,9 @@
+In this folder you need to save the models and data that are used by the application.
+This directory is repoduced in the build process as app_root/resources/backend/resources.
+
+If you want to reproduce the application you need to save the models and data in this folder:
+
+```
+- data/inter/base -> baseline data used for finetuning
+- models -> finetuned deberta-v3-base cls and pythia-1b based gen
+```

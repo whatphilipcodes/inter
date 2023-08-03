@@ -21,7 +21,7 @@ datas += copy_metadata('accelerate')
 datas += copy_metadata('sentencepiece')
 datas += copy_metadata('pyarrow')
 
-datas += [('resources_dev', 'resources')]
+datas += [('resources', 'resources')]
 
 datas += collect_data_files('torch', include_py_files=True, includes=['**/*.py'])
 datas += collect_data_files('pyarrow', include_py_files=True, includes=['**/*.py'])

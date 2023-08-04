@@ -67,7 +67,7 @@ class Generator:
         try:
             encoded_text = raw.encode("utf-8")
         except UnicodeEncodeError as e:
-            # Handle the exception here (e.g., replace the problematic character)
+            # Handle the exception here (replace the problematic character)
             encoded_text = raw.encode("utf-8", errors="replace")
 
         if config.DEBUG_MSG:

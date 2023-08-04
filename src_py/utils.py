@@ -220,6 +220,8 @@ class InterData(BaseModel):
     input: str
     response: str
     mood: Mood
+    epoch_cls: int
+    epoch_gen: int
 
 
 # END INTERNAL DATAMODELS ####################################################

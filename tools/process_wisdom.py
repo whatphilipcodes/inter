@@ -76,6 +76,8 @@ def main():
             context=entry.context if entry.context else "",
             input=entry.input,
             response="",
+            epoch_cls=0,
+            epoch_gen=0,
         )
         pp.add_row(data)
 

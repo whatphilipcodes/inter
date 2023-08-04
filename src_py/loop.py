@@ -9,7 +9,6 @@ from .utils import ConvoText, LoopPatch, get_timestamp, Mood
 
 from .manager_conversation import ConvoManager
 from .manager_data import DataManager
-
 from .classifier import Classifier
 from .generator import Generator
 
@@ -104,7 +103,7 @@ class MainLoop:
                     # make results available in the dictionary
                     self.__results[input_data.messageID] = response_object
 
-                    # 3) add new datapoint to training database & save
+                    # 3) add datapoint to data manager (data manager will evaluate mood)
                     self._data_manager.add(datapoint, self._active_split)
 
                     self.__inference_queue.task_done()

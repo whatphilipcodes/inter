@@ -188,6 +188,8 @@ def create_inter_data(
                 input=input_dialogue,
                 response=response_dialogue,
                 mood=Mood.neutral,
+                epoch_cls=0,
+                epoch_gen=0,
             )
         )
     return inter_data

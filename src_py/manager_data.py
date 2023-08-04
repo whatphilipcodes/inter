@@ -31,7 +31,6 @@ class DataManager:
         disable_caching()
         self._setup_paths()
         self._load_database()
-        # print(self.database)
 
     # Public Methods ###########################################################
     def get_datapoint(self, input: ConvoText) -> InterData:
@@ -43,6 +42,8 @@ class DataManager:
             input=input.text,
             response="",
             mood=Mood.neutral,
+            epoch_cls=0,
+            epoch_gen=0,
         )
         return datapoint
 
@@ -72,10 +73,9 @@ class DataManager:
         return selected_split
 
     def add(self, datapoint: InterData, split: str) -> None:
-        print(datapoint.dict())
         self.database[split] = self.database[split].add_item(datapoint.dict())  # type: ignore
         if config.DEBUG_MSG:
-            print(f"Added datapoint {self.database[split][-1]} to split {split}.")
+            print(f"Added datapoint to split {split}:\n {self.database[split][-1]}.")
 
     def save(self) -> None:
         # save to disk
@@ -157,5 +157,26 @@ class DataManager:
 
         if config.DEBUG_MSG:
             print(f"Data folder cleanup complete.\nRemoved {folders} folders.")
+
+    # def _valid_data(self, data: InterData) -> bool:
+    #     if data.mood == Mood.doubt:
+    #         options = [True, False]
+    #         choice = random.choices(options, weights=[0.2, 0.8], k=1)[0]
+    #         if config.DEBUG_MSG:
+    #             print(f"Data is doubted, weighted random chose: {choice}")
+    #         return choice
+    #     if data.mood == Mood.neutral:
+    #         options = [True, False]
+    #         choice = random.choices(options, weights=[0.8, 0.2], k=1)[0]
+    #         if config.DEBUG_MSG:
+    #             print(f"Data is neutral, weighted random chose: {choice}")
+    #         return choice
+    #     if data.mood == Mood.truth:
+    #         if config.DEBUG_MSG:
+    #             print(f"Data identified as truth, returning True")
+    #         return True
+    #     if config.DEBUG_MSG:
+    #         print(f"Data identified as lie, returning False")
+    #     return False
 
     # END PRIVATE METHODS ######################################################

@@ -15,7 +15,7 @@ from src_py.utils import ClassifierLabels
 # TOOL SETTINGS #################################################
 IN_MODEL = os.path.join("resources_dev", "models_origin", "deberta-v3-base")
 IN_DATA = os.path.join("resources_dev", "data_sets", "wisdom")
-OUT_MODEL = os.path.join("resources_dev", "models_tuned", "inter-classifier-max")
+OUT_MODEL = os.path.join("resources_dev", "models_tuned", "inter-classifier-max-norand")
 #################################################################
 
 

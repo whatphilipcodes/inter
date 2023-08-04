@@ -14,13 +14,7 @@ from .utils import get_resource_path, get_cuda, ClassifierLabels, Mood
 
 class Classifier:
     def __init__(self):
-        # File paths
         self.modelpath = os.path.join(get_resource_path(), *config.CLS_PATH)
-        # self.datapath = os.path.join(
-        #     get_resource_path(), "data_raw", "classifier", dataroot
-        # )
-
-        # Load infrastructure
         self.device = get_cuda()
         self.model = DebertaV2ForSequenceClassification.from_pretrained(
             self.modelpath, num_labels=len(ClassifierLabels.dict)

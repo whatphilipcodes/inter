@@ -21,7 +21,6 @@ class Generator:
     def __init__(
         self,
     ) -> None:
-        # File paths
         self.modelpath = os.path.join(get_resource_path(), *config.GEN_PATH)
 
         # Config XXX ask if this is correct -> see tokenizer.json
@@ -71,7 +70,7 @@ class Generator:
             encoded_text = raw.encode("utf-8", errors="replace")
 
         if config.DEBUG_MSG:
-            print(f"Raw result:\n {encoded_text}")
+            print(f"Raw result:\n{encoded_text}")
 
         if return_tokens:
             return encoded_text, generated_tokens

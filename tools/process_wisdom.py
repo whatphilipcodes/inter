@@ -8,6 +8,7 @@ from tqdm import tqdm
 IN_EUROPARL = os.path.join("resources_dev", "data_origin", "europarl_select")
 IN_FEVER = os.path.join("resources_dev", "data_origin", "nli_fever")
 OUT_PATH = os.path.join("resources_dev", "data_Sets", "wisdom-parquet")
+USE_RANDOM_KEYSTROKES = True  # Significantly increases the rate if forlang detection
 #################################################################
 
 
@@ -34,8 +35,12 @@ def main():
     )
 
     # get 34200 entries (1800 * 18 (europarl) + 1800 (random keystrokes)) randomly for each mood
+    if USE_RANDOM_KEYSTROKES:
+        n = 1800 * 18 + 1800
+    else:
+        n = 1800 * 18
     fever_select = (
-        fever.groupby("mood").apply(lambda x: x.sample(n=34200)).reset_index(drop=True)
+        fever.groupby("mood").apply(lambda x: x.sample(n=n)).reset_index(drop=True)
     )
 
     # rename colums
@@ -44,7 +49,7 @@ def main():
     # put "input" column first
     europal = europal[["input", "mood"]]
 
-    # get 1800 (*18 -> 32400) entries randomly for each mood
+    # get 1800 (*18 -> 32400) entries randomly for each mood (lang)
     europal_select = (
         europal.groupby("mood").apply(lambda x: x.sample(n=1800)).reset_index(drop=True)
     )
@@ -53,11 +58,17 @@ def main():
     europal_select["mood"] = str(Mood.forlang)
 
     # create random keystrokes
-    rand_keystrokes_df = pd.DataFrame(
-        {"input": [random_keystrokes() for _ in range(1800)], "mood": str(Mood.forlang)}
-    )
+    if USE_RANDOM_KEYSTROKES:
+        rand_keystrokes_df = pd.DataFrame(
+            {
+                "input": [random_keystrokes() for _ in range(1800)],
+                "mood": str(Mood.forlang),
+            }
+        )
+        forlang_df = pd.concat([europal_select, rand_keystrokes_df], ignore_index=True)
+    else:
+        forlang_df = europal_select
 
-    forlang_df = pd.concat([europal_select, rand_keystrokes_df], ignore_index=True)
     # add "context" column
     forlang_df["context"] = ""
 

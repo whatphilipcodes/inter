@@ -75,7 +75,7 @@ class DataManager:
     def add(self, datapoint: InterData, split: str) -> None:
         self.database[split] = self.database[split].add_item(datapoint.dict())  # type: ignore
         if config.DEBUG_MSG:
-            print(f"Added datapoint to split {split}:\n {self.database[split][-1]}.")
+            print(f"Added datapoint to split {split}:\n{self.database[split][-1]}")
 
     def save(self) -> None:
         # save to disk

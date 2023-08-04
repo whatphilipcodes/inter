@@ -1,7 +1,7 @@
 # IMPORT BLOCK ###############################################################
 # Lib Imports
-import datetime
 import random
+from typing import List
 
 # Local Imports
 from .utils import ConvoText, Mood, SpecialTokens
@@ -95,9 +95,6 @@ class ConvoManager:
         # Update the history with the input
         self._update_history(input.text)
 
-        # if config.DEBUG_MSG:
-        #     print(f"Input string:\n {self.current_input}")
-
         return self.current_input
 
     def filter_response(self, response: str) -> str:
@@ -113,17 +110,6 @@ class ConvoManager:
         #     print(f"Filtered result:\n {processed}")
         self._update_history(processed)
         return processed
-
-    # def get_training_example(self, mood: str, input: str, response: str) -> str:
-    #     return (
-    #         S
-    #         + mood
-    #         + SpecTok
-    #         + input
-    #         + SpecTok.response
-    #         + response
-    #         + SpecTok.endseq
-    #     )
 
     # END Public Methods #######################################################
 

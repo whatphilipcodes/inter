@@ -3,12 +3,15 @@
 import os
 import random
 from datasets import DatasetDict, disable_caching
+from collections import deque
+from typing import List
 
 # Local Imports
 from . import __backend_config as config
 from .utils import (
     get_resource_path,
     get_timestamp,
+    SpecialTokens,
     ConvoText,
     InterData,
     Mood,
@@ -26,11 +29,13 @@ class DataManager:
 
     # Data
     database: DatasetDict
+    epoch_session: deque[list[int]]
 
     def __init__(self) -> None:
         disable_caching()
         self._setup_paths()
         self._load_database()
+        self._update_epoch_session()
 
     # Public Methods ###########################################################
     def get_datapoint(self, input: ConvoText) -> InterData:
@@ -77,6 +82,8 @@ class DataManager:
         if config.DEBUG_MSG:
             print(f"Added datapoint to split {split}:\n{self.database[split][-1]}")
 
+        # TODO: For every datapoint added, remove the oldest datapoint from the same split
+
     def save(self) -> None:
         # save to disk
         path = os.path.join(self.data_path, get_timestamp())
@@ -84,11 +91,43 @@ class DataManager:
         if config.DEBUG_MSG:
             print("Database saved to:", path)
 
-    # def get_gen_step(self) -> InterData:
-    #     pass
+    def get_gen_step(self, random_range: bool = False) -> str:
+        # get all rows for the conID with the lowest epoch_gen
+        # min_epoch_gen = min(self.database["train"]["epoch_gen"])
+        # candidates = self.database["train"].filter(
+        #     lambda x: x["epoch_gen"] == min_epoch_gen
+        # )
+        # max_conID = max(self.epoch_session)
+        # conversation = candidates.filter(lambda x: x["conID"] == max_conID)
+        # print(*conversation)
+        start_index = 136789  # self.epoch_session[0][0]
+        end_index = 136798  # self.epoch_session[0][1]
+        index_range = end_index - start_index
 
-    # def get_cls_step(self) -> InterData:
-    #     pass
+        if random_range:
+            shift = random.randint(0, index_range - 1)
+            index_range = random.randint(1, index_range - shift)
+            start_index = start_index + shift
+            end_index = start_index + index_range
+            print(
+                f"shift: {shift}, index_range: {index_range}, start_index: {start_index}, end_index: {end_index}"
+            )
+
+        convo_subset = self.database["train"][start_index:end_index]
+
+        inter_data = []
+        for i in range(index_range):
+            data = {key: value[i] for key, value in convo_subset.items()}
+            instance = InterData(**data)
+            inter_data.append(instance)
+
+        print(inter_data)
+
+        step = self._get_gen_training_str(inter_data)
+        return step
+
+    def get_cls_step(self) -> str:
+        return ""
 
     # END PUBLIC METHODS #######################################################
 
@@ -157,6 +196,21 @@ class DataManager:
 
         if config.DEBUG_MSG:
             print(f"Data folder cleanup complete.\nRemoved {folders} folders.")
+
+    def _update_epoch_session(self) -> None:
+        pass
+
+    def _get_gen_training_str(self, conversation: List[InterData]) -> str:
+        # create history from input and responses in conversation list
+        context = conversation[0].context
+        history = ""
+        for i in range(len(conversation)):
+            history += SpecialTokens.input + conversation[i].input
+            history += SpecialTokens.response + conversation[i].response
+
+        # create training string
+        training_str = SpecialTokens.context + context + history + SpecialTokens.endseq
+        return training_str
 
     # def _valid_data(self, data: InterData) -> bool:
     #     if data.mood == Mood.doubt:

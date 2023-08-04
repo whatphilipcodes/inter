@@ -65,7 +65,7 @@ def run():
     #     evaluation_strategy="steps",
     # )
 
-    # CHAT GPT SUGGESTION ->
+    # CHAT GPT SUGGESTION -> {'eval_loss': 0.43345701694488525, 'eval_accuracy': 0.8240354938271605, 'eval_runtime': 53.8454, 'eval_samples_per_second': 481.379, 'eval_steps_per_second': 30.086, 'epoch': 2.0}
     training_args = TrainingArguments(
         output_dir=OUT_MODEL,
         num_train_epochs=5,  # Increased from 2 to 5 // 3 seems to have the best loss

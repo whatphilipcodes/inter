@@ -164,7 +164,7 @@ def find_context(text: str, prior_dialogue: str, num_paragraphs=1) -> str:
 
 
 def create_inter_data(
-    conID: int, context: str, conversation: List[str]
+    conID: int, context: str, conversation: List[str], always_context: bool = False
 ) -> List[InterData]:
     """
     Creates a list of InterData objects from a conversation.
@@ -175,7 +175,7 @@ def create_inter_data(
     ):
         input_dialogue = conversation[j]
         response_dialogue = conversation[j + 1]
-        if i == 0:
+        if i == 0 or always_context:
             context = context
         else:
             context = ""
@@ -226,7 +226,7 @@ def extract_conversations(
                 continue
 
             conID = parproc.get_convo_id()
-            inter_data = create_inter_data(conID, context, valid_dialogues)
+            inter_data = create_inter_data(conID, context, valid_dialogues, True)
 
             for x in inter_data:
                 parproc.add_row(x)

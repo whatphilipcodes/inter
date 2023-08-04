@@ -109,9 +109,6 @@ class DataManager:
             index_range = random.randint(1, index_range - shift)
             start_index = start_index + shift
             end_index = start_index + index_range
-            print(
-                f"shift: {shift}, index_range: {index_range}, start_index: {start_index}, end_index: {end_index}"
-            )
 
         convo_subset = self.database["train"][start_index:end_index]
 
@@ -120,8 +117,6 @@ class DataManager:
             data = {key: value[i] for key, value in convo_subset.items()}
             instance = InterData(**data)
             inter_data.append(instance)
-
-        print(inter_data)
 
         step = self._get_gen_training_str(inter_data)
         return step

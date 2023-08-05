@@ -134,7 +134,9 @@ def find_dialogue(text: str) -> tuple[List[str], List[str]]:
     return raw, dialogues
 
 
-def find_context(text: str, prior_dialogue: str, num_paragraphs=1) -> str:
+def find_context(
+    text: str, prior_dialogue: str, num_paragraphs=1, num_sentences=2
+) -> str:
     """
     Finds num_paragraphs that precede the prior_dialogue in the text.
     Only returns complete sentences.
@@ -158,6 +160,13 @@ def find_context(text: str, prior_dialogue: str, num_paragraphs=1) -> str:
     # Extracting the preceding paragraphs
     start_index = max(0, index_of_prior_dialogue - num_paragraphs)
     preceding_paragraphs = paragraphs[start_index:index_of_prior_dialogue]
+
+    # extract the last n sentences from the preceding paragraphs
+    for idx, paragraph in enumerate(preceding_paragraphs):
+        sentences = regex.split(
+            r"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\!)\s", paragraph
+        )
+        preceding_paragraphs[idx] = " ".join(sentences[-num_sentences:])
 
     # Joining the paragraphs into a single string
     return "\n\n".join(preceding_paragraphs)

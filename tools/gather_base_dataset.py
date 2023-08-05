@@ -5,7 +5,6 @@ from tqdm import tqdm
 from src_py.classifier import Classifier
 
 # TOOL SETTINGS #################################################
-IN_WISDOM = os.path.join("resources_dev", "data_sets", "wisdom")
 IN_NOVELIST = os.path.join("resources_dev", "data_sets", "novelist")
 OUT = os.path.join("resources", "data", "base")
 #################################################################

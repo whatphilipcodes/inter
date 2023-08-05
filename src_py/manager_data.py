@@ -3,7 +3,8 @@
 import os
 import random
 from datasets import DatasetDict, disable_caching
-from collections import deque
+from transformers import GPTNeoXTokenizerFast, DebertaV2Tokenizer
+from queue import Queue
 from typing import List
 
 # Local Imports
@@ -29,13 +30,12 @@ class DataManager:
 
     # Data
     database: DatasetDict
-    epoch_session: deque[list[int]]
+    epoch_session: Queue[list[str]]
 
     def __init__(self) -> None:
         disable_caching()
         self._setup_paths()
         self._load_database()
-        self._update_epoch_session()
 
     # Public Methods ###########################################################
     def get_datapoint(self, input: ConvoText) -> InterData:
@@ -100,6 +100,7 @@ class DataManager:
         # max_conID = max(self.epoch_session)
         # conversation = candidates.filter(lambda x: x["conID"] == max_conID)
         # print(*conversation)
+
         start_index = 136789  # self.epoch_session[0][0]
         end_index = 136798  # self.epoch_session[0][1]
         index_range = end_index - start_index
@@ -123,6 +124,13 @@ class DataManager:
 
     def get_cls_step(self) -> str:
         return ""
+
+    def update_epoch_session(
+        self, tokenizer: GPTNeoXTokenizerFast | DebertaV2Tokenizer
+    ) -> None:
+        # sort table according to epoch counters (ascending)
+        self.database["train"].sort("epoch_gen")
+        pass
 
     # END PUBLIC METHODS #######################################################
 
@@ -191,9 +199,6 @@ class DataManager:
 
         if config.DEBUG_MSG:
             print(f"Data folder cleanup complete.\nRemoved {folders} folders.")
-
-    def _update_epoch_session(self) -> None:
-        pass
 
     def _get_gen_training_str(self, conversation: List[InterData]) -> str:
         # create history from input and responses in conversation list

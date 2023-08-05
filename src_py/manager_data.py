@@ -101,8 +101,8 @@ class DataManager:
         # conversation = candidates.filter(lambda x: x["conID"] == max_conID)
         # print(*conversation)
 
-        start_index = 136789  # self.epoch_session[0][0]
-        end_index = 136798  # self.epoch_session[0][1]
+        start_index = 100000  # self.epoch_session[0][0]
+        end_index = 100010  # self.epoch_session[0][1]
         index_range = end_index - start_index
 
         if random_range:

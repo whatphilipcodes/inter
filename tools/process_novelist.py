@@ -8,7 +8,7 @@ from src_py.utils import get_timestamp, InterData, Mood
 
 # TOOL SETTINGS #################################################
 IN_GUTENBERG = os.path.join("resources_dev", "data_origin", "gutenberg")
-OUT_PATH = os.path.join("resources_dev", "data_sets", "novelist-parquet")
+OUT_PATH = os.path.join("resources_dev", "data_sets", "novelist-dev-parquet")
 #################################################################
 
 
@@ -16,8 +16,10 @@ def main():
     filepaths = get_txt_in_directory(IN_GUTENBERG)
     files = []
 
-    for path in filepaths:
-        files.append(read_file_as_string(path))
+    # for path in filepaths:
+    #     files.append(read_file_as_string(path))
+
+    files.append(read_file_as_string(filepaths[0]))
 
     print(f"Found {len(files)} files.")
 

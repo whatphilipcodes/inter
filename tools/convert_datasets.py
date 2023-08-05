@@ -3,9 +3,9 @@ from datasets import load_dataset, DatasetDict
 
 # TOOL SETTINGS #################################################
 IN_WISDOM = os.path.join("resources_dev", "data_sets", "wisdom-parquet")
-IN_NOVELIST = os.path.join("resources_dev", "data_sets", "novelist-parquet")
+IN_NOVELIST = os.path.join("resources_dev", "data_sets", "novelist-dev-parquet")
 OUT_WISDOM = os.path.join("resources_dev", "data_sets", "wisdom")
-OUT_NOVELIST = os.path.join("resources_dev", "data_sets", "novelist")
+OUT_NOVELIST = os.path.join("resources_dev", "data_sets", "novelist-dev")
 #################################################################
 
 if os.path.exists(IN_WISDOM):

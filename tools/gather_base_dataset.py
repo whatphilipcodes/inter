@@ -1,13 +1,14 @@
 import os
-from datasets import DatasetDict
+from datasets import DatasetDict, disable_caching
 from src_py.classifier import Classifier
 
 # TOOL SETTINGS #################################################
-IN_NOVELIST = os.path.join("resources_dev", "data_sets", "novelist")
+IN_NOVELIST = os.path.join("resources_dev", "data_sets", "novelist-dev")
 OUT = os.path.join("resources", "data", "base")
 #################################################################
 
 cls = Classifier()
+disable_caching()
 novelist = DatasetDict.load_from_disk(IN_NOVELIST)
 
 
@@ -21,6 +22,6 @@ def update_mood(example):
     return example
 
 
-novelist.map(update_mood)
-novelist.save_to_disk(OUT)
+base = novelist.map(update_mood)
+base.save_to_disk(OUT)
 print(f"Saved dataset base to {OUT}")

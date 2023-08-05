@@ -1,12 +1,13 @@
 import os
-from datasets import DatasetDict
+from datasets import DatasetDict, disable_caching
 
-PATH = os.path.join("resources_dev", "data_sets", "novelist")
+PATH = os.path.join("resources", "data", "base")
 
+disable_caching()
 dataset = DatasetDict.load_from_disk(PATH)
 
 # print the first n examples
-n = 10
+n = 6
 
 print(
     "# TRAIN SPLIT ######################################################################################################################"

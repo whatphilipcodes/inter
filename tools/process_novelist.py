@@ -68,38 +68,33 @@ def read_file_as_string(file_path):
 
 
 def remove_footer(text):
+    """
+    Looks for the footer and removes everything after it (including the footer).
+    """
+    pattern = regex.compile(r"(?im)end of( the)?( this)? project gutenberg")
     lines = text.splitlines()
 
     # Look for the specified strings
     for index, line in enumerate(lines):
-        if (
-            "END OF THE PROJECT GUTENBERG EBOOK" in line.upper()
-            or "End of the Project Gutenberg EBook" in line.upper()
-        ):
-            # Find the last non-empty line preceding the target text
-            for preceding_index in range(index - 1, -1, -1):
-                if lines[preceding_index].strip():
-                    break
+        if pattern.search(line):
+            # Delete everything after and including the line containing the target text
+            lines = lines[:index]
+            break
 
-                # Remove everything from the last non-empty line onward
-                lines = lines[: preceding_index + 1]
-                break
-
-    # Join the remaining lines to create the modified text
-    modified_text = "\n".join(lines)
-    return modified_text
+    return "\n".join(lines)
 
 
 def remove_header(text):
+    """
+    Looks for the header and removes everything before it (including the header).
+    """
+    pattern = regex.compile(r"(?im)start of( the)?( this)? project gutenberg")
     lines = text.splitlines()
 
     # Look for the specified strings
     for index, line in enumerate(lines):
-        if (
-            "START OF THIS PROJECT GUTENBERG EBOOK" in line.upper()
-            or "Start of this Project Gutenberg EBook" in line.upper()
-        ):
-            # Delete everything up to and including the line containing the target text
+        if pattern.search(line):
+            # Delete everything before and including the line containing the target text
             lines = lines[index + 1 :]
             break
 
@@ -172,8 +167,19 @@ def find_context(
         )
         preceding_paragraphs[idx] = " ".join(sentences[-num_sentences:])
 
+    # if the sentences dont end with a period discard the context
+    if not all(
+        [
+            paragraph.endswith(".")
+            or paragraph.endswith("?")
+            or paragraph.endswith("!")
+            for paragraph in preceding_paragraphs
+        ]
+    ):
+        return ""
+
     # Joining the paragraphs into a single string
-    return "\n\n".join(preceding_paragraphs)
+    return " ".join(preceding_paragraphs)
 
 
 def create_inter_data(

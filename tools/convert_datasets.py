@@ -1,5 +1,5 @@
 import os
-from datasets import load_dataset, DatasetDict
+from datasets import load_dataset, DatasetDict, disable_caching
 
 # TOOL SETTINGS #################################################
 IN_WISDOM = os.path.join("resources_dev", "data_sets", "wisdom-parquet")
@@ -8,6 +8,7 @@ OUT_WISDOM = os.path.join("resources_dev", "data_sets", "wisdom")
 OUT_NOVELIST = os.path.join("resources_dev", "data_sets", "novelist-dev")
 #################################################################
 
+disable_caching()
 if os.path.exists(IN_WISDOM):
     wisdom: DatasetDict = load_dataset("parquet", data_dir=IN_WISDOM)  # type: ignore
     wisdom.save_to_disk(OUT_WISDOM)

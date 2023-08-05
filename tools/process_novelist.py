@@ -19,7 +19,9 @@ def main():
     # for path in filepaths:
     #     files.append(read_file_as_string(path))
 
-    files.append(read_file_as_string(filepaths[0]))
+    # create small dev dataset
+    for i in range(0, 10):
+        files.append(read_file_as_string(filepaths[i]))
 
     print(f"Found {len(files)} files.")
 

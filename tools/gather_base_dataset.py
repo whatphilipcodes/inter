@@ -14,10 +14,18 @@ cls = Classifier()
 novelist = DatasetDict.load_from_disk(IN_NOVELIST)
 
 for item in tqdm(novelist["train"]):
-    item["mood"] = cls.infer(item["input"])  # type: ignore
+    candidate_input = cls.infer(item["input"])  # type: ignore
+    if candidate_input == "doubt" or candidate_input == "lie":
+        item["mood"] = cls.infer(item["response"])  # type: ignore
+    else:
+        item["mood"] = candidate_input  # type: ignore
 
 for item in tqdm(novelist["test"]):
-    item["mood"] = cls.infer(item["input"])  # type: ignore
+    candidate_input = cls.infer(item["input"])  # type: ignore
+    if candidate_input == "doubt" or candidate_input == "lie":
+        item["mood"] = cls.infer(item["response"])  # type: ignore
+    else:
+        item["mood"] = candidate_input  # type: ignore
 
 
 novelist.save_to_disk(OUT)

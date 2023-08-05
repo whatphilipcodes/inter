@@ -1,7 +1,5 @@
 import os
 from datasets import DatasetDict
-from tqdm import tqdm
-
 from src_py.classifier import Classifier
 
 # TOOL SETTINGS #################################################
@@ -10,23 +8,19 @@ OUT = os.path.join("resources", "data", "base")
 #################################################################
 
 cls = Classifier()
-
 novelist = DatasetDict.load_from_disk(IN_NOVELIST)
 
-for item in tqdm(novelist["train"]):
-    candidate_input = cls.infer(item["input"])  # type: ignore
-    if candidate_input == "doubt" or candidate_input == "lie":
-        item["mood"] = cls.infer(item["response"])  # type: ignore
-    else:
-        item["mood"] = candidate_input  # type: ignore
 
-for item in tqdm(novelist["test"]):
-    candidate_input = cls.infer(item["input"])  # type: ignore
-    if candidate_input == "doubt" or candidate_input == "lie":
-        item["mood"] = cls.infer(item["response"])  # type: ignore
-    else:
-        item["mood"] = candidate_input  # type: ignore
+def update_mood(example):
+    candidate_input = str(cls.infer(example["input"]))
+    if candidate_input == "doubt" or candidate_input == "forlang":
+        candidate_response = str(cls.infer(example["response"]))
+        if candidate_response == "forlang":
+            candidate_input = "neutral"
+    example["mood"] = candidate_input
+    return example
 
 
+novelist.map(update_mood)
 novelist.save_to_disk(OUT)
 print(f"Saved dataset base to {OUT}")

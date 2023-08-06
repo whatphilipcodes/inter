@@ -7,7 +7,7 @@ import { Store } from '../state/store'
 // import { appState } from '../utils/enums'
 
 // SceneSubjects
-import InputDisplay from './inputDisplay'
+import InputDisplay from './message'
 
 // Debugging
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'

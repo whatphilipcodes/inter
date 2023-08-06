@@ -32,7 +32,7 @@ class DataManager:
         self._setup_paths()
         self._load_database()
 
-    # Public Methods ###########################################################
+    # PUBLIC METHODS  ###########################################################
     def get_datapoint(self, input: ConvoText) -> InterData:
         datapoint = InterData(
             timestamp=input.timestamp,

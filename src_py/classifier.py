@@ -30,6 +30,9 @@ class Classifier:
     def prepare_training(self, data: Any) -> None:
         pass
 
+    def step(self) -> None:
+        pass
+
     def infer(self, text: str):
         # Set model to eval mode
         self.model.eval()

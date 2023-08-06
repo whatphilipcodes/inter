@@ -55,8 +55,8 @@ class MainLoop:
                     self._enter_training()
                 # TRAINING FLOW ##################################################
                 # TODO: get training data from data manager
-                # self._classifier.training_step()
-                # self._generator.training_step()
+                self._classifier.step()
+                # self._generator.step()
                 # END TRAINING FLOW ##############################################
 
             if self.state == LoopPatch.State.inference:
@@ -164,7 +164,7 @@ class MainLoop:
         """
         self._enter_state = False
         if config.DEBUG_MSG:
-            print("Running training...")
+            print("Training started...")
         # save new conversations to database
         self._data_manager.save()
         # get the updated dataset from the data manager
@@ -180,6 +180,6 @@ class MainLoop:
         """
         self._enter_state = False
         if config.DEBUG_MSG:
-            print("Running inference...")
+            print("Inference started...")
         # update the active split
         self._active_split = self._data_manager.get_split()

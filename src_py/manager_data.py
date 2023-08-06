@@ -3,16 +3,12 @@
 import os
 import random
 from datasets import DatasetDict, disable_caching
-from transformers import GPTNeoXTokenizerFast, DebertaV2Tokenizer
-from queue import Queue
-from typing import List
 
 # Local Imports
 from . import __backend_config as config
 from .utils import (
     get_resource_path,
     get_timestamp,
-    SpecialTokens,
     ConvoText,
     InterData,
     Mood,
@@ -30,7 +26,6 @@ class DataManager:
 
     # Data
     database: DatasetDict
-    epoch_session: Queue[list[str]]
 
     def __init__(self) -> None:
         disable_caching()
@@ -91,46 +86,17 @@ class DataManager:
         if config.DEBUG_MSG:
             print("Database saved to:", path)
 
-    def get_gen_step(self, random_range: bool = False) -> str:
-        # get all rows for the conID with the lowest epoch_gen
-        # min_epoch_gen = min(self.database["train"]["epoch_gen"])
-        # candidates = self.database["train"].filter(
-        #     lambda x: x["epoch_gen"] == min_epoch_gen
-        # )
-        # max_conID = max(self.epoch_session)
-        # conversation = candidates.filter(lambda x: x["conID"] == max_conID)
-        # print(*conversation)
+    def get_gen_data(self) -> DatasetDict:
+        gen_train = self.database["train"].sort("epoch_gen")
+        gen_test = self.database["test"]
+        gen_queue = DatasetDict({"train": gen_train, "test": gen_test})
+        return gen_queue
 
-        start_index = 100000  # self.epoch_session[0][0]
-        end_index = 100010  # self.epoch_session[0][1]
-        index_range = end_index - start_index
-
-        if random_range:
-            shift = random.randint(0, index_range - 1)
-            index_range = random.randint(1, index_range - shift)
-            start_index = start_index + shift
-            end_index = start_index + index_range
-
-        convo_subset = self.database["train"][start_index:end_index]
-
-        inter_data = []
-        for i in range(index_range):
-            data = {key: value[i] for key, value in convo_subset.items()}
-            instance = InterData(**data)
-            inter_data.append(instance)
-
-        step = self._get_gen_training_str(inter_data)
-        return step
-
-    def get_cls_step(self) -> str:
-        return ""
-
-    def update_epoch_session(
-        self, tokenizer: GPTNeoXTokenizerFast | DebertaV2Tokenizer
-    ) -> None:
-        # sort table according to epoch counters (ascending)
-        self.database["train"].sort("epoch_gen")
-        pass
+    def get_cls_data(self) -> DatasetDict:
+        cls_train = self.database["train"].sort("epoch_cls")
+        cls_test = self.database["test"]
+        cls_queue = DatasetDict({"train": cls_train, "test": cls_test})
+        return cls_queue
 
     # END PUBLIC METHODS #######################################################
 
@@ -199,38 +165,5 @@ class DataManager:
 
         if config.DEBUG_MSG:
             print(f"Data folder cleanup complete.\nRemoved {folders} folders.")
-
-    def _get_gen_training_str(self, conversation: List[InterData]) -> str:
-        # create history from input and responses in conversation list
-        context = conversation[0].context
-        history = ""
-        for i in range(len(conversation)):
-            history += SpecialTokens.input + conversation[i].input
-            history += SpecialTokens.response + conversation[i].response
-
-        # create training string
-        training_str = SpecialTokens.context + context + history + SpecialTokens.endseq
-        return training_str
-
-    # def _valid_data(self, data: InterData) -> bool:
-    #     if data.mood == Mood.doubt:
-    #         options = [True, False]
-    #         choice = random.choices(options, weights=[0.2, 0.8], k=1)[0]
-    #         if config.DEBUG_MSG:
-    #             print(f"Data is doubted, weighted random chose: {choice}")
-    #         return choice
-    #     if data.mood == Mood.neutral:
-    #         options = [True, False]
-    #         choice = random.choices(options, weights=[0.8, 0.2], k=1)[0]
-    #         if config.DEBUG_MSG:
-    #             print(f"Data is neutral, weighted random chose: {choice}")
-    #         return choice
-    #     if data.mood == Mood.truth:
-    #         if config.DEBUG_MSG:
-    #             print(f"Data identified as truth, returning True")
-    #         return True
-    #     if config.DEBUG_MSG:
-    #         print(f"Data identified as lie, returning False")
-    #     return False
 
     # END PRIVATE METHODS ######################################################

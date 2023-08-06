@@ -167,6 +167,12 @@ class MainLoop:
             print("Running training...")
         # save new conversations to database
         self._data_manager.save()
+        # get the updated dataset from the data manager
+        gen_data = self._data_manager.get_gen_data()
+        cls_data = self._data_manager.get_cls_data()
+        # update both models
+        self._generator.prepare_training(gen_data)
+        self._classifier.prepare_training(cls_data)
 
     def _enter_inference(self) -> None:
         """

@@ -4,5 +4,5 @@ MAX_MODEL_FOLDERS = 2
 DATA_PATH = ["data"]
 DATA_SUB_PROTECTED = "base"
 MODELS_SUB_PROTECTED = "base"
-GEN_PATH = ["models", "base", "inter-generator"]
+GEN_PATH = ["models", "base", "pythia-mod"]
 CLS_PATH = ["models", "base", "inter-classifier"]

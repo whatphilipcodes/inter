@@ -3,6 +3,7 @@
 import os
 import torch
 from typing import Any
+from collections import deque
 from transformers import DebertaV2Tokenizer, DebertaV2ForSequenceClassification
 
 # Local Imports
@@ -11,9 +12,12 @@ from .utils import get_resource_path, get_cuda, ClassifierLabels, Mood
 
 # END IMPORT BLOCK ###########################################################
 
+# tok_data_cls: {'input_ids': [int], 'token_type_ids': [int], 'attention_mask': [int], 'labels': int}
+
 
 class Classifier:
     def __init__(self):
+        self._session = deque()
         self.modelpath = os.path.join(get_resource_path(), *config.CLS_PATH)
         self.device = get_cuda()
         self.model = DebertaV2ForSequenceClassification.from_pretrained(
@@ -22,6 +26,9 @@ class Classifier:
             self.device
         )
         self.tokenizer = DebertaV2Tokenizer.from_pretrained(self.modelpath)
+
+    def prepare_training(self, data: Any) -> None:
+        pass
 
     def infer(self, text: str):
         # Set model to eval mode

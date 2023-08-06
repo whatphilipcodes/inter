@@ -18,12 +18,10 @@ def main() -> None:
     # model = GPTNeoXForCausalLM.from_pretrained(IN_MODEL).to(device)  # type: ignore
     # tokenizer = GPTNeoXTokenizerFast.from_pretrained(IN_MODEL)
 
-    def preprocess_data():
-        str = d_man.get_gen_step(random_range=True)
-        print(str)
-        # return tokenizer(str, return_tensors="pt").input_ids
+    # def preprocess_data():
+    #     return tokenizer(str, return_tensors="pt").input_ids
 
-    preprocess_data()
+    # preprocess_data()
 
 
 if __name__ == "__main__":

@@ -9,7 +9,14 @@ IN_MODEL = os.path.join("resources_dev", "models_origin", "pythia-1b-deduped")
 OUT_MODEL = os.path.join("resources_dev", "models_tuned", "pythia-tok-mod")
 #################################################################
 
-tokenizer: GPTNeoXTokenizerFast = GPTNeoXTokenizerFast.from_pretrained(IN_MODEL)
+tokenizer: GPTNeoXTokenizerFast = GPTNeoXTokenizerFast.from_pretrained(
+    IN_MODEL,
+    eos_token_id=0,
+    unk_token_id=0,
+    bos_token_id=0,
+    pad_token_id=1,
+    pad_token="<|padding|>",
+)
 model: GPTNeoXForCausalLM = GPTNeoXForCausalLM.from_pretrained(IN_MODEL)  # type: ignore
 
 # Mod Overview:

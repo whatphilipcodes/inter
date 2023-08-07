@@ -28,7 +28,7 @@ export default class Role {
 			anchor.y - this.height / 2,
 			anchor.z
 		)
-		this.mesh.anchor.set(this.anchor.x, this.anchor.y, this.anchor.z)
+		this.mesh.position.set(this.anchor.x, this.anchor.y, this.anchor.z)
 	}
 
 	get() {
@@ -42,7 +42,7 @@ export default class Role {
 
 	update(offset: THREE.Vector2) {
 		this.posOffset = offset
-		this.mesh.anchor.set(
+		this.mesh.position.set(
 			this.anchor.x + this.posOffset.x,
 			this.anchor.y + this.posOffset.y,
 			this.anchor.z

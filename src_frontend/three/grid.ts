@@ -50,7 +50,6 @@ export default class Grid extends SceneSubject {
 			this.scene,
 			this.state,
 			this.camera,
-			this.anchor,
 			"Hello, I'm a message!"
 		)
 		return message
@@ -70,7 +69,7 @@ export default class Grid extends SceneSubject {
 	}
 
 	update(elTime: number, curFrame: number, deltaTime: number): void {
-		//
+		this.message.update()
 	}
 
 	onWindowResize(): void {

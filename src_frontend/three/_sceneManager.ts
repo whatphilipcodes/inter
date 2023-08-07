@@ -47,13 +47,6 @@ export default class SceneManager {
 		this.sceneSubjects = this.buildSceneSubjects()
 
 		this.renderer = this.buildRenderer()
-		// this.postProcessor = new PostProcessor(
-		// 	this.renderer,
-		// 	this.scene,
-		// 	this.camera.instance() as THREE.Camera
-		// )
-		// this.ascii = new Ascii(this.renderer) // line distance is to big
-
 		this.init()
 
 		if (config.devUI) this.buildDevUI()
@@ -90,18 +83,18 @@ export default class SceneManager {
 
 	buildSceneSubjects(): SceneSubject[] {
 		const sceneSubjects = [
-			// new Grid(
-			// 	'Grid',
-			// 	this.scene,
-			// 	this.camera.instance() as THREE.OrthographicCamera,
-			// 	this.state
-			// ),
-			new Input(
-				'Input',
+			new Grid(
+				'Grid',
 				this.scene,
-				this.state,
-				this.camera.instance() as THREE.OrthographicCamera
+				this.camera.instance() as THREE.OrthographicCamera,
+				this.state
 			),
+			// new Input(
+			// 	'Input',
+			// 	this.scene,
+			// 	this.state,
+			// 	this.camera.instance() as THREE.OrthographicCamera
+			// ),
 		]
 		return sceneSubjects
 	}

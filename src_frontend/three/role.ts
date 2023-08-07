@@ -12,14 +12,14 @@ export default class Cursor {
 	height: number
 
 	constructor(anchor: THREE.Vector3, width = 0.1, height = 1) {
-		// this.posOffset = new THREE.Vector2(0, 0)
 		this.width = width
 		this.height = height
 		this.material = new THREE.MeshBasicMaterial({
 			color: 0xffffff,
 		})
-		this.geometry = new THREE.PlaneGeometry(this.width, this.height)
+		this.geometry = new THREE.PlaneGeometry()
 		this.mesh = new THREE.Mesh(this.geometry, this.material)
+		this.mesh.scale.set(width, height, 1)
 		this.anchor = anchor
 		this.setPosition(anchor)
 	}
@@ -40,6 +40,7 @@ export default class Cursor {
 	updateDimensions(width: number, height: number) {
 		this.width = width
 		this.height = height
+		// this.mesh.scale.set(width, height, 1)
 	}
 
 	updatePosition(offset: THREE.Vector3) {

@@ -74,4 +74,68 @@ function cursorWidth(targetLineHeight: number, ratio = 0.08): number {
 	return targetLineHeight * ratio
 }
 
-export { screenToWorld, worldToPixel, fontSize, cursorWidth }
+/**
+ * Creates a red 2D box helper at the given position with the given width and height.
+ * The anchor point of the box helper is at the bottom left corner.
+ * @param {THREE.Vector3} position The position of the box helper.
+ * @param {number} width The width of the box helper.
+ * @param {number} height The height of the box helper.
+ * @param {THREE.Color} color The color of the box helper.
+ * @returns {THREE.BoxHelper} The box helper.
+ */
+function getHelper2DBox(
+	position: THREE.Vector3,
+	width: number,
+	height: number,
+	color: THREE.Color = new THREE.Color(0xff0000)
+): THREE.BoxHelper {
+	const geometry = new THREE.BoxGeometry(width, height, 0)
+	const material = new THREE.MeshBasicMaterial({ color: color })
+	const cube = new THREE.Mesh(geometry, material)
+	const adjustedPosition = position
+		.clone()
+		.add(new THREE.Vector3(width / 2, height / 2, 0))
+	cube.position.set(adjustedPosition.x, adjustedPosition.y, adjustedPosition.z)
+	const helper = new THREE.BoxHelper(cube, color)
+	return helper
+}
+
+/**
+ * Returns a point visualization that can be added to the scene. Default color is red.
+ * The anchor point of the box helper is at the bottom left corner.
+ * @param {THREE.Vector3} position The position of the box helper.
+ * @param {number} width The width of the box helper.
+ * @param {number} height The height of the box helper.
+ * @param {THREE.Color} color The color of the box helper.
+ * @returns {THREE.BoxHelper} The box helper.
+ */
+function getPointsVisu(
+	position: THREE.Vector3 | THREE.Vector3[],
+	color: THREE.Color = new THREE.Color(0xff0000)
+): THREE.Points {
+	const geometry = new THREE.BufferGeometry()
+	const positions = []
+	if (Array.isArray(position)) {
+		for (const pos of position) {
+			positions.push(pos.x, pos.y, pos.z)
+		}
+	} else {
+		positions.push(position.x, position.y, position.z)
+	}
+	geometry.setAttribute(
+		'position',
+		new THREE.Float32BufferAttribute(positions, 3)
+	)
+	const material = new THREE.PointsMaterial({ size: 5, color: color })
+	const point = new THREE.Points(geometry, material)
+	return point
+}
+
+export {
+	screenToWorld,
+	worldToPixel,
+	fontSize,
+	cursorWidth,
+	getHelper2DBox,
+	getPointsVisu,
+}

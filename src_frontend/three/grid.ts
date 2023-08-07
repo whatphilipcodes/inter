@@ -1,9 +1,14 @@
 import { Store } from '../state/store'
 import SceneSubject from './_sceneSubject'
 import * as THREE from 'three'
-import { screenToWorld } from '../utils/threeUtil'
+import {
+	screenToWorld,
+	getHelper2DBox,
+	getPointsVisu,
+} from '../utils/threeUtil'
 
 import Message from './message'
+import config from '../front.config'
 
 export default class Grid extends SceneSubject {
 	// Refs
@@ -11,8 +16,8 @@ export default class Grid extends SceneSubject {
 	camera: THREE.OrthographicCamera
 
 	// Props
-	padding: number // decimal percent of world units
-	spacing: number // decimal percent of world units
+	padding: number // in world units
+	spacing: number // in world units
 	screenWidthWorld: number
 	screenHeightWorld: number
 	contentHeight: number
@@ -26,10 +31,12 @@ export default class Grid extends SceneSubject {
 	messageAnchor: THREE.Vector3[]
 	leftBottom: THREE.Vector3
 
+	// Debug
 	testText =
 		"The Egyptian's curved sword clanged against Sir Robert's helm, setting his head ringing. In return, the knight's broadsword came about in a sweeping arc,"
 	testText02 =
 		'This is a test response. Do you know what is happening? If you do, please tell me. I am very confused. I need 6 lines so conder this boilerplate.'
+
 	// Children
 	message: Message
 	response: Message
@@ -49,6 +56,7 @@ export default class Grid extends SceneSubject {
 		this.padding = padding
 
 		this.leftBottom = screenToWorld(this.camera, -1, -1) // functions as grid origin
+		console.log(this.leftBottom)
 
 		this.calculateScreenDimensions()
 		this.calulateMessageDimensions()
@@ -58,14 +66,19 @@ export default class Grid extends SceneSubject {
 			this.leftBottom
 				.clone()
 				.add(
-					new THREE.Vector3(this.padding, this.messageHeight + this.padding, 0)
+					new THREE.Vector3(
+						this.padding + this.responseOffset,
+						this.messageHeight + this.padding,
+						0
+					)
 				),
 			this.leftBottom
 				.clone()
-				.add(
-					new THREE.Vector3(this.padding + this.responseOffset, this.padding, 0)
-				),
+				.add(new THREE.Vector3(this.padding, this.padding, 0)),
 		]
+
+		const points = getPointsVisu(this.messageAnchor, new THREE.Color(0xff00ff))
+		this.scene.add(points)
 		//
 
 		this.message = this.buildMessage()
@@ -73,6 +86,18 @@ export default class Grid extends SceneSubject {
 
 		this.scene.add(this.message)
 		this.scene.add(this.response)
+
+		// Dev
+		if (config.devUI) {
+			const meshVisu = getHelper2DBox(
+				this.leftBottom
+					.clone()
+					.add(new THREE.Vector3(this.padding, this.padding)),
+				this.contentWidth,
+				this.contentHeight
+			)
+			this.scene.add(meshVisu)
+		}
 	}
 
 	buildMessage(): Message {
@@ -83,9 +108,9 @@ export default class Grid extends SceneSubject {
 			this.camera,
 			this.testText,
 			this.messageWidth,
-			this.messageHeight,
 			this.lineHeight,
-			this.messageAnchor[0]
+			this.messageAnchor[0],
+			'response'
 		)
 		return message
 	}
@@ -98,34 +123,40 @@ export default class Grid extends SceneSubject {
 			this.camera,
 			this.testText02,
 			this.messageWidth,
-			this.messageHeight,
 			this.lineHeight,
-			this.messageAnchor[1],
-			'response'
+			this.messageAnchor[1]
 		)
 		return message
 	}
 
 	calculateScreenDimensions(): void {
-		this.screenWidthWorld = this.camera.right - this.camera.left
-		this.screenHeightWorld = this.camera.top - this.camera.bottom
-		this.contentWidth = this.screenWidthWorld * (1 - this.padding * 2)
-		this.contentHeight = this.screenHeightWorld * (1 - this.padding * 2)
+		this.screenWidthWorld = screenToWorld(this.camera, 1, 1).distanceTo(
+			screenToWorld(this.camera, -1, 1)
+		)
+		this.screenHeightWorld = screenToWorld(this.camera, 1, 1).distanceTo(
+			screenToWorld(this.camera, 1, -1)
+		)
+		this.contentWidth = this.screenWidthWorld - this.padding * 2
+		this.contentHeight = this.screenHeightWorld - this.padding * 2
 	}
 
 	calulateMessageDimensions(): void {
-		this.responseOffset = this.screenWidthWorld / 3
+		this.responseOffset = this.contentWidth / 3
 		this.messageWidth = this.contentWidth * (2 / 3)
 		this.messageHeight = this.contentHeight / 2
 		this.lineHeight = this.messageHeight / 6
 	}
 
+	// CALLBACKS
 	update(): void {
 		this.message.update()
 		this.response.update()
 	}
 
 	onWindowResize(): void {
-		//
+		this.calculateScreenDimensions()
+		this.calulateMessageDimensions()
+		this.message.onWindowResize()
+		this.response.onWindowResize()
 	}
 }

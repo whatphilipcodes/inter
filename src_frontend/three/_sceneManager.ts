@@ -9,6 +9,7 @@ import { Store } from '../state/store'
 // SceneSubjects
 // import Input from './input'
 import Grid from './grid'
+import Input from './input'
 
 // Debugging
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'

@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { Text, getSelectionRects, getCaretAtPoint } from 'troika-three-text'
 import Cursor from './cursor'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
-import { screenToWorld } from '../utils/threeUtil'
+import { screenToWorld, fontSizeFromLineHeight } from '../utils/threeUtil'
 
 import config from '../front.config'
 
@@ -64,37 +64,7 @@ export default class Input extends SceneSubject {
 		}
 	}
 
-	buildTroika() {
-		const troika = new Text()
-		troika.font = './assets/cascadiacode/CascadiaMono-Regular.ttf'
-		troika.fontSize = this.fontSizeFromLineHeight(0.5)
-		troika.lineHeight = 1.2
-		troika.sdfGlyphSize = 64
-		troika.color = 0xffffff
-		troika.anchorX = 'left'
-		troika.anchorY = 'top'
-		troika.maxWidth = this.camera.right - this.camera.left //- this.margin
-		troika.overflowWrap = 'break-word'
-		troika.whiteSpace = 'normal'
-		troika.position.set(this.anchor.x, this.anchor.y, this.anchor.z)
-		return troika
-	}
-
-	/**
-	 * Calculates the font size from based on the target line height.
-	 * @param {number} targetLineHeight The line height that the object should have in world units.
-	 * @param {number} ratio The ratio between the font size and the line height. Defaults to 1.2.
-	 * @returns {number} The font size.
-	 */
-	fontSizeFromLineHeight(targetLineHeight: number, ratio = 1.2): number {
-		const targetFontSize = targetLineHeight / ratio
-		return targetFontSize
-	}
-
-	getCursorWidth(ofLineHeight = 0.08): number {
-		return this.targetLineHeight * ofLineHeight
-	}
-
+	// DEV
 	buildDevBox(): THREE.BoxHelper {
 		// Debug
 		const boxHelper = new THREE.BoxHelper(this.troika)
@@ -107,9 +77,25 @@ export default class Input extends SceneSubject {
 		folder.addColor(this.troika, 'color').name('Color')
 	}
 
-	update() {
-		this.setCaretPos()
-		if (this.boxHelper) this.boxHelper.update()
+	// METHODS
+	buildTroika() {
+		const troika = new Text()
+		troika.font = './assets/cascadiacode/CascadiaMono-Regular.ttf'
+		troika.fontSize = fontSizeFromLineHeight(0.5)
+		troika.lineHeight = 1.2
+		troika.sdfGlyphSize = 64
+		troika.color = 0xffffff
+		troika.anchorX = 'left'
+		troika.anchorY = 'top'
+		troika.maxWidth = this.camera.right - this.camera.left //- this.margin
+		troika.overflowWrap = 'break-word'
+		troika.whiteSpace = 'normal'
+		troika.position.set(this.anchor.x, this.anchor.y, this.anchor.z)
+		return troika
+	}
+
+	getCursorWidth(ofLineHeight = 0.08): number {
+		return this.targetLineHeight * ofLineHeight
 	}
 
 	syncDisplay(): void {
@@ -165,33 +151,12 @@ export default class Input extends SceneSubject {
 		return lowerCaretPos.charIndex
 	}
 
-	onWindowResize(): void {
-		this.anchor = screenToWorld(this.camera, -1, 1)
-		// this.margin = screenToWorld(this.camera, 0.4, 0).x
-		// this.textcursor.setAnchor(this.anchor)
-		this.textcursor.updateDimensions(
-			this.getCursorWidth(),
-			this.targetLineHeight
-		)
-		this.troika.position.set(this.anchor.x, this.anchor.y, this.anchor.z)
-		this.troika.maxWidth = this.camera.right - this.camera.left //- this.margin
-		this.troika.fontSize = this.fontSizeFromLineHeight(0.5)
-		this.syncDisplay()
-	}
-
 	setCaretPos(): void {
 		if (this.state.cursorPos === 0) {
 			this.textcursor.update(new THREE.Vector3(0, 0, this.position.z))
 			return
 		}
-		// const currentChar = this.troika.text[this.state.cursorPos - 1]
-		// let newLineOffset = 0
-		// let charIndexOffset = 0
-		// if (currentChar === '\n') {
-		// 	charIndexOffset = 1
-		// 	newLineOffset = 0
-		// }
-		const arrayPos = (this.state.cursorPos - 1) /*+ charIndexOffset*/ * 4
+		const arrayPos = (this.state.cursorPos - 1) * 4
 		// Float32Array contains n + 0: left, n + 1: right, n + 2: bottom, n + 3: top for each caret
 		// they are relative to the text's anchor point, so we need to add the text's position to them
 		const currentCaretPos = {
@@ -205,10 +170,29 @@ export default class Input extends SceneSubject {
 			return
 		this.textcursor.update(
 			new THREE.Vector3(
-				currentCaretPos.right /*- newLineOffset*/,
+				currentCaretPos.right,
 				currentCaretPos.top,
 				this.position.z
 			)
 		)
+	}
+
+	// CALLBACKS
+	update() {
+		this.setCaretPos()
+		if (this.boxHelper) this.boxHelper.update()
+	}
+
+	onWindowResize(): void {
+		this.anchor = screenToWorld(this.camera, -1, 1)
+		this.textcursor.onWindowResize(
+			this.anchor,
+			this.getCursorWidth(),
+			this.targetLineHeight
+		)
+		this.troika.position.set(this.anchor.x, this.anchor.y, this.anchor.z)
+		this.troika.maxWidth = this.camera.right - this.camera.left
+		this.troika.fontSize = fontSizeFromLineHeight(0.5)
+		this.syncDisplay()
 	}
 }

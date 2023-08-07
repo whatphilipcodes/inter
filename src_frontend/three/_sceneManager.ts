@@ -50,7 +50,7 @@ export default class SceneManager {
 		this.renderer = this.buildRenderer()
 		this.init()
 
-		if (config.devUI) this.buildDevUI()
+		// if (config.devUI) this.buildDevUI()
 	}
 
 	buildCanvas(width: number, height: number): HTMLCanvasElement {
@@ -100,13 +100,13 @@ export default class SceneManager {
 		return sceneSubjects
 	}
 
-	buildDevUI(): void {
-		const gui = new GUI({ title: 'Dev UI' })
-		this.camera.buildDevUI(gui)
-		for (const subject of this.sceneSubjects) {
-			subject.buildDevUI?.(gui)
-		}
-	}
+	// buildDevUI(): void {
+	// 	const gui = new GUI({ title: 'Dev UI' })
+	// 	this.camera.buildDevUI(gui)
+	// 	for (const subject of this.sceneSubjects) {
+	// 		subject.buildDevUI?.(gui)
+	// 	}
+	// }
 
 	// Callbacks
 	init(): void {

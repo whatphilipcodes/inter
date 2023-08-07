@@ -2,8 +2,7 @@ import { Store } from '../state/store'
 import SceneSubject from './_sceneSubject'
 import * as THREE from 'three'
 import { Text } from 'troika-three-text'
-import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
-import { fontSize, cursorWidth, getHelper2DBox } from '../utils/threeUtil'
+import { fontSize, cursorWidth } from '../utils/threeUtil'
 
 import Role from './role'
 import config from '../front.config'
@@ -26,6 +25,7 @@ export default class Input extends SceneSubject {
 
 	// Role
 	indicatorOffset: THREE.Vector3
+	posOffset: THREE.Vector3
 	role: Role
 
 	// Debug
@@ -61,15 +61,19 @@ export default class Input extends SceneSubject {
 		// create role indicator
 		switch (type) {
 			case 'input':
-				this.indicatorOffset = new THREE.Vector3(-0.04, 0, 0)
+				this.indicatorOffset = new THREE.Vector3(0, 0, 0)
+				this.posOffset = new THREE.Vector3(this.targetLineHeight, 0, 0)
 				break
 			case 'response':
 				console.log(this.width)
-				this.indicatorOffset = new THREE.Vector3(this.width + 0.04, 0, 0)
+				this.indicatorOffset = new THREE.Vector3(this.width, 0, 0)
+				this.posOffset = new THREE.Vector3(-this.targetLineHeight, 0, 0)
 				break
 			default:
 				throw new Error('Invalid message type!')
 		}
+
+		this.setPosition()
 
 		this.role = new Role(this.anchor, cursorWidth(this.targetLineHeight), 1)
 		this.scene.add(this.role.get())
@@ -88,12 +92,6 @@ export default class Input extends SceneSubject {
 		return boxHelper
 	}
 
-	buildDevUI(gui: GUI) {
-		const folder = gui.addFolder('Input Display')
-		folder.add(this.troika, 'fontSize', 0.01, 1).name('Font Size')
-		folder.addColor(this.troika, 'color').name('Color')
-	}
-
 	// METHODS
 	buildTroika() {
 		const troika = new Text()
@@ -107,9 +105,17 @@ export default class Input extends SceneSubject {
 		troika.maxWidth = this.width
 		troika.overflowWrap = 'break-word'
 		troika.whiteSpace = 'normal'
-		troika.position.set(this.anchor.x, this.anchor.y, this.anchor.z)
 		troika.text = this.text
 		return troika
+	}
+
+	setPosition(position: THREE.Vector3 = new THREE.Vector3(0, 0, 0)) {
+		const newPosition = new THREE.Vector3(
+			this.anchor.x + this.posOffset.x + position.x,
+			this.anchor.y + this.posOffset.y + position.y,
+			this.anchor.z + this.posOffset.z + position.z
+		)
+		this.troika.position.set(newPosition.x, newPosition.y, newPosition.z)
 	}
 
 	// CALLBACKS
@@ -123,7 +129,7 @@ export default class Input extends SceneSubject {
 	}
 
 	onWindowResize(): void {
-		this.troika.position.set(this.anchor.x, this.anchor.y, this.anchor.z)
+		this.setPosition()
 		this.troika.maxWidth = this.width
 		this.troika.fontSize = fontSize(this.targetLineHeight)
 	}

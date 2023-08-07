@@ -70,7 +70,7 @@ function fontSize(targetLineHeight: number, ratio = 1.2): number {
  * @param {number} ratio The ratio between the font size and the line height. Defaults to 0.08.
  * @returns {number} The font size.
  */
-function cursorWidth(targetLineHeight: number, ratio = 0.08): number {
+function cursorWidth(targetLineHeight: number, ratio = 0.1): number {
 	return targetLineHeight * ratio
 }
 

@@ -33,9 +33,9 @@ export default class Grid extends SceneSubject {
 
 	// Debug
 	testText =
-		"The Egyptian's curved sword clanged against Sir Robert's helm, setting his head ringing. In return, the knight's broadsword came about in a sweeping arc,"
+		'This is a test message. In the future this might be AI-generated. For now, you can safely ignore the contents of this message.Please have nice day.Thanks.'
 	testText02 =
-		'This is a test response. Do you know what is happening? If you do, please tell me. I am very confused. I need 6 lines so condsider this boilerplate.'
+		'In a not so distant future, here could be your input. But for now, this is just a test. Thanks for your understanding.'
 
 	// Children
 	message: Message
@@ -46,14 +46,14 @@ export default class Grid extends SceneSubject {
 		scene: THREE.Scene,
 		camera: THREE.OrthographicCamera,
 		state: Store,
-		padding = 0.08
-		// spacing = 0.02
+		padding = 0.1
 	) {
 		super(name, scene)
 
 		this.state = state
 		this.camera = camera
 		this.padding = padding
+		this.spacing = this.lineHeight
 
 		this.leftBottom = screenToWorld(this.camera, -1, -1) // functions as grid origin
 		console.log(this.leftBottom)

@@ -27,7 +27,7 @@ export default class Cursor {
 	setPosition(position: THREE.Vector3) {
 		// offsets the postion to the lower left corner of the cursor
 		this.mesh.position.set(
-			position.x + this.width,
+			position.x + this.width / 2,
 			position.y + this.height / 2,
 			position.z
 		)

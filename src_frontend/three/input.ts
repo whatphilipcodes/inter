@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { Text, getSelectionRects, getCaretAtPoint } from 'troika-three-text'
 import Cursor from './cursor'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
-import { screenToWorld, fontSizeFromLineHeight } from '../utils/threeUtil'
+import { screenToWorld, fontSize, cursorWidth } from '../utils/threeUtil'
 
 import config from '../front.config'
 
@@ -49,7 +49,7 @@ export default class Input extends SceneSubject {
 		// Create Text Cursor
 		this.textcursor = new Cursor(
 			this.anchor,
-			this.getCursorWidth(),
+			cursorWidth(this.targetLineHeight),
 			this.targetLineHeight
 		)
 		this.scene.add(this.textcursor.get())
@@ -81,7 +81,7 @@ export default class Input extends SceneSubject {
 	buildTroika() {
 		const troika = new Text()
 		troika.font = './assets/cascadiacode/CascadiaMono-Regular.ttf'
-		troika.fontSize = fontSizeFromLineHeight(0.5)
+		troika.fontSize = fontSize(0.5)
 		troika.lineHeight = 1.2
 		troika.sdfGlyphSize = 64
 		troika.color = 0xffffff
@@ -92,10 +92,6 @@ export default class Input extends SceneSubject {
 		troika.whiteSpace = 'normal'
 		troika.position.set(this.anchor.x, this.anchor.y, this.anchor.z)
 		return troika
-	}
-
-	getCursorWidth(ofLineHeight = 0.08): number {
-		return this.targetLineHeight * ofLineHeight
 	}
 
 	syncDisplay(): void {
@@ -187,12 +183,12 @@ export default class Input extends SceneSubject {
 		this.anchor = screenToWorld(this.camera, -1, 1)
 		this.textcursor.onWindowResize(
 			this.anchor,
-			this.getCursorWidth(),
+			cursorWidth(this.targetLineHeight),
 			this.targetLineHeight
 		)
 		this.troika.position.set(this.anchor.x, this.anchor.y, this.anchor.z)
 		this.troika.maxWidth = this.camera.right - this.camera.left
-		this.troika.fontSize = fontSizeFromLineHeight(0.5)
+		this.troika.fontSize = fontSize(0.5)
 		this.syncDisplay()
 	}
 }

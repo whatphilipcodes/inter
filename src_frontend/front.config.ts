@@ -1,5 +1,5 @@
 const config = {
-	devUI: true,
+	devUI: false,
 	devTools: true,
 	fullScreen: false,
 	hideCursor: true,

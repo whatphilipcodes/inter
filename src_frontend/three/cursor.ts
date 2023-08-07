@@ -36,6 +36,7 @@ export default class Cursor {
 		this.geometry = new THREE.PlaneGeometry(this.width, this.height)
 		this.mesh = new THREE.Mesh(this.geometry, this.material)
 		this.anchor = anchor
+		this.setPosition(anchor)
 	}
 
 	setPosition(position: THREE.Vector3) {

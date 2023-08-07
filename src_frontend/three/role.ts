@@ -1,9 +1,10 @@
 import * as THREE from 'three'
+// import negative_frag from './shader/negative.frag'
 
-export default class Role {
+export default class Cursor {
 	// Props
 	anchor: THREE.Vector3
-	posOffset: THREE.Vector2
+	// posOffset: THREE.Vector2
 	material: THREE.MeshBasicMaterial
 	geometry: THREE.PlaneGeometry
 	mesh: THREE.Mesh
@@ -11,7 +12,7 @@ export default class Role {
 	height: number
 
 	constructor(anchor: THREE.Vector3, width = 0.1, height = 1) {
-		this.posOffset = new THREE.Vector2(0, 0)
+		// this.posOffset = new THREE.Vector2(0, 0)
 		this.width = width
 		this.height = height
 		this.material = new THREE.MeshBasicMaterial({
@@ -19,16 +20,17 @@ export default class Role {
 		})
 		this.geometry = new THREE.PlaneGeometry(this.width, this.height)
 		this.mesh = new THREE.Mesh(this.geometry, this.material)
-		// this.setAnchor(anchor)
+		this.anchor = anchor
+		this.setPosition(anchor)
 	}
 
-	setAnchor(anchor: THREE.Vector3) {
-		this.anchor = new THREE.Vector3(
-			anchor.x + this.width / 2,
-			anchor.y - this.height / 2,
-			anchor.z
+	setPosition(position: THREE.Vector3) {
+		// offsets the postion to the lower left corner of the cursor
+		this.mesh.position.set(
+			position.x + this.width / 2,
+			position.y + this.height / 2,
+			position.z
 		)
-		this.mesh.position.set(this.anchor.x, this.anchor.y, this.anchor.z)
 	}
 
 	get() {
@@ -40,12 +42,18 @@ export default class Role {
 		this.height = height
 	}
 
-	update(offset: THREE.Vector2) {
-		this.posOffset = offset
-		this.mesh.position.set(
-			this.anchor.x + this.posOffset.x,
-			this.anchor.y + this.posOffset.y,
-			this.anchor.z
-		)
+	updatePosition(offset: THREE.Vector3) {
+		const newPos = this.anchor.clone().add(offset)
+		this.setPosition(newPos)
+	}
+
+	// CALLBACKS
+	update(offset: THREE.Vector3) {
+		this.updatePosition(offset)
+	}
+
+	onWindowResize(anchor: THREE.Vector3, width: number, height: number) {
+		this.anchor = anchor
+		this.updateDimensions(width, height)
 	}
 }

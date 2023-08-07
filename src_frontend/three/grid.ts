@@ -35,7 +35,7 @@ export default class Grid extends SceneSubject {
 	testText =
 		"The Egyptian's curved sword clanged against Sir Robert's helm, setting his head ringing. In return, the knight's broadsword came about in a sweeping arc,"
 	testText02 =
-		'This is a test response. Do you know what is happening? If you do, please tell me. I am very confused. I need 6 lines so conder this boilerplate.'
+		'This is a test response. Do you know what is happening? If you do, please tell me. I am very confused. I need 6 lines so condsider this boilerplate.'
 
 	// Children
 	message: Message
@@ -46,8 +46,8 @@ export default class Grid extends SceneSubject {
 		scene: THREE.Scene,
 		camera: THREE.OrthographicCamera,
 		state: Store,
-		padding = 0.08,
-		spacing = 0.02
+		padding = 0.08
+		// spacing = 0.02
 	) {
 		super(name, scene)
 
@@ -76,9 +76,6 @@ export default class Grid extends SceneSubject {
 				.clone()
 				.add(new THREE.Vector3(this.padding, this.padding, 0)),
 		]
-
-		const points = getPointsVisu(this.messageAnchor, new THREE.Color(0xff00ff))
-		this.scene.add(points)
 		//
 
 		this.message = this.buildMessage()
@@ -97,6 +94,12 @@ export default class Grid extends SceneSubject {
 				this.contentHeight
 			)
 			this.scene.add(meshVisu)
+
+			const points = getPointsVisu(
+				this.messageAnchor,
+				new THREE.Color(0xff00ff)
+			)
+			this.scene.add(points)
 		}
 	}
 

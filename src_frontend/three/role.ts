@@ -19,7 +19,7 @@ export default class Cursor {
 		})
 		this.geometry = new THREE.PlaneGeometry()
 		this.mesh = new THREE.Mesh(this.geometry, this.material)
-		this.mesh.scale.set(width, height, 1)
+		// this.mesh.scale.set(width, height, 1)
 		this.anchor = anchor
 		this.setPosition(anchor)
 	}
@@ -27,7 +27,7 @@ export default class Cursor {
 	setPosition(position: THREE.Vector3) {
 		// offsets the postion to the lower left corner of the cursor
 		this.mesh.position.set(
-			position.x + this.width / 2,
+			position.x + this.width,
 			position.y + this.height / 2,
 			position.z
 		)
@@ -40,7 +40,7 @@ export default class Cursor {
 	updateDimensions(width: number, height: number) {
 		this.width = width
 		this.height = height
-		// this.mesh.scale.set(width, height, 1)
+		this.mesh.scale.set(width, height, 1)
 	}
 
 	updatePosition(offset: THREE.Vector3) {

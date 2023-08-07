@@ -3,7 +3,7 @@ import SceneSubject from './_sceneSubject'
 import * as THREE from 'three'
 import { Text } from 'troika-three-text'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
-import { screenToWorld, fontSize, cursorWidth } from '../utils/threeUtil'
+import { fontSize, cursorWidth, getHelper2DBox } from '../utils/threeUtil'
 
 import Role from './role'
 import config from '../front.config'
@@ -57,7 +57,6 @@ export default class Input extends SceneSubject {
 		// Create Troika Text
 		this.troika = this.buildTroika()
 		this.scene.add(this.troika)
-		this.troika.sync()
 
 		// create role indicator
 		switch (type) {
@@ -65,18 +64,15 @@ export default class Input extends SceneSubject {
 				this.indicatorOffset = new THREE.Vector3(-0.04, 0, 0)
 				break
 			case 'response':
+				console.log(this.width)
 				this.indicatorOffset = new THREE.Vector3(this.width + 0.04, 0, 0)
 				break
 			default:
 				throw new Error('Invalid message type!')
 		}
 
-		// this.role = new Role(
-		// 	this.anchor.clone().add(this.indicatorOffset),
-		// 	cursorWidth(this.targetLineHeight),
-		// 	this.height
-		// )
-		// this.scene.add(this.role.get())
+		this.role = new Role(this.anchor, cursorWidth(this.targetLineHeight), 1)
+		this.scene.add(this.role.get())
 
 		// debug
 		if (config.devUI) {
@@ -118,18 +114,15 @@ export default class Input extends SceneSubject {
 
 	// CALLBACKS
 	update() {
-		// console.log('updating')
-		// 	() => {
-		// 	this.height = this.troika.textRenderInfo.blockBounds[3]
-		// 	console.log(this.height)
-		// })
-
-		// this.role.updateDimensions(cursorWidth(this.targetLineHeight), 0.1)
+		this.troika.sync(() => {
+			this.height = this.troika.textRenderInfo.blockBounds[3]
+		})
+		this.role.updateDimensions(cursorWidth(this.targetLineHeight), this.height)
+		this.role.update(this.indicatorOffset)
 		if (this.boxHelper) this.boxHelper.update()
 	}
 
 	onWindowResize(): void {
-		// this.anchor = screenToWorld(this.camera, -1, 1)
 		this.troika.position.set(this.anchor.x, this.anchor.y, this.anchor.z)
 		this.troika.maxWidth = this.width
 		this.troika.fontSize = fontSize(this.targetLineHeight)

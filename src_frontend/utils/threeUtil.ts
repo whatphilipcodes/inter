@@ -53,4 +53,15 @@ function worldToPixel(
 	return new THREE.Vector2(x_coor, y_coor)
 }
 
-export { screenToWorld, worldToPixel }
+/**
+ * Calculates the font size from based on the target line height.
+ * @param {number} targetLineHeight The line height that the object should have in world units.
+ * @param {number} ratio The ratio between the font size and the line height. Defaults to 1.2.
+ * @returns {number} The font size.
+ */
+function fontSizeFromLineHeight(targetLineHeight: number, ratio = 1.2): number {
+	const targetFontSize = targetLineHeight / ratio
+	return targetFontSize
+}
+
+export { screenToWorld, worldToPixel, fontSizeFromLineHeight }

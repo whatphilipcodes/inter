@@ -7,7 +7,8 @@ import { Store } from '../state/store'
 // import { appState } from '../utils/enums'
 
 // SceneSubjects
-import InputDisplay from './message'
+import Input from './input'
+import Grid from './grid'
 
 // Debugging
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
@@ -40,7 +41,7 @@ export default class SceneManager {
 		this.clock = new THREE.Clock()
 
 		this.camera = new Camera(this.canvas)
-		this.camera.buildOrthoCam()
+		this.camera.buildOrthoCam(1)
 
 		this.scene = this.buildScene()
 		this.sceneSubjects = this.buildSceneSubjects()
@@ -89,8 +90,14 @@ export default class SceneManager {
 
 	buildSceneSubjects(): SceneSubject[] {
 		const sceneSubjects = [
-			new InputDisplay(
-				'InputDisplay',
+			// new Grid(
+			// 	'Grid',
+			// 	this.scene,
+			// 	this.camera.instance() as THREE.OrthographicCamera,
+			// 	this.state
+			// ),
+			new Input(
+				'Input',
 				this.scene,
 				this.state,
 				this.camera.instance() as THREE.OrthographicCamera

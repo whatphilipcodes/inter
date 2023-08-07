@@ -1,22 +1,7 @@
 import * as THREE from 'three'
-// import negative_frag from './shader/negative.frag'
 
-enum Behavior {
-	// input
-	FLASH,
-	NAV,
-	ENTER,
-	// answer
-	LOADING,
-	REVEAL,
-	// both
-	STATIC,
-	HIDDEN,
-}
-
-export default class TextCursor {
+export default class Role {
 	// Props
-	behavior: Behavior
 	anchor: THREE.Vector3
 	posOffset: THREE.Vector2
 	material: THREE.MeshBasicMaterial
@@ -26,7 +11,6 @@ export default class TextCursor {
 	height: number
 
 	constructor(anchor: THREE.Vector3, width = 0.1, height = 1) {
-		this.behavior = Behavior.FLASH
 		this.posOffset = new THREE.Vector2(0, 0)
 		this.width = width
 		this.height = height
@@ -35,7 +19,7 @@ export default class TextCursor {
 		})
 		this.geometry = new THREE.PlaneGeometry(this.width, this.height)
 		this.mesh = new THREE.Mesh(this.geometry, this.material)
-		this.setAnchor(anchor)
+		// this.setAnchor(anchor)
 	}
 
 	setAnchor(anchor: THREE.Vector3) {
@@ -44,16 +28,21 @@ export default class TextCursor {
 			anchor.y - this.height / 2,
 			anchor.z
 		)
-		this.mesh.position.set(this.anchor.x, this.anchor.y, this.anchor.z)
+		this.mesh.anchor.set(this.anchor.x, this.anchor.y, this.anchor.z)
 	}
 
 	get() {
 		return this.mesh
 	}
 
+	updateDimensions(width: number, height: number) {
+		this.width = width
+		this.height = height
+	}
+
 	update(offset: THREE.Vector2) {
 		this.posOffset = offset
-		this.mesh.position.set(
+		this.mesh.anchor.set(
 			this.anchor.x + this.posOffset.x,
 			this.anchor.y + this.posOffset.y,
 			this.anchor.z

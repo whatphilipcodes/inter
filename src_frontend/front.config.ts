@@ -1,7 +1,7 @@
 const config = {
-	devUI: false,
+	devUI: true,
 	devTools: true,
-	fullScreen: true,
+	fullScreen: false,
 	hideCursor: true,
 	debugMsg: true,
 	maxInputLength: 128,

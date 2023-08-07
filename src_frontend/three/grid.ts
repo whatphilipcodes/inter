@@ -8,6 +8,7 @@ import {
 } from '../utils/threeUtil'
 
 import Message from './message'
+import Input from './input'
 import config from '../front.config'
 
 export default class Grid extends SceneSubject {
@@ -26,20 +27,21 @@ export default class Grid extends SceneSubject {
 	lineHeight: number
 	responseOffset: number // 1/3 of screen width - margin
 	messageWidth: number // 2/3 of screen width - margin
-	messageHeight: number // 1/2 of screen height - margin
+	// messageHeight: number // 1/2 of screen height - margin
 
 	messageAnchor: THREE.Vector3[]
 	leftBottom: THREE.Vector3
 
 	// Debug
 	testText =
-		'This is a test message. In the future this might be AI-generated. For now, you can safely ignore the contents of this message.Please have nice day.Thanks.'
+		'This is a test message. In the future this might be AI-generated. For now, you can safely ignore the contents of this message. Please have a nice day. Thanks.'
 	testText02 =
-		'In a not so distant future, here could be your input. But for now, this is just a test. Thanks for your understanding.'
+		'In a not so distant future, here could be your input. But for now, this is just a test. Thank you for your understanding.'
 
 	// Children
 	message: Message
 	response: Message
+	input: Input
 
 	constructor(
 		name: string,
@@ -65,23 +67,24 @@ export default class Grid extends SceneSubject {
 		this.messageAnchor = [
 			this.leftBottom
 				.clone()
+				.add(new THREE.Vector3(this.padding, this.padding, 0)),
+			this.leftBottom
+				.clone()
 				.add(
 					new THREE.Vector3(
 						this.padding + this.responseOffset,
-						this.messageHeight + this.padding,
+						this.lineHeight * 4 + this.padding,
 						0
 					)
 				),
-			this.leftBottom
-				.clone()
-				.add(new THREE.Vector3(this.padding, this.padding, 0)),
 		]
 		//
 
-		this.message = this.buildMessage()
+		this.input = this.buildInput()
+		// this.message = this.buildMessage()
 		this.response = this.buildResponse()
 
-		this.scene.add(this.message)
+		this.scene.add(this.input)
 		this.scene.add(this.response)
 
 		// Dev
@@ -103,6 +106,19 @@ export default class Grid extends SceneSubject {
 		}
 	}
 
+	buildInput(): Input {
+		const input = new Input(
+			'input',
+			this.scene,
+			this.state,
+			this.camera,
+			this.messageWidth,
+			this.lineHeight,
+			this.messageAnchor[0]
+		)
+		return input
+	}
+
 	buildMessage(): Message {
 		const message = new Message(
 			'message',
@@ -112,8 +128,7 @@ export default class Grid extends SceneSubject {
 			this.testText,
 			this.messageWidth,
 			this.lineHeight,
-			this.messageAnchor[0],
-			'response'
+			this.messageAnchor[0]
 		)
 		return message
 	}
@@ -124,10 +139,11 @@ export default class Grid extends SceneSubject {
 			this.scene,
 			this.state,
 			this.camera,
-			this.testText02,
+			this.testText,
 			this.messageWidth,
 			this.lineHeight,
-			this.messageAnchor[1]
+			this.messageAnchor[1],
+			'response'
 		)
 		return message
 	}
@@ -146,20 +162,20 @@ export default class Grid extends SceneSubject {
 	calulateMessageDimensions(): void {
 		this.responseOffset = this.contentWidth / 3
 		this.messageWidth = this.contentWidth * (2 / 3)
-		this.messageHeight = this.contentHeight / 2
-		this.lineHeight = this.messageHeight / 6
+		// this.messageHeight = this.contentHeight / 2
+		this.lineHeight = this.contentHeight / 18 // devide the content height by the number of lines
 	}
 
 	// CALLBACKS
 	update(): void {
-		this.message.update()
+		this.input.update()
 		this.response.update()
 	}
 
 	onWindowResize(): void {
 		this.calculateScreenDimensions()
 		this.calulateMessageDimensions()
-		this.message.onWindowResize()
+		this.input.onWindowResize()
 		this.response.onWindowResize()
 	}
 }

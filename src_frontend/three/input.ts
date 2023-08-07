@@ -3,8 +3,8 @@ import SceneSubject from './_sceneSubject'
 import * as THREE from 'three'
 import { Text, getSelectionRects, getCaretAtPoint } from 'troika-three-text'
 import Cursor from './cursor'
-import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
-import { screenToWorld, fontSize, cursorWidth } from '../utils/threeUtil'
+// import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
+import { fontSize, cursorWidth } from '../utils/threeUtil'
 
 import config from '../front.config'
 
@@ -12,8 +12,10 @@ export default class Input extends SceneSubject {
 	// Refs
 	state: Store
 	camera: THREE.OrthographicCamera
+
 	// Props
-	targetLineHeight = 0.5
+	width: number
+	targetLineHeight: number
 	anchor: THREE.Vector3
 	textcursor: Cursor
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,18 +31,23 @@ export default class Input extends SceneSubject {
 		name: string,
 		scene: THREE.Scene,
 		state: Store,
-		camera: THREE.OrthographicCamera
+		camera: THREE.OrthographicCamera,
+		width: number,
+		lineHeight: number,
+		anchor: THREE.Vector3
 	) {
 		super(name, scene)
 
 		// Get References
 		this.state = state
 		this.camera = camera
-		this.anchor = screenToWorld(camera, -1, 1)
-		// this.margin = 0 // screenToWorld(camera, 0.4, 0).x
+		this.anchor = anchor
+		this.width = width
+		this.targetLineHeight = lineHeight
 
 		// Create Troika Text
 		this.troika = this.buildTroika()
+		this.setPosition()
 		this.scene.add(this.troika)
 
 		this.caretPositions = new Float32Array(0)
@@ -71,27 +78,35 @@ export default class Input extends SceneSubject {
 		return boxHelper
 	}
 
-	buildDevUI(gui: GUI) {
-		const folder = gui.addFolder('Input Display')
-		folder.add(this.troika, 'fontSize', 0.01, 1).name('Font Size')
-		folder.addColor(this.troika, 'color').name('Color')
-	}
+	// buildDevUI(gui: GUI) {
+	// 	const folder = gui.addFolder('Input Display')
+	// 	folder.add(this.troika, 'fontSize', 0.01, 1).name('Font Size')
+	// 	folder.addColor(this.troika, 'color').name('Color')
+	// }
 
 	// METHODS
 	buildTroika() {
 		const troika = new Text()
 		troika.font = './assets/cascadiacode/CascadiaMono-Regular.ttf'
-		troika.fontSize = fontSize(0.5)
+		troika.fontSize = fontSize(this.targetLineHeight)
 		troika.lineHeight = 1.2
 		troika.sdfGlyphSize = 64
 		troika.color = 0xffffff
 		troika.anchorX = 'left'
-		troika.anchorY = 'top'
-		troika.maxWidth = this.camera.right - this.camera.left //- this.margin
+		troika.anchorY = 'bottom'
+		troika.maxWidth = this.width
 		troika.overflowWrap = 'break-word'
 		troika.whiteSpace = 'normal'
-		troika.position.set(this.anchor.x, this.anchor.y, this.anchor.z)
 		return troika
+	}
+
+	setPosition(position: THREE.Vector3 = new THREE.Vector3(0, 0, 0)) {
+		const newPosition = new THREE.Vector3(
+			this.anchor.x + this.targetLineHeight + position.x,
+			this.anchor.y + position.y,
+			this.anchor.z + position.z
+		)
+		this.troika.position.set(newPosition.x, newPosition.y, newPosition.z)
 	}
 
 	syncDisplay(): void {
@@ -149,7 +164,13 @@ export default class Input extends SceneSubject {
 
 	setCaretPos(): void {
 		if (this.state.cursorPos === 0) {
-			this.textcursor.update(new THREE.Vector3(0, 0, this.position.z))
+			this.textcursor.update(
+				new THREE.Vector3(
+					this.targetLineHeight,
+					this.targetLineHeight,
+					this.position.z
+				)
+			)
 			return
 		}
 		const arrayPos = (this.state.cursorPos - 1) * 4
@@ -166,7 +187,7 @@ export default class Input extends SceneSubject {
 			return
 		this.textcursor.update(
 			new THREE.Vector3(
-				currentCaretPos.right,
+				currentCaretPos.right + this.targetLineHeight,
 				currentCaretPos.top,
 				this.position.z
 			)
@@ -180,15 +201,14 @@ export default class Input extends SceneSubject {
 	}
 
 	onWindowResize(): void {
-		this.anchor = screenToWorld(this.camera, -1, 1)
 		this.textcursor.onWindowResize(
 			this.anchor,
 			cursorWidth(this.targetLineHeight),
 			this.targetLineHeight
 		)
-		this.troika.position.set(this.anchor.x, this.anchor.y, this.anchor.z)
-		this.troika.maxWidth = this.camera.right - this.camera.left
-		this.troika.fontSize = fontSize(0.5)
+		this.setPosition()
+		this.troika.maxWidth = this.width
+		this.troika.fontSize = fontSize(this.targetLineHeight)
 		this.syncDisplay()
 	}
 }

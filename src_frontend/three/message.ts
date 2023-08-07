@@ -7,7 +7,7 @@ import { fontSize, cursorWidth } from '../utils/threeUtil'
 import Role from './role'
 import config from '../front.config'
 
-export default class Input extends SceneSubject {
+export default class Message extends SceneSubject {
 	// Refs
 	state: Store
 	camera: THREE.OrthographicCamera

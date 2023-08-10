@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-// import negative_frag from './shader/negative.frag'
 
 enum Behavior {
 	// input
@@ -18,7 +17,6 @@ export default class Cursor {
 	// Props
 	behavior: Behavior
 	anchor: THREE.Vector3
-	// posOffset: THREE.Vector2
 	material: THREE.MeshBasicMaterial
 	geometry: THREE.PlaneGeometry
 	mesh: THREE.Mesh
@@ -27,7 +25,6 @@ export default class Cursor {
 
 	constructor(anchor: THREE.Vector3, width = 0.1, height = 1) {
 		this.behavior = Behavior.FLASH
-		// this.posOffset = new THREE.Vector2(0, 0)
 		this.width = width
 		this.height = height
 		this.material = new THREE.MeshBasicMaterial({

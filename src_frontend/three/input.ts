@@ -177,13 +177,16 @@ export default class Input extends SceneSubject {
 		this.boxHelper = new THREE.BoxHelper(this.troika)
 		this.scene.add(this.boxHelper)
 		const folder = gui.addFolder('Text')
-		folder.add(this.state, 'fontLineHeightRatio', 1, 1.4, 0.01).onChange(() => {
-			this.updateTroika()
-		})
+		folder
+			.add(this.state, 'fontLineHeightRatio', 1, 1.4, 0.01)
+			.onChange((value: number) => {
+				this.state.mutate({ fontLineHeightRatio: value })
+				this.updateTroika()
+			})
 		folder
 			.add(this.state, 'cursorWidthRatio', 0.01, 1, 0.01)
-			.onChange((value: unknown) => {
-				this.state.mutate({ cursorWidthRatio: value as number })
+			.onChange((value: number) => {
+				this.state.mutate({ cursorWidthRatio: value })
 				this.updateTroika()
 			})
 	}

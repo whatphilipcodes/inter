@@ -200,21 +200,34 @@ export default class Grid extends SceneSubject {
 		this.buildGridHelper()
 		// gui settings
 		const gridFolder = gui.addFolder('Grid')
-		gridFolder.add(this.state, 'padding', 0, 0.4, 0.01).onChange(() => {
-			this.propertiesChanged()
-		})
-		gridFolder.add(this.state, 'numLines', 10, 36, 1).onChange(() => {
-			this.propertiesChanged()
-		})
-		gridFolder.add(this.state, 'numLinesSpacing', 0, 10, 1).onChange(() => {
-			this.propertiesChanged()
-		})
-		gridFolder.add(this.state, 'messageWidthRatio', 0, 1, 0.01).onChange(() => {
-			this.propertiesChanged()
-		})
+		gridFolder
+			.add(this.state, 'padding', 0, 0.4, 0.01)
+			.onChange((value: number) => {
+				this.state.mutate({ padding: value })
+				this.propertiesChanged()
+			})
+		gridFolder
+			.add(this.state, 'numLines', 10, 36, 1)
+			.onChange((value: number) => {
+				this.state.mutate({ numLines: value })
+				this.propertiesChanged()
+			})
+		gridFolder
+			.add(this.state, 'numLinesSpacing', 0, 10, 1)
+			.onChange((value: number) => {
+				this.state.mutate({ numLinesSpacing: value })
+				this.propertiesChanged()
+			})
+		gridFolder
+			.add(this.state, 'messageWidthRatio', 0, 1, 0.01)
+			.onChange((value: number) => {
+				this.state.mutate({ messageWidthRatio: value })
+				this.propertiesChanged()
+			})
 		gridFolder
 			.add(this.state, 'counterpartOffsetRatio', 0, 1, 0.01)
-			.onChange(() => {
+			.onChange((value: number) => {
+				this.state.mutate({ counterpartOffsetRatio: value })
 				this.propertiesChanged()
 			})
 	}

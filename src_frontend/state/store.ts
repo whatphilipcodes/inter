@@ -53,31 +53,42 @@ export class Store {
 
 	private initialState = config.initState
 
-	private mutationCallbacks: {
+	private keyMutationCallbacks: {
 		[key: string]: ((newVal?: unknown) => void) | (() => void)
+	}
+
+	private anyMutationCallbacks: {
+		[key: string]: () => void
 	}
 
 	constructor() {
 		Object.assign(this, this.initialState)
-		this.mutationCallbacks = {}
+		this.keyMutationCallbacks = {}
+		this.anyMutationCallbacks = {}
 	}
 
 	subscribe(
 		key: string,
-		callback: ((newVal?: unknown) => void) | (() => void)
+		callback: ((newVal?: unknown) => void) | (() => void),
+		toAnyMutation = false
 	): void {
-		this.mutationCallbacks[key] = callback
+		if (toAnyMutation) this.anyMutationCallbacks[key] = callback
+		else this.keyMutationCallbacks[key] = callback
 	}
 
 	unsubscribe(key: string): void {
-		delete this.mutationCallbacks[key]
+		if (key in this.anyMutationCallbacks) delete this.anyMutationCallbacks[key]
+		else if (key in this.keyMutationCallbacks)
+			delete this.keyMutationCallbacks[key]
+		else throw new Error(`No callback found for key ${key}`)
 	}
 
 	mutate(newState: Partial<Store>): void {
 		Object.assign(this, newState)
 		const keys = Object.keys(newState)
+		Object.values(this.anyMutationCallbacks).forEach((callback) => callback())
 		const filteredCallbacks = keys
-			.map((key) => this.mutationCallbacks[key])
+			.map((key) => this.keyMutationCallbacks[key])
 			.filter((callback) => typeof callback === 'function')
 		filteredCallbacks.forEach(
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any

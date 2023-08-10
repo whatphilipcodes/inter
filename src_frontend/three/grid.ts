@@ -1,154 +1,81 @@
 import { Store } from '../state/store'
 import SceneSubject from './_sceneSubject'
 import * as THREE from 'three'
-import {
-	screenToWorld,
-	getHelper2DBox,
-	getPointsVisu,
-} from '../utils/threeUtil'
+import { screenToWorld, getHelper2DBox } from '../utils/threeUtil'
 
-import Message from './message'
-import Input from './input'
 import config from '../front.config'
+import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
 
 export default class Grid extends SceneSubject {
-	// Refs
-	state: Store
-	camera: THREE.OrthographicCamera
+	// Input Props
+	padding: number
+	numLines: number
+	spacing: number
 
-	// Props
-	padding: number // in world units
-	spacing: number // in world units
+	// Screen dependent variables
 	screenWidthWorld: number
 	screenHeightWorld: number
-	contentHeight: number
 	contentWidth: number
+	contentHeight: number
 
+	// Calculation dependent variables
 	lineHeight: number
 	responseOffset: number // 1/3 of screen width - margin
 	messageWidth: number // 2/3 of screen width - margin
-	// messageHeight: number // 1/2 of screen height - margin
-
-	messageAnchor: THREE.Vector3[]
 	leftBottom: THREE.Vector3
 
-	// Debug
-	testText =
-		'This is a test message. In the future this might be AI-generated. For now, you can safely ignore the contents of this message. Please have a nice day. Thanks.'
-	testText02 =
-		'In a not so distant future, here could be your input. But for now, this is just a test. Thank you for your understanding.'
-
-	// Children
-	message: Message
-	response: Message
-	input: Input
+	// Debugging
+	helperBox: THREE.BoxHelper
 
 	constructor(
 		name: string,
 		scene: THREE.Scene,
 		camera: THREE.OrthographicCamera,
-		state: Store,
-		padding = 0.1
+		state: Store
 	) {
-		super(name, scene)
+		super(name, scene, camera, state)
 
-		this.state = state
-		this.camera = camera
-		this.padding = padding
-		this.spacing = this.lineHeight
+		this.padding = config.padding
+		this.numLines = config.numLines
+		this.spacing = config.spacingLines
 
-		this.leftBottom = screenToWorld(this.camera, -1, -1) // functions as grid origin
-		console.log(this.leftBottom)
+		// left bottom corner of the screen as grid origin
+		this.leftBottom = screenToWorld(this.camera, -1, -1)
 
-		this.calculateScreenDimensions()
-		this.calulateMessageDimensions()
+		this.updateScreenDimensions()
+		this.updateMessageDimensions()
+	}
 
-		// this has to be automated
-		this.messageAnchor = [
+	buildDevUI(gui: GUI): void {
+		// on screen visualisation
+		this.helperBox = getHelper2DBox(
 			this.leftBottom
 				.clone()
-				.add(new THREE.Vector3(this.padding, this.padding, 0)),
-			this.leftBottom
-				.clone()
-				.add(
-					new THREE.Vector3(
-						this.padding + this.responseOffset,
-						this.lineHeight * 4 + this.padding,
-						0
-					)
-				),
-		]
-		//
-
-		this.input = this.buildInput()
-		// this.message = this.buildMessage()
-		this.response = this.buildResponse()
-
-		this.scene.add(this.input)
-		this.scene.add(this.response)
-
-		// Dev
-		if (config.devUI) {
-			const meshVisu = getHelper2DBox(
-				this.leftBottom
-					.clone()
-					.add(new THREE.Vector3(this.padding, this.padding)),
-				this.contentWidth,
-				this.contentHeight
-			)
-			this.scene.add(meshVisu)
-
-			const points = getPointsVisu(
-				this.messageAnchor,
-				new THREE.Color(0xff00ff)
-			)
-			this.scene.add(points)
-		}
-	}
-
-	buildInput(): Input {
-		const input = new Input(
-			'input',
-			this.scene,
-			this.state,
-			this.camera,
-			this.messageWidth,
-			this.lineHeight,
-			this.messageAnchor[0]
+				.add(new THREE.Vector3(this.padding, this.padding)),
+			this.contentWidth,
+			this.contentHeight
 		)
-		return input
+		this.scene.add(this.helperBox)
+
+		// gui settings
+		const gridFolder = gui.addFolder('Grid')
+		gridFolder.add(this, 'padding', 0, 0.4, 0.01).onChange(() => {
+			this.propertiesChanged()
+		})
+		gridFolder.add(this, 'numLines', 1, 36, 1).onChange(() => {
+			this.propertiesChanged()
+		})
+		gridFolder.add(this, 'spacing', 0, 10, 1).onChange(() => {
+			this.propertiesChanged()
+		})
 	}
 
-	buildMessage(): Message {
-		const message = new Message(
-			'message',
-			this.scene,
-			this.state,
-			this.camera,
-			this.testText,
-			this.messageWidth,
-			this.lineHeight,
-			this.messageAnchor[0]
-		)
-		return message
+	propertiesChanged(): void {
+		this.updateScreenDimensions()
+		this.updateMessageDimensions()
 	}
 
-	buildResponse(): Message {
-		const message = new Message(
-			'message',
-			this.scene,
-			this.state,
-			this.camera,
-			this.testText,
-			this.messageWidth,
-			this.lineHeight,
-			this.messageAnchor[1],
-			'response'
-		)
-		return message
-	}
-
-	calculateScreenDimensions(): void {
+	updateScreenDimensions(): void {
 		this.screenWidthWorld = screenToWorld(this.camera, 1, 1).distanceTo(
 			screenToWorld(this.camera, -1, 1)
 		)
@@ -159,23 +86,31 @@ export default class Grid extends SceneSubject {
 		this.contentHeight = this.screenHeightWorld - this.padding * 2
 	}
 
-	calulateMessageDimensions(): void {
+	updateMessageDimensions(): void {
 		this.responseOffset = this.contentWidth / 3
 		this.messageWidth = this.contentWidth * (2 / 3)
-		// this.messageHeight = this.contentHeight / 2
 		this.lineHeight = this.contentHeight / 18 // devide the content height by the number of lines
 	}
 
 	// CALLBACKS
 	update(): void {
-		this.input.update()
-		this.response.update()
+		// needs to pass down the update call
+	}
+
+	updateDevUI(): void {
+		this.scene.remove(this.helperBox)
+		this.helperBox.dispose()
+		this.helperBox = getHelper2DBox(
+			this.leftBottom
+				.clone()
+				.add(new THREE.Vector3(this.padding, this.padding)),
+			this.contentWidth,
+			this.contentHeight
+		)
+		this.scene.add(this.helperBox)
 	}
 
 	onWindowResize(): void {
-		this.calculateScreenDimensions()
-		this.calulateMessageDimensions()
-		this.input.onWindowResize()
-		this.response.onWindowResize()
+		this.propertiesChanged()
 	}
 }

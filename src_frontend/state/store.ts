@@ -32,17 +32,19 @@ export class Store {
 	numLinesSpacing: number
 
 	// message settings
-	rightOffsetRatio: number
+	counterpartOffsetRatio: number
 	messageWidthRatio: number
 
 	// grid props
+	origin: THREE.Vector3
+	leftBottom: THREE.Vector3
 	contentWidth: number
 	contentHeight: number
 	lineHeight: number
-	rightOffset: number
+	spacing: number
 	messageWidth: number
-	leftBottom: THREE.Vector3
-	origin: THREE.Vector3
+	counterpartMsgOffset: number
+	counterpartIndOffset: number
 
 	// text settings
 	fontLineHeightRatio: number

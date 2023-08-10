@@ -67,7 +67,7 @@ export default class Input extends SceneSubject {
 
 	setPosition(position: THREE.Vector3 = new THREE.Vector3(0, 0, 0)) {
 		const newPosition = new THREE.Vector3(
-			this.state.leftBottom.x + /*this.state.lineHeight +*/ position.x,
+			this.state.leftBottom.x + this.state.lineHeight + position.x,
 			this.state.leftBottom.y + position.y,
 			this.state.leftBottom.z + position.z
 		)

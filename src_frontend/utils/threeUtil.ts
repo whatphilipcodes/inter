@@ -110,4 +110,36 @@ function getPointsVisu(
 	return point
 }
 
-export { screenToWorld, worldToPixel, getHelper2DBox, getPointsVisu }
+/**
+ * Returns a line visualization that can be added to the scene. Default color is red.
+ * @param {THREE.Vector3} start The start position of the line.
+ * @param {THREE.Vector3} end The end position of the line.
+ * @param {THREE.Color} color The color of the line.
+ * @returns {THREE.Line} The line.
+ * @example
+ * const line = getHelperLine(new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 1, 1))
+ * scene.add(line)
+ */
+function getHelperLine(
+	start: THREE.Vector3,
+	end: THREE.Vector3,
+	color: THREE.Color = new THREE.Color(0xff0000)
+): THREE.Line {
+	const geometry = new THREE.BufferGeometry()
+	const positions = [start.x, start.y, start.z, end.x, end.y, end.z]
+	geometry.setAttribute(
+		'position',
+		new THREE.Float32BufferAttribute(positions, 3)
+	)
+	const material = new THREE.LineBasicMaterial({ color: color })
+	const line = new THREE.Line(geometry, material)
+	return line
+}
+
+export {
+	screenToWorld,
+	worldToPixel,
+	getHelper2DBox,
+	getPointsVisu,
+	getHelperLine,
+}

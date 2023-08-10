@@ -35,6 +35,11 @@ const config = {
 		// message settings
 		rightOffsetRatio: 0.66,
 		messageWidthRatio: 0.34,
+
+		// text settings
+		fontLineHeightRatio: 1.2,
+		cursorWidthRatio: 0.1,
+		sdfGlyphSize: 64,
 	},
 }
 

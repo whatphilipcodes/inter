@@ -54,27 +54,6 @@ function worldToPixel(
 }
 
 /**
- * Calculates the font size from based on the targeted line height.
- * @param {number} targetLineHeight The line height that the object should have in world units.
- * @param {number} ratio The ratio between the font size and the line height. Defaults to 1.2.
- * @returns {number} The font size.
- */
-function fontSize(targetLineHeight: number, ratio = 1.2): number {
-	const targetFontSize = targetLineHeight / ratio
-	return targetFontSize
-}
-
-/**
- * Calculates the cursor width based on the targeted line height.
- * @param {number} targetLineHeight The line height that the object should have in world units.
- * @param {number} ratio The ratio between the font size and the line height. Defaults to 0.08.
- * @returns {number} The font size.
- */
-function cursorWidth(targetLineHeight: number, ratio = 0.1): number {
-	return targetLineHeight * ratio
-}
-
-/**
  * Creates a red 2D box helper at the given position with the given width and height.
  * The anchor point of the box helper is at the bottom left corner.
  * @param {THREE.Vector3} position The position of the box helper.
@@ -131,11 +110,4 @@ function getPointsVisu(
 	return point
 }
 
-export {
-	screenToWorld,
-	worldToPixel,
-	fontSize,
-	cursorWidth,
-	getHelper2DBox,
-	getPointsVisu,
-}
+export { screenToWorld, worldToPixel, getHelper2DBox, getPointsVisu }

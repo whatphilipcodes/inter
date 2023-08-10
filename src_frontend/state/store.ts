@@ -44,6 +44,11 @@ export class Store {
 	leftBottom: THREE.Vector3
 	origin: THREE.Vector3
 
+	// text settings
+	fontLineHeightRatio: number
+	cursorWidthRatio: number
+	sdfGlyphSize: number
+
 	private initialState = config.initState
 
 	private mutationCallbacks: {

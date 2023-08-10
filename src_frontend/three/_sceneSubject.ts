@@ -21,17 +21,10 @@ export default class SceneSubject extends THREE.Group {
 		this.state = state
 	}
 
-	buildDevUI?(gui: GUI): void
-	updateDevUI?(): void
+	update?(elTime: number, curFrame: number, deltaTime: number): void
 	updateState?(state: Store): void
 	onWindowResize?(): void
 
-	update(elTime: number, curFrame: number, deltaTime: number) {
-		console.log(
-			'elTime: ' + elTime,
-			'curFrame: ' + curFrame,
-			'deltaTime: ' + deltaTime
-		)
-		throw new Error('update() not implemented on SceneSubject: ' + this.name)
-	}
+	buildDevUI?(gui: GUI): void
+	updateDevUI?(): void
 }

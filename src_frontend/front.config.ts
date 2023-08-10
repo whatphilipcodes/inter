@@ -1,19 +1,41 @@
+import { state } from './utils/types'
 const config = {
+	// app settings
 	devUI: true,
 	devTools: true,
 	fullScreen: true,
 	hideCursor: true,
 	debugMsg: true,
-	maxInputLength: 128,
 	showHiddenInput: false,
 	apiTimeout: 120000,
 	idleTimeout: 20000,
-	botStarts: true,
 
-	// grid settings
-	padding: 0.1,
-	numLines: 18,
-	spacingLines: 1,
+	// textarea settings
+	maxInputLength: 128,
+
+	// initial state
+	initState: {
+		// state
+		appState: state.loading,
+
+		// textarea
+		input: '',
+		cursorPos: 0,
+		maxInputLength: 128,
+
+		// api
+		convoID: 0,
+		messageID: 0,
+
+		// grid settings
+		padding: 0.1,
+		numLines: 18,
+		numLinesSpacing: 1,
+
+		// message settings
+		rightOffsetRatio: 0.66,
+		messageWidthRatio: 0.34,
+	},
 }
 
 export default config

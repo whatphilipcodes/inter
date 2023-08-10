@@ -1,13 +1,14 @@
 import { state } from '../utils/types'
 import { API } from '../utils/api'
+import config from '../front.config'
 
 export class Store {
+	// state
 	appState: state
 
+	// api
 	elURL: URL
 	uviURL: URL
-
-	// api
 	api: API
 	convoID: number
 	messageID: number
@@ -17,24 +18,32 @@ export class Store {
 	screenWidth: number
 	screenHeight: number
 
-	// textarea synced props
+	// textarea
 	input: string
 	cursorPos: number
+	maxInputLength: number
 	specialKeyPressed: string
 	selection: { start: number; end: number }
 	selectionActive: boolean
 
-	private initialState = {
-		// state
-		appState: state.loading,
+	// grid settings
+	padding: number
+	numLines: number
+	numLinesSpacing: number
 
-		// textarea
-		cursorPos: 0,
+	// message settings
+	rightOffsetRatio: number
+	messageWidthRatio: number
 
-		// api
-		convoID: 0,
-		messageID: 0,
-	}
+	// grid props
+	contentWidth: number
+	contentHeight: number
+	lineHeight: number
+	rightOffset: number
+	messageWidth: number
+	leftBottom: THREE.Vector3
+
+	private initialState = config.initState
 
 	private mutationCallbacks: {
 		[key: string]: ((newVal?: unknown) => void) | (() => void)

@@ -78,12 +78,7 @@ export default class SceneManager {
 
 	buildSceneSubjects(): SceneSubject[] {
 		const sceneSubjects = [
-			new Grid(
-				'Grid',
-				this.scene,
-				this.camera.instance() as THREE.OrthographicCamera,
-				this.state
-			),
+			new Grid('Grid', this.scene, this.camera.instance(), this.state),
 		]
 		return sceneSubjects
 	}
@@ -101,7 +96,7 @@ export default class SceneManager {
 		const deltaTime = this.clock.getDelta()
 		const curFrame = this.renderer.info.render.frame
 		for (const subject of this.sceneSubjects) {
-			subject.update(elTime, curFrame, deltaTime)
+			subject.update?.(elTime, curFrame, deltaTime)
 			subject.updateDevUI?.()
 		}
 		this.renderer.render(this.scene, this.camera.instance())

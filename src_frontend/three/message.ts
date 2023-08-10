@@ -2,9 +2,6 @@ import { Store } from '../state/store'
 import SceneSubject from './_sceneSubject'
 import * as THREE from 'three'
 import { Text } from 'troika-three-text'
-import { fontSize, cursorWidth } from '../utils/threeUtil'
-
-import Role from './role'
 import config from '../front.config'
 
 export default class Message extends SceneSubject {
@@ -26,7 +23,6 @@ export default class Message extends SceneSubject {
 	// Role
 	indicatorOffset: THREE.Vector3
 	posOffset: THREE.Vector3
-	role: Role
 
 	// Debug
 	boxHelper: THREE.BoxHelper
@@ -75,9 +71,6 @@ export default class Message extends SceneSubject {
 
 		this.setPosition()
 
-		this.role = new Role(this.anchor, cursorWidth(this.targetLineHeight), 1)
-		this.scene.add(this.role.get())
-
 		// debug
 		if (config.devUI) {
 			this.boxHelper = this.buildDevBox()
@@ -96,7 +89,7 @@ export default class Message extends SceneSubject {
 	buildTroika() {
 		const troika = new Text()
 		troika.font = './assets/cascadiacode/CascadiaMono-Regular.ttf'
-		troika.fontSize = fontSize(this.targetLineHeight)
+		// troika.fontSize = fontSize(this.targetLineHeight)
 		troika.lineHeight = 1.2
 		troika.sdfGlyphSize = 64
 		troika.color = 0xffffff
@@ -123,14 +116,12 @@ export default class Message extends SceneSubject {
 		this.troika.sync(() => {
 			this.height = this.troika.textRenderInfo.blockBounds[3]
 		})
-		this.role.updateDimensions(cursorWidth(this.targetLineHeight), this.height)
-		this.role.update(this.indicatorOffset)
 		if (this.boxHelper) this.boxHelper.update()
 	}
 
 	onWindowResize(): void {
 		this.setPosition()
 		this.troika.maxWidth = this.width
-		this.troika.fontSize = fontSize(this.targetLineHeight)
+		// this.troika.fontSize = fontSize(this.targetLineHeight)
 	}
 }

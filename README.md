@@ -1,4 +1,4 @@
-![header image](https://github.com/whatphilipcodes/inter/blob/[branch]/image.jpg?raw=true)
+![header image](https://github.com/whatphilipcodes/inter/blob/master/img/header_visu.jpg?raw=true)
 
 # About
 

@@ -42,6 +42,7 @@ export class Store {
 	rightOffset: number
 	messageWidth: number
 	leftBottom: THREE.Vector3
+	origin: THREE.Vector3
 
 	private initialState = config.initState
 

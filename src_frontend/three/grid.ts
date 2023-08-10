@@ -1,6 +1,6 @@
+import * as THREE from 'three'
 import { Store } from '../state/store'
 import SceneSubject from './_sceneSubject'
-import * as THREE from 'three'
 import { screenToWorld, getHelper2DBox } from '../utils/threeUtil'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
 
@@ -10,6 +10,7 @@ export default class Grid extends SceneSubject {
 	screenHeightWorld: number
 	contentWidth: number
 	contentHeight: number
+	origin: THREE.Vector3
 
 	// Calculation dependent variables
 	lineHeight: number
@@ -31,7 +32,7 @@ export default class Grid extends SceneSubject {
 	}
 
 	propertiesChanged(): void {
-		this.leftBottom = screenToWorld(this.camera, -1, -1)
+		this.calculateOrigin()
 		this.calculateScreenDimensions()
 		this.calculateMessageDimensions()
 		this.state.mutate({
@@ -41,7 +42,15 @@ export default class Grid extends SceneSubject {
 			rightOffset: this.rightOffset,
 			messageWidth: this.messageWidth,
 			leftBottom: this.leftBottom,
+			origin: this.origin,
 		})
+	}
+
+	calculateOrigin(): void {
+		this.origin = screenToWorld(this.camera, -1, -1)
+		this.leftBottom = this.origin
+			.clone()
+			.add(new THREE.Vector3(this.state.padding, this.state.padding))
 	}
 
 	calculateScreenDimensions(): void {
@@ -65,11 +74,11 @@ export default class Grid extends SceneSubject {
 	buildDevUI(gui: GUI): void {
 		// on screen visualisation
 		this.helperBox = getHelper2DBox(
-			this.leftBottom
+			this.state.origin
 				.clone()
 				.add(new THREE.Vector3(this.state.padding, this.state.padding)),
-			this.contentWidth,
-			this.contentHeight
+			this.state.contentWidth,
+			this.state.contentHeight
 		)
 		this.scene.add(this.helperBox)
 
@@ -96,11 +105,11 @@ export default class Grid extends SceneSubject {
 		this.scene.remove(this.helperBox)
 		this.helperBox.dispose()
 		this.helperBox = getHelper2DBox(
-			this.leftBottom
+			this.state.origin
 				.clone()
 				.add(new THREE.Vector3(this.state.padding, this.state.padding)),
-			this.contentWidth,
-			this.contentHeight
+			this.state.contentWidth,
+			this.state.contentHeight
 		)
 		this.scene.add(this.helperBox)
 	}

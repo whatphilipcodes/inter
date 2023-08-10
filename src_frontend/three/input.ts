@@ -1,25 +1,20 @@
+import * as THREE from 'three'
+// import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 import { Store } from '../state/store'
 import SceneSubject from './_sceneSubject'
-import * as THREE from 'three'
 import { Text, getSelectionRects, getCaretAtPoint } from 'troika-three-text'
 import Cursor from './cursor'
-// import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 import { fontSize, cursorWidth } from '../utils/threeUtil'
-
-import config from '../front.config'
 
 export default class Input extends SceneSubject {
 	// Props
-	width: number
-	targetLineHeight: number
-	anchor: THREE.Vector3
 	textcursor: Cursor
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	troika: any
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	caretPositions: any
 
-	// Debug
+	// Debugging
 	boxHelper: THREE.BoxHelper
 
 	constructor(
@@ -29,55 +24,36 @@ export default class Input extends SceneSubject {
 		state: Store
 	) {
 		super(name, scene, camera, state)
-
-		this.anchor = this.state.leftBottom
-		this.width = this.state.messageWidth
-		this.targetLineHeight = this.state.lineHeight
-
 		// Create Troika Text
 		this.troika = this.buildTroika()
 		this.setPosition()
 		this.scene.add(this.troika)
 
 		this.caretPositions = new Float32Array(0)
-		this.state.cursorPos = 0
 
 		// Create Text Cursor
 		this.textcursor = new Cursor(
-			this.anchor,
-			cursorWidth(this.targetLineHeight),
-			this.targetLineHeight
+			this.state.leftBottom,
+			cursorWidth(this.state.lineHeight),
+			this.state.lineHeight
 		)
 		this.scene.add(this.textcursor.get())
 
 		this.state.subscribe('input', () => this.syncDisplay())
 		this.state.subscribe('specialKeyPressed', () => this.handleSpecialKey())
-
-		// debug
-		if (config.devUI) {
-			this.boxHelper = this.buildDevBox()
-			this.scene.add(this.boxHelper)
-		}
-	}
-
-	// DEV
-	buildDevBox(): THREE.BoxHelper {
-		// Debug
-		const boxHelper = new THREE.BoxHelper(this.troika)
-		return boxHelper
 	}
 
 	// METHODS
 	buildTroika() {
 		const troika = new Text()
 		troika.font = './assets/cascadiacode/CascadiaMono-Regular.ttf'
-		troika.fontSize = fontSize(this.targetLineHeight)
+		troika.fontSize = fontSize(this.state.lineHeight)
 		troika.lineHeight = 1.2
 		troika.sdfGlyphSize = 64
 		troika.color = 0xffffff
 		troika.anchorX = 'left'
 		troika.anchorY = 'bottom'
-		troika.maxWidth = this.width
+		troika.maxWidth = this.state.messageWidth
 		troika.overflowWrap = 'break-word'
 		troika.whiteSpace = 'normal'
 		return troika
@@ -85,10 +61,11 @@ export default class Input extends SceneSubject {
 
 	setPosition(position: THREE.Vector3 = new THREE.Vector3(0, 0, 0)) {
 		const newPosition = new THREE.Vector3(
-			this.anchor.x + this.targetLineHeight + position.x,
-			this.anchor.y + position.y,
-			this.anchor.z + position.z
+			this.state.leftBottom.x + /*this.state.lineHeight +*/ position.x,
+			this.state.leftBottom.y + position.y,
+			this.state.leftBottom.z + position.z
 		)
+
 		this.troika.position.set(newPosition.x, newPosition.y, newPosition.z)
 	}
 
@@ -149,8 +126,8 @@ export default class Input extends SceneSubject {
 		if (this.state.cursorPos === 0) {
 			this.textcursor.update(
 				new THREE.Vector3(
-					this.targetLineHeight,
-					this.targetLineHeight,
+					this.state.lineHeight,
+					this.state.lineHeight,
 					this.position.z
 				)
 			)
@@ -170,34 +147,41 @@ export default class Input extends SceneSubject {
 			return
 		this.textcursor.update(
 			new THREE.Vector3(
-				currentCaretPos.right + this.targetLineHeight,
+				currentCaretPos.right + this.state.lineHeight,
 				currentCaretPos.top,
 				this.position.z
 			)
 		)
 	}
 
-	// CALLBACKS
+	// Callback Implementations
 	update() {
 		this.setCaretPos()
-		if (this.boxHelper) this.boxHelper.update()
 	}
 
-	// buildDevUI(gui: GUI) {
-	// 	const folder = gui.addFolder('Input Display')
-	// 	folder.add(this.troika, 'fontSize', 0.01, 1).name('Font Size')
-	// 	folder.addColor(this.troika, 'color').name('Color')
-	// }
+	buildDevUI(): void {
+		// Debug
+		this.boxHelper = new THREE.BoxHelper(this.troika)
+		this.scene.add(this.boxHelper)
+
+		// const folder = gui.addFolder('Input Display')
+		// 	folder.add(this.troika, 'fontSize', 0.01, 1).name('Font Size')
+		// 	folder.addColor(this.troika, 'color').name('Color')
+	}
+
+	updateDevUI(): void {
+		this.boxHelper.update()
+	}
 
 	onWindowResize(): void {
 		this.textcursor.onWindowResize(
-			this.anchor,
-			cursorWidth(this.targetLineHeight),
-			this.targetLineHeight
+			this.state.leftBottom,
+			cursorWidth(this.state.lineHeight),
+			this.state.lineHeight
 		)
 		this.setPosition()
-		this.troika.maxWidth = this.width
-		this.troika.fontSize = fontSize(this.targetLineHeight)
+		this.troika.maxWidth = this.state.messageWidth
+		this.troika.fontSize = fontSize(this.state.lineHeight)
 		this.syncDisplay()
 	}
 }

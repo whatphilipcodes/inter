@@ -1,11 +1,9 @@
 import './index.css'
 
 // components -> index.html
-import './components/demoChat'
-import './components/input'
+import './components/hiddenInput'
 // components types
-import type Input from './components/input'
-import type DemoChat from './components/demoChat'
+import type Input from './components/hiddenInput'
 
 // state
 import { Store } from './state/store'
@@ -36,8 +34,7 @@ if (config.hideCursor) {
 //  * Components
 //  *************************************************************/
 // Get references to all custom elements in index.html
-const chat = document.getElementById('testChatModule') as DemoChat
-const input = document.getElementById('textInput') as Input
+const input = document.getElementById('hiddenInput') as Input
 
 // /*************************************************************
 //  * State
@@ -77,38 +74,35 @@ function updateBackendState(current: state): void {
 globalState.subscribe('appState', updateBackendState)
 
 // init all component instances that need access to the global state
-if (!config.demoPlain) input.initInput(globalState)
-if (config.demoPlain) chat.initChat(globalState)
+input.initInput(globalState)
 
 // /*************************************************************
 //  * Rendering
 //  *************************************************************/
-if (!config.demoPlain) {
-	// Create sceneManager
-	const initialResolution = {
-		width: window.innerWidth,
-		height: window.innerHeight,
-	}
-	const sceneManager = new SceneManager(initialResolution, globalState)
-
-	// Render Loop
-	// eslint-disable-next-line no-inner-declarations
-	function animate() {
-		if (config.devUI) stats.begin()
-		sceneManager.update()
-		requestAnimationFrame(animate)
-		if (config.devUI) stats.end()
-	}
-	// Start Loop
-	animate()
-
-	// Event Callbacks
-	window.addEventListener(
-		'resize',
-		() => sceneManager.onWindowResize(window.innerWidth, window.innerHeight),
-		false
-	)
+// Create sceneManager
+const initialResolution = {
+	width: window.innerWidth,
+	height: window.innerHeight,
 }
+const sceneManager = new SceneManager(initialResolution, globalState)
+
+// Render Loop
+// eslint-disable-next-line no-inner-declarations
+function animate() {
+	if (config.devUI) stats.begin()
+	sceneManager.update()
+	requestAnimationFrame(animate)
+	if (config.devUI) stats.end()
+}
+// Start Loop
+animate()
+
+// Event Callbacks
+window.addEventListener(
+	'resize',
+	() => sceneManager.onWindowResize(window.innerWidth, window.innerHeight),
+	false
+)
 
 // /*************************************************************
 //  * IPC from main process

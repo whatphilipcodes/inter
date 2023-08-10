@@ -20,7 +20,7 @@ enum backendState {
 	exit = 'exit',
 }
 
-// See utils.py for pydantic counterpart
+// See utils.py for pydantic counterparts
 type ConvoText = {
 	convoID: number
 	messageID: number

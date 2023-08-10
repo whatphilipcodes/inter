@@ -7,17 +7,13 @@ import { Store } from '../state/store'
 // import { appState } from '../utils/enums'
 
 // SceneSubjects
-// import Input from './input'
 import Grid from './grid'
-import Input from './input'
 
 // Debugging
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 import config from '../front.config'
 
-import Ascii from './ascii'
 import Camera from './camera'
-import PostProcessor from './_postProcessor'
 
 export default class SceneManager {
 	// Props
@@ -26,12 +22,10 @@ export default class SceneManager {
 
 	canvas: HTMLCanvasElement
 	renderer: THREE.WebGLRenderer
-	postProcessor: PostProcessor
 	camera: Camera
 	scene: THREE.Scene
 
 	sceneSubjects: SceneSubject[]
-	ascii: Ascii
 
 	// Init
 	constructor(initRes: { width: number; height: number }, state: Store) {
@@ -48,7 +42,7 @@ export default class SceneManager {
 		this.sceneSubjects = this.buildSceneSubjects()
 
 		this.renderer = this.buildRenderer()
-		this.init()
+		document.body.appendChild(this.renderer.domElement)
 
 		// if (config.devUI) this.buildDevUI()
 	}
@@ -90,12 +84,6 @@ export default class SceneManager {
 				this.camera.instance() as THREE.OrthographicCamera,
 				this.state
 			),
-			// new Input(
-			// 	'Input',
-			// 	this.scene,
-			// 	this.state,
-			// 	this.camera.instance() as THREE.OrthographicCamera
-			// ),
 		]
 		return sceneSubjects
 	}
@@ -109,10 +97,6 @@ export default class SceneManager {
 	// }
 
 	// Callbacks
-	init(): void {
-		if (!this.ascii) document.body.appendChild(this.renderer.domElement)
-	}
-
 	update(): void {
 		const elTime = this.clock.getElapsedTime()
 		const deltaTime = this.clock.getDelta()
@@ -120,8 +104,6 @@ export default class SceneManager {
 		for (const subject of this.sceneSubjects)
 			subject.update(elTime, curFrame, deltaTime)
 		this.renderer.render(this.scene, this.camera.instance())
-		this.ascii?.render(this.scene, this.camera.instance())
-		this.postProcessor?.update()
 	}
 
 	onWindowResize(width: number, height: number): void {
@@ -129,8 +111,6 @@ export default class SceneManager {
 		this.state.screenHeight = height
 		this.camera.updateAspect(width, height)
 		this.renderer.setSize(width, height)
-		this.postProcessor?.onWindowResize(width, height)
-		this.ascii?.onWindowResize(width, height)
 		for (const subject of this.sceneSubjects) {
 			subject.onWindowResize?.()
 		}

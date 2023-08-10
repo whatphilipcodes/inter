@@ -1,9 +1,8 @@
 import { Store } from '../state/store'
 import config from '../front.config'
 
-export default class Input extends HTMLElement {
+export default class HiddenInput extends HTMLElement {
 	state: Store
-
 	textarea: HTMLTextAreaElement
 
 	constructor() {
@@ -83,22 +82,8 @@ export default class Input extends HTMLElement {
 					this.state.mutate({ cursorPos: this.textarea.selectionStart })
 					break
 			}
-
-			// if (this.textarea.selectionStart === this.textarea.selectionEnd) {
-			// 	state.mutate({ selectionActive: false })
-			// }
 		})
-
-		// // update selection
-		// this.textarea.addEventListener('select', async () => {
-		// 	await new Promise((resolve) => setTimeout(resolve, 0))
-		// 	const target = this.textarea
-		// 	state.mutate({ cursorPos: target.selectionStart })
-		// 	if (target.selectionStart === target.selectionEnd) {
-		// 		state.mutate({ selectionActive: false })
-		// 	}
-		// })
 	}
 }
 
-customElements.define('input-el', Input)
+customElements.define('input-el', HiddenInput)

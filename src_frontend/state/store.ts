@@ -30,8 +30,6 @@ export class Store {
 
 		// textarea
 		cursorPos: 0,
-		selection: { start: 0, end: 0 },
-		selectionActive: false,
 
 		// api
 		convoID: 0,

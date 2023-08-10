@@ -42,6 +42,14 @@ export default class Input extends SceneSubject {
 
 		this.state.subscribe('input', () => this.syncDisplay())
 		this.state.subscribe('specialKeyPressed', () => this.handleSpecialKey())
+		this.state.subscribe(
+			'updateInputOnGridChanges',
+			() => {
+				this.updateTroika()
+				this.updateCursor()
+			},
+			true
+		)
 	}
 
 	// Methods
@@ -75,7 +83,7 @@ export default class Input extends SceneSubject {
 
 	setPosition(position: THREE.Vector3 = new THREE.Vector3(0, 0, 0)) {
 		const newPosition = new THREE.Vector3(
-			this.state.leftBottom.x + this.state.lineHeight + position.x,
+			this.state.leftBottom.x + this.state.spacing + position.x,
 			this.state.leftBottom.y + position.y,
 			this.state.leftBottom.z + position.z
 		)
@@ -160,7 +168,7 @@ export default class Input extends SceneSubject {
 			return
 		this.textcursor.update(
 			new THREE.Vector3(
-				currentCaretPos.right + this.state.lineHeight,
+				currentCaretPos.right + this.state.spacing,
 				currentCaretPos.top,
 				this.position.z
 			)

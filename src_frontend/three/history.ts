@@ -7,3 +7,5 @@ class History extends SceneSubject {
 		super(name, scene)
 	}
 }
+
+export default History

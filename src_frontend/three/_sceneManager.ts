@@ -36,7 +36,7 @@ export default class SceneManager {
 		this.clock = new THREE.Clock()
 
 		this.camera = new Camera(this.canvas)
-		this.camera.buildOrthoCam(1)
+		this.camera.buildCamera(1)
 
 		this.scene = this.buildScene()
 		this.sceneSubjects = this.buildSceneSubjects()
@@ -44,7 +44,7 @@ export default class SceneManager {
 		this.renderer = this.buildRenderer()
 		document.body.appendChild(this.renderer.domElement)
 
-		// if (config.devUI) this.buildDevUI()
+		if (config.devUI) this.buildDevUI()
 	}
 
 	buildCanvas(width: number, height: number): HTMLCanvasElement {
@@ -88,13 +88,12 @@ export default class SceneManager {
 		return sceneSubjects
 	}
 
-	// buildDevUI(): void {
-	// 	const gui = new GUI({ title: 'Dev UI' })
-	// 	this.camera.buildDevUI(gui)
-	// 	for (const subject of this.sceneSubjects) {
-	// 		subject.buildDevUI?.(gui)
-	// 	}
-	// }
+	buildDevUI(): void {
+		const gui = new GUI({ title: 'Dev UI' })
+		for (const subject of this.sceneSubjects) {
+			subject.buildDevUI?.(gui)
+		}
+	}
 
 	// Callbacks
 	update(): void {

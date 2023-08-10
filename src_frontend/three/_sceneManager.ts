@@ -8,6 +8,8 @@ import { Store } from '../state/store'
 
 // SceneSubjects
 import Grid from './grid'
+import History from './history'
+import Input from './input'
 
 // Debugging
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
@@ -79,6 +81,8 @@ export default class SceneManager {
 	buildSceneSubjects(): SceneSubject[] {
 		const sceneSubjects = [
 			new Grid('Grid', this.scene, this.camera.instance(), this.state),
+			new History('History', this.scene, this.camera.instance(), this.state),
+			new Input('Input', this.scene, this.camera.instance(), this.state),
 		]
 		return sceneSubjects
 	}

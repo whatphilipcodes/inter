@@ -9,10 +9,6 @@ import { fontSize, cursorWidth } from '../utils/threeUtil'
 import config from '../front.config'
 
 export default class Input extends SceneSubject {
-	// Refs
-	state: Store
-	camera: THREE.OrthographicCamera
-
 	// Props
 	width: number
 	targetLineHeight: number
@@ -22,7 +18,6 @@ export default class Input extends SceneSubject {
 	troika: any
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	caretPositions: any
-	// margin: number
 
 	// Debug
 	boxHelper: THREE.BoxHelper
@@ -30,20 +25,14 @@ export default class Input extends SceneSubject {
 	constructor(
 		name: string,
 		scene: THREE.Scene,
-		state: Store,
 		camera: THREE.OrthographicCamera,
-		width: number,
-		lineHeight: number,
-		anchor: THREE.Vector3
+		state: Store
 	) {
-		super(name, scene)
+		super(name, scene, camera, state)
 
-		// Get References
-		this.state = state
-		this.camera = camera
-		this.anchor = anchor
-		this.width = width
-		this.targetLineHeight = lineHeight
+		this.anchor = this.state.leftBottom
+		this.width = this.state.messageWidth
+		this.targetLineHeight = this.state.lineHeight
 
 		// Create Troika Text
 		this.troika = this.buildTroika()
@@ -77,12 +66,6 @@ export default class Input extends SceneSubject {
 		const boxHelper = new THREE.BoxHelper(this.troika)
 		return boxHelper
 	}
-
-	// buildDevUI(gui: GUI) {
-	// 	const folder = gui.addFolder('Input Display')
-	// 	folder.add(this.troika, 'fontSize', 0.01, 1).name('Font Size')
-	// 	folder.addColor(this.troika, 'color').name('Color')
-	// }
 
 	// METHODS
 	buildTroika() {
@@ -199,6 +182,12 @@ export default class Input extends SceneSubject {
 		this.setCaretPos()
 		if (this.boxHelper) this.boxHelper.update()
 	}
+
+	// buildDevUI(gui: GUI) {
+	// 	const folder = gui.addFolder('Input Display')
+	// 	folder.add(this.troika, 'fontSize', 0.01, 1).name('Font Size')
+	// 	folder.addColor(this.troika, 'color').name('Color')
+	// }
 
 	onWindowResize(): void {
 		this.textcursor.onWindowResize(

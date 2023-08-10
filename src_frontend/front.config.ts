@@ -4,9 +4,9 @@ const config = {
 	devUI: true,
 	devTools: true,
 	fullScreen: true,
-	hideCursor: true,
+	hideCursor: false,
 	debugMsg: true,
-	showHiddenInput: false,
+	showHiddenInput: true,
 	apiTimeout: 120000,
 	idleTimeout: 20000,
 

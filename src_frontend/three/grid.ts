@@ -27,45 +27,11 @@ export default class Grid extends SceneSubject {
 		state: Store
 	) {
 		super(name, scene, camera, state)
-
-		// left bottom corner of the screen as grid origin
-		this.leftBottom = screenToWorld(this.camera, -1, -1)
-
-		this.calculateScreenDimensions()
-		this.calculateMessageDimensions()
-	}
-
-	buildDevUI(gui: GUI): void {
-		// on screen visualisation
-		this.helperBox = getHelper2DBox(
-			this.leftBottom
-				.clone()
-				.add(new THREE.Vector3(this.state.padding, this.state.padding)),
-			this.contentWidth,
-			this.contentHeight
-		)
-		this.scene.add(this.helperBox)
-
-		// gui settings
-		const gridFolder = gui.addFolder('Grid')
-		gridFolder.add(this.state, 'padding', 0, 0.4, 0.01).onChange(() => {
-			this.propertiesChanged()
-		})
-		gridFolder.add(this.state, 'numLines', 1, 36, 1).onChange(() => {
-			this.propertiesChanged()
-		})
-		gridFolder.add(this.state, 'numLinesSpacing', 0, 10, 1).onChange(() => {
-			this.propertiesChanged()
-		})
-		gridFolder.add(this.state, 'messageWidthRatio', 0, 1, 0.01).onChange(() => {
-			this.propertiesChanged()
-		})
-		gridFolder.add(this.state, 'rightOffsetRatio', 0, 1, 0.01).onChange(() => {
-			this.propertiesChanged()
-		})
+		this.propertiesChanged()
 	}
 
 	propertiesChanged(): void {
+		this.leftBottom = screenToWorld(this.camera, -1, -1)
 		this.calculateScreenDimensions()
 		this.calculateMessageDimensions()
 		this.state.mutate({
@@ -96,6 +62,36 @@ export default class Grid extends SceneSubject {
 	}
 
 	// Callback Implementations
+	buildDevUI(gui: GUI): void {
+		// on screen visualisation
+		this.helperBox = getHelper2DBox(
+			this.leftBottom
+				.clone()
+				.add(new THREE.Vector3(this.state.padding, this.state.padding)),
+			this.contentWidth,
+			this.contentHeight
+		)
+		this.scene.add(this.helperBox)
+
+		// gui settings
+		const gridFolder = gui.addFolder('Grid')
+		gridFolder.add(this.state, 'padding', 0, 0.4, 0.01).onChange(() => {
+			this.propertiesChanged()
+		})
+		gridFolder.add(this.state, 'numLines', 1, 36, 1).onChange(() => {
+			this.propertiesChanged()
+		})
+		gridFolder.add(this.state, 'numLinesSpacing', 0, 10, 1).onChange(() => {
+			this.propertiesChanged()
+		})
+		gridFolder.add(this.state, 'messageWidthRatio', 0, 1, 0.01).onChange(() => {
+			this.propertiesChanged()
+		})
+		gridFolder.add(this.state, 'rightOffsetRatio', 0, 1, 0.01).onChange(() => {
+			this.propertiesChanged()
+		})
+	}
+
 	updateDevUI(): void {
 		this.scene.remove(this.helperBox)
 		this.helperBox.dispose()

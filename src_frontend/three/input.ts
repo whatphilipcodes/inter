@@ -51,6 +51,14 @@ export default class Input extends SceneSubject {
 		this.syncDisplay()
 	}
 
+	updateCursor(): void {
+		this.textcursor.onWindowResize(
+			this.state.leftBottom,
+			this.state.lineHeight * this.state.cursorWidthRatio,
+			this.state.lineHeight
+		)
+	}
+
 	updateSettings(): void {
 		this.troika.font = './assets/cascadiacode/CascadiaMono-Regular.ttf'
 		this.troika.fontSize =
@@ -185,11 +193,7 @@ export default class Input extends SceneSubject {
 	}
 
 	onWindowResize(): void {
-		this.textcursor.onWindowResize(
-			this.state.leftBottom,
-			this.state.lineHeight * this.state.cursorWidthRatio,
-			this.state.lineHeight
-		)
+		this.updateCursor()
 		this.updateTroika()
 	}
 }

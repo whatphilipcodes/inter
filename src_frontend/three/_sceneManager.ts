@@ -101,7 +101,7 @@ export default class SceneManager {
 		const curFrame = this.renderer.info.render.frame
 		for (const subject of this.sceneSubjects) {
 			subject.update?.(elTime, curFrame, deltaTime)
-			subject.updateDevUI?.()
+			if (config.devUI) subject.updateDevUI?.()
 		}
 		this.renderer.render(this.scene, this.camera.instance())
 	}

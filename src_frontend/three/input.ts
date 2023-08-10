@@ -172,9 +172,12 @@ export default class Input extends SceneSubject {
 		folder.add(this.state, 'fontLineHeightRatio', 1, 1.4, 0.01).onChange(() => {
 			this.updateTroika()
 		})
-		folder.add(this.state, 'cursorWidthRatio', 0.01, 1, 0.01).onChange(() => {
-			this.updateTroika()
-		})
+		folder
+			.add(this.state, 'cursorWidthRatio', 0.01, 1, 0.01)
+			.onChange((value: unknown) => {
+				this.state.mutate({ cursorWidthRatio: value as number })
+				this.updateTroika()
+			})
 	}
 
 	updateDevUI(): void {

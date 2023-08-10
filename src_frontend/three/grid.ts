@@ -41,7 +41,9 @@ export default class Grid extends SceneSubject {
 	) {
 		super(name, scene, camera, state)
 		this.propertiesChanged()
-		this.state.subscribe('cursorWidthRatio', () => this.propertiesChanged())
+		this.state.subscribe('cursorWidthRatio', () => {
+			this.propertiesChanged()
+		})
 	}
 
 	propertiesChanged(): void {

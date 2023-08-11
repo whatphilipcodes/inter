@@ -1,16 +1,10 @@
 import * as THREE from 'three'
 
 enum Behavior {
-	// input
 	FLASH,
-	NAV,
-	ENTER,
-	// answer
-	LOADING,
-	REVEAL,
-	// both
 	STATIC,
-	HIDDEN,
+	TOP2BOTTOM,
+	BOTTOM2TOP,
 }
 
 export default class Cursor {
@@ -23,49 +17,37 @@ export default class Cursor {
 	width: number
 	height: number
 
-	constructor(anchor: THREE.Vector3, width = 0.1, height = 1) {
+	constructor(color: THREE.Color = new THREE.Color(0xffffff)) {
 		this.behavior = Behavior.FLASH
-		this.width = width
-		this.height = height
 		this.material = new THREE.MeshBasicMaterial({
-			color: 0xffffff,
+			color: color,
 		})
-		this.geometry = new THREE.PlaneGeometry(this.width, this.height)
+		this.geometry = new THREE.PlaneGeometry(1, 1)
 		this.mesh = new THREE.Mesh(this.geometry, this.material)
-		this.anchor = anchor
-		this.setPosition(anchor)
 	}
 
-	setPosition(position: THREE.Vector3) {
-		// offsets the postion to the lower left corner of the cursor
+	private setPosition(position: THREE.Vector3) {
+		// transforms the pos anchor to the bottom left corner
 		this.mesh.position.set(
 			position.x + this.width / 2,
-			position.y - this.height / 2,
+			position.y + this.height / 2,
 			position.z
 		)
 	}
 
+	private setDimensions(width: number, height: number) {
+		this.width = width
+		this.height = height
+		this.mesh.scale.set(width, height, 1)
+	}
+
+	// Public Methods
 	get() {
 		return this.mesh
 	}
 
-	updateDimensions(width: number, height: number) {
-		this.width = width
-		this.height = height
-	}
-
-	updatePosition(offset: THREE.Vector3) {
-		const newPos = this.anchor.clone().add(offset)
-		this.setPosition(newPos)
-	}
-
-	// CALLBACKS
-	update(offset: THREE.Vector3) {
-		this.updatePosition(offset)
-	}
-
-	onWindowResize(anchor: THREE.Vector3, width: number, height: number) {
-		this.anchor = anchor
-		this.updateDimensions(width, height)
+	update(position: THREE.Vector3, width: number, height: number) {
+		this.setPosition(position)
+		this.setDimensions(width, height)
 	}
 }

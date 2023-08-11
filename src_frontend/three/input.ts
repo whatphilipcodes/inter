@@ -26,17 +26,8 @@ export default class Input extends SceneSubject {
 	) {
 		super(name, scene, camera, state)
 
-		// set the input position based on the grid
-		this.position.set(
-			this.state.leftBottom.x + this.state.spacing,
-			this.state.leftBottom.y,
-			this.state.leftBottom.z
-		)
-
-		const visu = getPointsVisu(this.position, new THREE.Color(0xff00ff))
-		this.scene.add(visu)
-
 		// Props
+		this.setInputPosition()
 		this.caretPositionsArray = new Float32Array(0)
 		this.caretPosition = this.position.clone()
 		this.troika = new Text()
@@ -72,6 +63,15 @@ export default class Input extends SceneSubject {
 			this.caretPosition,
 			this.state.lineHeight * this.state.cursorWidthRatio,
 			this.state.lineHeight
+		)
+	}
+
+	setInputPosition(): void {
+		// set the input position based on the grid
+		this.position.set(
+			this.state.leftBottom.x + this.state.spacing,
+			this.state.leftBottom.y,
+			this.state.leftBottom.z
 		)
 	}
 
@@ -201,9 +201,11 @@ export default class Input extends SceneSubject {
 
 	updateDevUI(): void {
 		this.boxHelper.update()
+		this.setInputPosition()
 	}
 
 	onWindowResize(): void {
+		this.setInputPosition()
 		this.updateCaret()
 		this.updateText()
 	}

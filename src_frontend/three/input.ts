@@ -76,7 +76,7 @@ export default class Input extends SceneSubject {
 		this.troika.color = 0xffffff
 		this.troika.anchorX = 'left'
 		this.troika.anchorY = 'bottom'
-		this.troika.maxWidth = this.state.messageWidth
+		this.troika.maxWidth = this.state.msgWidth
 		this.troika.overflowWrap = 'break-word'
 		this.troika.whiteSpace = 'normal'
 	}

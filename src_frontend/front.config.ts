@@ -33,8 +33,8 @@ const config = {
 		numLinesSpacing: 1,
 
 		// message settings
-		counterpartOffsetRatio: 0.34,
-		messageWidthRatio: 0.66,
+		ctpOffsetRatio: 0.34,
+		msgWidthRatio: 0.66,
 
 		// text settings
 		fontLineHeightRatio: 1.2,

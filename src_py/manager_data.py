@@ -41,7 +41,8 @@ class DataManager:
             context="",
             input=input.text,
             response="",
-            mood=Mood.neutral,
+            mood=Mood.doubt,
+            trust=input.trust,
             epoch_cls=0,
             epoch_gen=0,
         )

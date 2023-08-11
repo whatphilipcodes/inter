@@ -54,8 +54,6 @@ class ConvoManager:
 
         if mood == Mood.forlang:
             return random.choice(FORLANG)
-        elif mood == Mood.neutral:
-            return random.choice(NEUTRAL)
         elif mood == Mood.truth:
             return random.choice(TRUTH)
         elif mood == Mood.doubt:
@@ -64,7 +62,7 @@ class ConvoManager:
             return random.choice(LIE)
 
     def get_gen_inference_str(
-        self, input: ConvoText, mood=Mood.neutral, context=None
+        self, input: ConvoText, mood=Mood.doubt, context=None
     ) -> str:
         """
         Returns the conversation with history as a single string.

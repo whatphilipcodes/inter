@@ -27,6 +27,7 @@ type ConvoText = {
 	timestamp: string
 	type: ConvoType
 	text: string
+	trust: number
 	tokens?: string[]
 }
 

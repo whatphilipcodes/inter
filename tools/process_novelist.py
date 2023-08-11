@@ -206,7 +206,8 @@ def create_inter_data(
                 context=context,
                 input=input_dialogue,
                 response=response_dialogue,
-                mood=Mood.neutral,
+                mood=Mood.doubt,
+                trust=0.5,
                 epoch_cls=0,
                 epoch_gen=0,
             )

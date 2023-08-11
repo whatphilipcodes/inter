@@ -5,7 +5,7 @@ import threading
 
 # Local Imports
 from . import __backend_config as config
-from .utils import ConvoText, LoopPatch, get_timestamp
+from .utils import ConvoText, Mood, LoopPatch, get_timestamp
 
 from .manager_conversation import ConvoManager
 from .manager_data import DataManager
@@ -42,6 +42,9 @@ class MainLoop:
         # Inference Props
         self._active_split = self._data_manager.get_split()
 
+        # Trust Score
+        self._trust_score = 0.0
+
     async def _loop(self) -> None:
         """
         Asynchronous method that defines the main loop.
@@ -70,8 +73,16 @@ class MainLoop:
                     # 0) get datapoint from data manager
                     datapoint = self._data_manager.get_datapoint(input_data)
 
-                    # 1) get classification for input_data -> mood
+                    # 1) get classification for input_data and update trust score
                     mood = self._classifier.infer(input_data.text)
+                    if mood == Mood.truth:
+                        self._trust_score = min(
+                            1.0, self._trust_score + config.TRUST_MOD
+                        )
+                    elif mood == Mood.lie:
+                        self._trust_score = max(
+                            0.0, self._trust_score - config.TRUST_MOD
+                        )
                     datapoint.mood = mood
 
                     # 2) instruct generator to create response -> response
@@ -98,6 +109,7 @@ class MainLoop:
                         text=response,
                         timestamp=get_timestamp(),
                         type=ConvoText.ConvoType.response,
+                        trust=self._trust_score,
                     )
 
                     # make results available in the dictionary
@@ -183,3 +195,5 @@ class MainLoop:
             print("Inference started...")
         # update the active split
         self._active_split = self._data_manager.get_split()
+        # reset trust score
+        self._trust_score = 0.0

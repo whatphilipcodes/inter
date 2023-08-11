@@ -147,6 +147,7 @@ class ConvoText(BaseModel):
     timestamp: str
     type: ConvoType
     text: str
+    trust: float
     tokens: Optional[list[str]] = None
 
 
@@ -176,7 +177,6 @@ class LoopPatch(BaseModel):
 # INTERNAL DATAMODELS ########################################################
 class Mood(str, Enum):
     forlang = "forlang"
-    neutral = "neutral"
     truth = "truth"
     doubt = "doubt"
     lie = "lie"
@@ -220,6 +220,7 @@ class InterData(BaseModel):
     input: str
     response: str
     mood: Mood
+    trust: float
     epoch_cls: int
     epoch_gen: int
 

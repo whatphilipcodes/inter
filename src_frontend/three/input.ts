@@ -4,7 +4,6 @@ import { Store } from '../state/store'
 import SceneSubject from './_sceneSubject'
 import { Text /*getSelectionRects, getCaretAtPoint*/ } from 'troika-three-text'
 import Cursor from './cursor'
-import { getPointsVisu } from '../utils/threeUtil'
 
 export default class Input extends SceneSubject {
 	// Props

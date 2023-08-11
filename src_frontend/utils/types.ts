@@ -1,9 +1,14 @@
-enum state {
+enum State {
 	loading = 'loading',
 	idle = 'idle',
 	interaction = 'interaction',
 	error = 'error',
 	exit = 'exit',
+}
+
+enum Sender {
+	user = 'user',
+	agent = 'agent',
 }
 
 // See utils.py for pydantic counterpart
@@ -12,7 +17,7 @@ enum ConvoType {
 	response = 'response',
 }
 
-enum backendState {
+enum BackendState {
 	loading = 'loading',
 	training = 'training',
 	inference = 'inference',
@@ -31,8 +36,8 @@ type ConvoText = {
 }
 
 type LoopPatch = {
-	state: backendState
+	state: BackendState
 }
 
 // export
-export { state, backendState, ConvoType, ConvoText, LoopPatch }
+export { State, Sender, BackendState, ConvoType, ConvoText, LoopPatch }

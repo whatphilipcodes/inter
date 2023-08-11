@@ -1,10 +1,10 @@
-import { state } from '../utils/types'
+import { State } from '../utils/types'
 import { API } from '../utils/api'
 import config from '../front.config'
 
 export class Store {
 	// state
-	appState: state
+	appState: State
 
 	// api
 	elURL: URL

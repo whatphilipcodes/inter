@@ -7,7 +7,7 @@ import type Input from './components/hiddenInput'
 
 // state
 import { Store } from './state/store'
-import { state, backendState, LoopPatch } from './utils/types'
+import { State, BackendState, LoopPatch } from './utils/types'
 
 // three
 import SceneManager from './three/_sceneManager'
@@ -43,26 +43,26 @@ const input = document.getElementById('hiddenInput') as Input
 const globalState = new Store()
 
 // connect frontend state to backend state
-function updateBackendState(current: state): void {
+function updateBackendState(current: State): void {
 	let translation
 	switch (current) {
-		case state.loading:
-			translation = { state: backendState.loading }
+		case State.loading:
+			translation = { S: BackendState.loading }
 			break
-		case state.idle:
-			translation = { state: backendState.training }
+		case State.idle:
+			translation = { state: BackendState.training }
 			break
-		case state.interaction:
-			translation = { state: backendState.inference }
+		case State.interaction:
+			translation = { state: BackendState.inference }
 			break
-		case state.error:
-			translation = { state: backendState.error }
+		case State.error:
+			translation = { state: BackendState.error }
 			break
-		case state.exit:
-			translation = { state: backendState.exit }
+		case State.exit:
+			translation = { state: BackendState.exit }
 			break
 		default:
-			translation = { state: backendState.training }
+			translation = { state: BackendState.training }
 			break
 	}
 	globalState.api
@@ -117,7 +117,7 @@ window.addEventListener(
 		}
 		if (globalState.api.online) {
 			globalState.mutate({
-				appState: state.idle,
+				appState: State.idle,
 			})
 		}
 	} catch (error) {

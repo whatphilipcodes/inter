@@ -11,8 +11,7 @@ export default class Input extends SceneSubject {
 	caretPosition: THREE.Vector3
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	troika: any
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	caretPositionsArray: any
+	caretPositionsArray: Float32Array
 
 	// Debugging
 	boxHelper: THREE.BoxHelper
@@ -175,7 +174,7 @@ export default class Input extends SceneSubject {
 	}
 
 	// Callback Implementations
-	update() {
+	update(): void {
 		this.updateCaret()
 	}
 

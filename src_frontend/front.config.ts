@@ -1,4 +1,4 @@
-import { state } from './utils/types'
+import { State } from './utils/types'
 const config = {
 	// app settings
 	devUI: true,
@@ -16,7 +16,7 @@ const config = {
 	// initial state
 	initState: {
 		// state
-		appState: state.loading,
+		appState: State.loading,
 
 		// textarea
 		input: '',

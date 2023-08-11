@@ -5,13 +5,13 @@ import * as THREE from 'three'
 export default class SceneSubject extends THREE.Group {
 	name: string
 	scene: THREE.Scene
-	camera?: THREE.Camera
+	camera?: THREE.OrthographicCamera
 	state?: Store
 
 	constructor(
 		name: string,
 		scene: THREE.Scene,
-		camera?: THREE.Camera,
+		camera?: THREE.OrthographicCamera,
 		state?: Store
 	) {
 		super()

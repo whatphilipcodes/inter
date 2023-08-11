@@ -35,7 +35,7 @@ export class Store {
 	ctpOffsetRatio: number
 	msgWidthRatio: number
 
-	// grid props
+	// vertical grid props
 	origin: THREE.Vector3
 	leftBottom: THREE.Vector3
 	contentWidth: number
@@ -48,6 +48,9 @@ export class Store {
 	msgIndicator: number
 	loaIndicator: number
 	ctpIndicator: number
+
+	// horizontal grid props
+	historyStart: number
 
 	// text settings
 	fontLineHeightRatio: number

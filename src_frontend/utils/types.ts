@@ -6,11 +6,6 @@ enum State {
 	exit = 'exit',
 }
 
-enum Sender {
-	user = 'user',
-	agent = 'agent',
-}
-
 // See utils.py for pydantic counterpart
 enum ConvoType {
 	input = 'input',
@@ -40,4 +35,4 @@ type LoopPatch = {
 }
 
 // export
-export { State, Sender, BackendState, ConvoType, ConvoText, LoopPatch }
+export { State, BackendState, ConvoType, ConvoText, LoopPatch }

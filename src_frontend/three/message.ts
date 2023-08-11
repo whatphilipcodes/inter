@@ -1,14 +1,15 @@
+import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
 import * as THREE from 'three'
+import { Text } from 'troika-three-text'
+
 import { Store } from '../state/store'
 import SceneSubject from './_sceneSubject'
-import { Text } from 'troika-three-text'
-import { Sender } from '../utils/types'
+import { ConvoText, ConvoType } from '../utils/types'
 
 export default class Message extends SceneSubject {
 	// Props
-	sender: Sender
 	height: number
-	text: string
+	text: ConvoText
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	troika: any
 
@@ -20,10 +21,13 @@ export default class Message extends SceneSubject {
 		scene: THREE.Scene,
 		camera: THREE.OrthographicCamera,
 		state: Store,
-		text: string
+		text: ConvoText
 	) {
 		super(name, scene, camera, state)
+
+		// Props
 		this.text = text
+		this.setMessagePosition()
 		this.troika = new Text()
 		this.setTextSettings()
 		this.setTextPosition()
@@ -31,6 +35,23 @@ export default class Message extends SceneSubject {
 	}
 
 	// Methods
+	setMessagePosition(): void {
+		switch (this.text.type) {
+			case ConvoType.input:
+				this.position.set(this.state.leftBottom.x + this.state.spacing, 0, 0)
+				break
+			case ConvoType.response:
+				this.position.set(
+					this.state.leftBottom.x + this.state.ctpOffset + this.state.spacing,
+					0,
+					0
+				)
+				break
+			default:
+				throw new Error('Invalid sender')
+		}
+	}
+
 	setTextSettings(): void {
 		this.troika.font = './assets/cascadiacode/CascadiaMono-Regular.ttf'
 		this.troika.fontSize =
@@ -51,13 +72,25 @@ export default class Message extends SceneSubject {
 	}
 
 	syncText(): void {
-		this.troika.text = this.text
+		this.troika.text = this.text.text
 		this.troika.sync()
 	}
 
 	// Callback Implementations
 	update(): void {
-		//
+		this.setMessagePosition()
+		this.setTextSettings()
+		this.setTextPosition()
+		this.syncText()
+	}
+
+	buildDevUI(gui: GUI): void {
+		this.boxHelper = new THREE.BoxHelper(this.troika)
+		this.scene.add(this.boxHelper)
+	}
+
+	updateDevUI(): void {
+		this.boxHelper.update()
 	}
 
 	onWindowResize(): void {

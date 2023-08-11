@@ -115,7 +115,7 @@ export default class Grid extends SceneSubject {
 			this.state.leftBottom,
 			this.state.contentWidth,
 			this.state.contentHeight,
-			new THREE.Color(0xffffff)
+			new THREE.Color(0xff0000)
 		)
 		this.scene.add(this.helperBox)
 

@@ -1,12 +1,13 @@
 import * as THREE from 'three'
-import { Store } from '../state/store'
+import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
+
 import SceneSubject from './_sceneSubject'
+import { Store } from '../state/store'
 import {
 	screenToWorld,
 	getHelper2DBox,
 	getHelperLine,
 } from '../utils/threeUtil'
-import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
 
 export default class Grid extends SceneSubject {
 	// Screen dependent variables

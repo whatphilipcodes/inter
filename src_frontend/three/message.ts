@@ -1,5 +1,5 @@
-import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
 import * as THREE from 'three'
+import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
 import { Text } from 'troika-three-text'
 
 import { Store } from '../state/store'
@@ -32,6 +32,7 @@ export default class Message extends SceneSubject {
 		this.setTextSettings()
 		this.setTextPosition()
 		this.syncText()
+		this.scene.add(this.troika)
 	}
 
 	// Methods

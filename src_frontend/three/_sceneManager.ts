@@ -1,21 +1,20 @@
 // Thanks to https://pierfrancesco-soffritti.medium.com/how-to-organize-the-structure-of-a-three-js-project-77649f58fa3f
-
 import * as THREE from 'three'
 
 import SceneSubject from './_sceneSubject'
 import { Store } from '../state/store'
-// import { appState } from '../utils/enums'
 
 // SceneSubjects
 import Grid from './grid'
-import History from './history'
+import Mask from './mask'
+import ChunkManager from './chunkManager'
 import Input from './input'
+
+import Camera from './camera'
 
 // Debugging
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 import config from '../front.config'
-
-import Camera from './camera'
 
 export default class SceneManager {
 	// Props
@@ -81,7 +80,8 @@ export default class SceneManager {
 	buildSceneSubjects(): SceneSubject[] {
 		const sceneSubjects = [
 			new Grid('Grid', this.scene, this.camera.instance(), this.state),
-			new History('History', this.scene, this.camera.instance(), this.state),
+			new Mask('Mask', this.scene, this.camera.instance(), this.state),
+			new ChunkManager('CMan', this.scene, this.camera.instance(), this.state),
 			new Input('Input', this.scene, this.camera.instance(), this.state),
 		]
 		return sceneSubjects

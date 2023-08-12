@@ -1,8 +1,9 @@
 import * as THREE from 'three'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
-import { Store } from '../state/store'
-import SceneSubject from './_sceneSubject'
 import { Text /*getSelectionRects, getCaretAtPoint*/ } from 'troika-three-text'
+
+import SceneSubject from './_sceneSubject'
+import { Store } from '../state/store'
 import Cursor from './cursor'
 
 export default class Input extends SceneSubject {

@@ -6,10 +6,11 @@ import SceneSubject from './_sceneSubject'
 import { Store } from '../state/store'
 import Message from './message'
 
-class History extends SceneSubject {
+export default class Chunk extends SceneSubject {
 	// Props
 	inputs: ConvoText[]
 	messages: Message[] = []
+	// chunks need to scale with the grid settings in order to fill the screen -> load ConvoTexts while height < sample size n = numLines * lineHeight * 2
 	constructor(
 		name: string,
 		scene: THREE.Scene,
@@ -27,6 +28,7 @@ class History extends SceneSubject {
 				timestamp: '2021-08-01T00:00:00.000Z',
 				type: ConvoType.input,
 				text: 'Hello',
+				trust: 0.5,
 			},
 			{
 				convoID: 0,
@@ -34,6 +36,7 @@ class History extends SceneSubject {
 				timestamp: '2022-08-01T00:00:00.000Z',
 				type: ConvoType.response,
 				text: 'Hi',
+				trust: 0.5,
 			},
 			{
 				convoID: 0,
@@ -41,6 +44,7 @@ class History extends SceneSubject {
 				timestamp: '2023-08-01T00:00:00.000Z',
 				type: ConvoType.input,
 				text: 'How are you?',
+				trust: 0.5,
 			},
 			{
 				convoID: 0,
@@ -48,6 +52,7 @@ class History extends SceneSubject {
 				timestamp: '2024-08-01T00:00:00.000Z',
 				type: ConvoType.response,
 				text: 'Good',
+				trust: 0.5,
 			}
 		)
 		this.buildMessages()
@@ -64,7 +69,6 @@ class History extends SceneSubject {
 				input
 			)
 			this.messages.push(message)
-			this.scene.add(message.troika)
 		}
 	}
 
@@ -93,5 +97,3 @@ class History extends SceneSubject {
 		}
 	}
 }
-
-export default History

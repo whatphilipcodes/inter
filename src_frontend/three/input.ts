@@ -122,7 +122,6 @@ export default class Input extends SceneSubject {
 				this.troika.geometry.boundingBox.max.y -
 				this.troika.geometry.boundingBox.min.y
 			this.state.mutate({ inputHeight: height })
-			console.log('input height', this.state.inputHeight)
 			resolve()
 		})
 	}

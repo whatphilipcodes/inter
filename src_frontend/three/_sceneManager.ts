@@ -37,7 +37,8 @@ export default class SceneManager {
 		this.clock = new THREE.Clock()
 
 		this.camera = new Camera(this.canvas)
-		this.camera.buildCamera(1)
+		const cameraPos = new THREE.Vector3(0, 0, 1)
+		this.camera.buildCamera(1, cameraPos)
 
 		this.scene = this.buildScene()
 		this.sceneSubjects = this.buildSceneSubjects()
@@ -89,9 +90,9 @@ export default class SceneManager {
 	buildSceneSubjects(): SceneSubject[] {
 		const sceneSubjects = [
 			new Grid('Grid', this.scene, this.camera.instance(), this.state),
-			new Mask('Mask', this.scene, this.camera.instance(), this.state),
 			new History('History', this.scene, this.camera.instance(), this.state),
 			new Input('Input', this.scene, this.camera.instance(), this.state),
+			new Mask('Mask', this.scene, this.camera.instance(), this.state),
 		]
 		return sceneSubjects
 	}

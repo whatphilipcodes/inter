@@ -131,7 +131,6 @@ export default class Message extends SceneSubject {
 	buildDevUI(gui: GUI): void {
 		this.boxHelper = new THREE.BoxHelper(this.troika)
 		this.scene.add(this.boxHelper)
-
 		this.positionHelper = getPointsVisu(
 			this.position.clone(),
 			new THREE.Color(0xff0000)
@@ -140,7 +139,6 @@ export default class Message extends SceneSubject {
 	}
 
 	updateDevUI(): void {
-		// this.setTextSettings()
 		this.boxHelper.update()
 		this.scene.remove(this.positionHelper)
 		this.positionHelper = getPointsVisu(

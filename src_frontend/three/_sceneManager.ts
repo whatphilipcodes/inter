@@ -45,7 +45,16 @@ export default class SceneManager {
 		this.renderer = this.buildRenderer()
 		document.body.appendChild(this.renderer.domElement)
 
-		if (config.devUI) this.buildDevUI()
+		if (config.devUI) {
+			this.buildDevUI()
+			this.state.subscribe(
+				'devUIUpdate',
+				() => {
+					this.onPropertiesChanged()
+				},
+				true
+			)
+		}
 	}
 
 	buildCanvas(width: number, height: number): HTMLCanvasElement {
@@ -82,7 +91,7 @@ export default class SceneManager {
 			new Grid('Grid', this.scene, this.camera.instance(), this.state),
 			new Mask('Mask', this.scene, this.camera.instance(), this.state),
 			new History('History', this.scene, this.camera.instance(), this.state),
-			// new Input('Input', this.scene, this.camera.instance(), this.state),
+			new Input('Input', this.scene, this.camera.instance(), this.state),
 		]
 		return sceneSubjects
 	}
@@ -94,6 +103,13 @@ export default class SceneManager {
 		}
 	}
 
+	// Dev UI Update
+	onPropertiesChanged(): void {
+		for (const subject of this.sceneSubjects) {
+			subject.updateDevUI?.()
+		}
+	}
+
 	// Callbacks
 	update(): void {
 		const elTime = this.clock.getElapsedTime()
@@ -101,7 +117,6 @@ export default class SceneManager {
 		const curFrame = this.renderer.info.render.frame
 		for (const subject of this.sceneSubjects) {
 			subject.update?.(elTime, curFrame, deltaTime)
-			if (config.devUI) subject.updateDevUI?.()
 		}
 		this.renderer.render(this.scene, this.camera.instance())
 	}

@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
+// import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
 
 import { ConvoText, ConvoType } from '../utils/types'
 import SceneSubject from './_sceneSubject'
@@ -95,9 +95,9 @@ export default class History extends SceneSubject {
 		}
 	}
 
-	buildDevUI(gui: GUI): void {
+	buildDevUI(): void {
 		for (const message of this.messages) {
-			message.buildDevUI(gui)
+			message.buildDevUI()
 		}
 	}
 

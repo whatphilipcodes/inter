@@ -136,10 +136,26 @@ function getHelperLine(
 	return line
 }
 
+/**
+ * Checks if the given vector (either THREE.Vector3 or THREE.Vector2) contains any NaN values.
+ *
+ * @param vector - The vector to check.
+ * @returns {boolean} - Returns true if the vector contains any NaN values, otherwise false.
+ */
+function hasNaN(vector: THREE.Vector3 | THREE.Vector2) {
+	if (vector instanceof THREE.Vector3) {
+		return isNaN(vector.x) || isNaN(vector.y) || isNaN(vector.z)
+	} else if (vector instanceof THREE.Vector2) {
+		return isNaN(vector.x) || isNaN(vector.y)
+	}
+	return false
+}
+
 export {
 	screenToWorld,
 	worldToPixel,
 	getHelper2DBox,
 	getPointsVisu,
 	getHelperLine,
+	hasNaN,
 }

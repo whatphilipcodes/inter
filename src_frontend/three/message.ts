@@ -1,8 +1,8 @@
 import * as THREE from 'three'
-import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
+// import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
 import { Text } from 'troika-three-text'
 
-import { getPointsVisu } from '../utils/threeUtil'
+import { getPointsVisu, hasNaN } from '../utils/threeUtil'
 import { ConvoText, ConvoType } from '../utils/types'
 import { Store } from '../state/store'
 import SceneSubject from './_sceneSubject'
@@ -57,25 +57,15 @@ export default class Message extends SceneSubject {
 	private setHorizontalPosition(): void {
 		switch (this.text.type) {
 			case ConvoType.input:
-				this.position.set(
-					this.state.leftBottom.x + this.state.spacing,
-					this.position.y,
-					this.position.z
-				)
-				this.indicatorPos.set(
-					this.state.leftBottom.x,
-					this.position.y,
-					this.position.z
-				)
+				this.position.setX(this.state.leftBottom.x + this.state.spacing)
+				this.indicatorPos.setX(this.state.leftBottom.x)
 				break
 			case ConvoType.response:
 				this.position.setX(
 					this.state.leftBottom.x + this.state.spacing + this.state.ctpOffset
 				)
-				this.indicatorPos.set(
-					this.state.leftBottom.x + this.state.ctpIndicator,
-					this.position.y,
-					this.position.z
+				this.indicatorPos.setX(
+					this.state.leftBottom.x + this.state.ctpIndicator
 				)
 				break
 			default:
@@ -128,7 +118,7 @@ export default class Message extends SceneSubject {
 		this.syncText()
 	}
 
-	buildDevUI(gui: GUI): void {
+	buildDevUI(): void {
 		this.boxHelper = new THREE.BoxHelper(this.troika)
 		this.scene.add(this.boxHelper)
 		this.positionHelper = getPointsVisu(
@@ -139,7 +129,7 @@ export default class Message extends SceneSubject {
 	}
 
 	updateDevUI(): void {
-		this.boxHelper.update()
+		if (!hasNaN(this.troika.position)) this.boxHelper.update()
 		this.scene.remove(this.positionHelper)
 		this.positionHelper = getPointsVisu(
 			this.position.clone(),

@@ -8,8 +8,8 @@ import { ConvoText, ConvoType } from '../utils/types'
 
 export default class Message extends SceneSubject {
 	// Props
-	height: number
 	text: ConvoText
+	height: number
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	troika: any
 
@@ -25,35 +25,35 @@ export default class Message extends SceneSubject {
 	) {
 		super(name, scene, camera, state)
 
-		// Props
 		this.text = text
-		this.setMessagePosition()
+		// Create and Link Text
 		this.troika = new Text()
 		this.setTextSettings()
-		this.setTextPosition()
+		this.add(this.troika)
 		this.syncText()
-		this.scene.add(this.troika)
+
+		this.setMessagePosition()
+	}
+
+	// Getters
+	getTextHeight(): number {
+		return this.height
 	}
 
 	// Methods
-	setMessagePosition(): void {
+	private setMessagePosition(): void {
 		switch (this.text.type) {
 			case ConvoType.input:
-				this.position.set(this.state.leftBottom.x + this.state.spacing, 0, 0)
 				break
 			case ConvoType.response:
-				this.position.set(
-					this.state.leftBottom.x + this.state.ctpOffset + this.state.spacing,
-					0,
-					0
-				)
+				this.translateX(this.state.ctpOffset)
 				break
 			default:
 				throw new Error('Invalid sender')
 		}
 	}
 
-	setTextSettings(): void {
+	private setTextSettings(): void {
 		this.troika.font = './assets/cascadiacode/CascadiaMono-Regular.ttf'
 		this.troika.fontSize =
 			this.state.lineHeight / this.state.fontLineHeightRatio
@@ -67,22 +67,19 @@ export default class Message extends SceneSubject {
 		this.troika.whiteSpace = 'normal'
 	}
 
-	setTextPosition() {
-		const newPosition = this.position.clone()
-		this.troika.position.set(newPosition.x, newPosition.y, newPosition.z)
-	}
-
-	syncText(): void {
+	private syncText(): void {
 		this.troika.text = this.text.text
-		this.troika.sync()
+		this.troika.sync(() => {
+			this.height =
+				this.troika.geometry.boundingBox.max.y -
+				this.troika.geometry.boundingBox.min.y
+		})
 	}
 
 	// Callback Implementations
 	update(): void {
-		this.setMessagePosition()
+		// this.setMessagePosition()
 		this.setTextSettings()
-		this.setTextPosition()
-		this.syncText()
 	}
 
 	buildDevUI(gui: GUI): void {

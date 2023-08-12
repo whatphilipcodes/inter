@@ -7,7 +7,7 @@ import { Store } from '../state/store'
 // SceneSubjects
 import Grid from './grid'
 import Mask from './mask'
-import ChunkManager from './chunkManager'
+import History from './history'
 import Input from './input'
 
 import Camera from './camera'
@@ -81,7 +81,7 @@ export default class SceneManager {
 		const sceneSubjects = [
 			new Grid('Grid', this.scene, this.camera.instance(), this.state),
 			new Mask('Mask', this.scene, this.camera.instance(), this.state),
-			new ChunkManager('CMan', this.scene, this.camera.instance(), this.state),
+			new History('History', this.scene, this.camera.instance(), this.state),
 			new Input('Input', this.scene, this.camera.instance(), this.state),
 		]
 		return sceneSubjects

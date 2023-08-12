@@ -6,7 +6,7 @@ import SceneSubject from './_sceneSubject'
 import { Store } from '../state/store'
 import Message from './message'
 
-export default class Chunk extends SceneSubject {
+export default class History extends SceneSubject {
 	// Props
 	inputs: ConvoText[]
 	messages: Message[] = []
@@ -18,6 +18,13 @@ export default class Chunk extends SceneSubject {
 		state: Store
 	) {
 		super(name, scene, camera, state)
+
+		// set position to leftBottom
+		this.position.set(
+			this.state.leftBottom.x + this.state.spacing,
+			this.state.leftBottom.y,
+			0
+		)
 
 		// Dummy messages
 		this.inputs = []
@@ -56,6 +63,7 @@ export default class Chunk extends SceneSubject {
 			}
 		)
 		this.buildMessages()
+		this.scene.add(this)
 	}
 
 	// Methods
@@ -68,6 +76,7 @@ export default class Chunk extends SceneSubject {
 				this.state,
 				input
 			)
+			this.add(message)
 			this.messages.push(message)
 		}
 	}

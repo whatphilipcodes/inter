@@ -1,12 +1,15 @@
 import { State } from './utils/types'
 const config = {
 	// app settings
-	devUI: true,
+	truthScore: true,
+	devUI: false,
 	devTools: true,
 	fullScreen: true,
 	hideCursor: false,
 	debugMsg: true,
-	showHiddenInput: true,
+	showHiddenInput: false,
+
+	// api settings
 	apiTimeout: 120000,
 	idleTimeout: 20000,
 

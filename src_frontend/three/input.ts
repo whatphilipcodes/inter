@@ -101,6 +101,10 @@ export default class Input extends SceneSubject {
 
 	handleSpecialKey(): void {
 		switch (this.state.specialKeyPressed) {
+			case 'Enter':
+				this.state.mutate({ input: '' })
+				this.state.cursorPos = 0
+				break
 			case 'ArrowUp':
 				// this.state.mutate({ cursorPos: this.getUpperCaretPos() })
 				break

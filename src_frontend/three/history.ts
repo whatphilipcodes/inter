@@ -28,7 +28,7 @@ export default class History extends SceneSubject {
 				timestamp: '2021-08-01T00:00:00.000Z',
 				type: ConvoType.input,
 				text: 'Hello how are you doing, kind Sir?',
-				trust: 0.5,
+				trust: 0.0,
 			},
 			{
 				convoID: 0,
@@ -36,7 +36,7 @@ export default class History extends SceneSubject {
 				timestamp: '2022-08-01T00:00:00.000Z',
 				type: ConvoType.response,
 				text: 'Hi. I am fine thanks a lot. How about you? Anything on your mind lately? I am here to listen. Please dont hesitate to tell me anything.',
-				trust: 0.5,
+				trust: 0.0,
 			},
 			{
 				convoID: 0,
@@ -44,7 +44,7 @@ export default class History extends SceneSubject {
 				timestamp: '2023-08-01T00:00:00.000Z',
 				type: ConvoType.input,
 				text: 'I am fine too. I am just thinking about the future.',
-				trust: 0.5,
+				trust: 0.33,
 			},
 			{
 				convoID: 0,
@@ -52,7 +52,7 @@ export default class History extends SceneSubject {
 				timestamp: '2024-08-01T00:00:00.000Z',
 				type: ConvoType.response,
 				text: 'Oh, what about the future?',
-				trust: 0.5,
+				trust: 0.33,
 			}
 		)
 		this.inputs.reverse() // revert order

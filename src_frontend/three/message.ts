@@ -2,6 +2,7 @@ import * as THREE from 'three'
 // import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
 import { Text } from 'troika-three-text'
 
+import config from '../front.config'
 import { getPointsVisu, hasNaN } from '../utils/threeUtil'
 import { ConvoText, ConvoType } from '../utils/types'
 import { Store } from '../state/store'
@@ -58,12 +59,22 @@ export default class Message extends SceneSubject {
 		switch (this.text.type) {
 			case ConvoType.input:
 				this.position.setX(this.state.leftBottom.x + this.state.spacing)
+				if (config.truthScore) {
+					this.position.setX(
+						this.position.x + this.state.ctpOffset * this.text.trust
+					)
+				}
 				this.indicatorPos.setX(this.state.leftBottom.x)
 				break
 			case ConvoType.response:
 				this.position.setX(
 					this.state.leftBottom.x + this.state.spacing + this.state.ctpOffset
 				)
+				if (config.truthScore) {
+					this.position.setX(
+						this.position.x - this.state.ctpOffset * this.text.trust
+					)
+				}
 				this.indicatorPos.setX(
 					this.state.leftBottom.x + this.state.ctpIndicator
 				)
@@ -71,6 +82,10 @@ export default class Message extends SceneSubject {
 			default:
 				throw new Error('Invalid sender')
 		}
+	}
+
+	private setVerticalPosition(): void {
+		this.indicatorPos.setY(this.position.y)
 	}
 
 	private setTextSettings(): void {
@@ -110,6 +125,7 @@ export default class Message extends SceneSubject {
 	update(): void {
 		this.setTextSettings()
 		this.setHorizontalPosition()
+		this.setVerticalPosition()
 		this.senderInd.update(
 			this.indicatorPos,
 			this.state.lineHeight * this.state.cursorWidthRatio,
@@ -129,7 +145,10 @@ export default class Message extends SceneSubject {
 	}
 
 	updateDevUI(): void {
-		if (!hasNaN(this.troika.position)) this.boxHelper.update()
+		if (!hasNaN(this.troika.position)) {
+			this.boxHelper.update()
+			// console.log(this.troika.position)
+		}
 		this.scene.remove(this.positionHelper)
 		this.positionHelper = getPointsVisu(
 			this.position.clone(),

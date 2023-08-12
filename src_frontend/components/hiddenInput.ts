@@ -62,6 +62,11 @@ export default class HiddenInput extends HTMLElement {
 		this.textarea.addEventListener('keydown', async (e) => {
 			await new Promise((resolve) => setTimeout(resolve, 0))
 			switch (e.key) {
+				case 'Enter':
+					e.preventDefault()
+					this.state.mutate({ specialKeyPressed: 'Enter' })
+					this.textarea.value = ''
+					break
 				case 'ArrowUp':
 					e.preventDefault()
 					this.state.mutate({ specialKeyPressed: 'ArrowUp' })

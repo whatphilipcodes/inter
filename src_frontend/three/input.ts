@@ -33,6 +33,7 @@ export default class Input extends SceneSubject {
 		this.caret = new Cursor()
 		this.updateText()
 
+		// Add to scene
 		this.scene.add(this.troika)
 		this.scene.add(this.caret.get())
 
@@ -89,8 +90,9 @@ export default class Input extends SceneSubject {
 	}
 
 	setTextPosition() {
-		const newPosition = this.position.clone()
-		this.troika.position.set(newPosition.x, newPosition.y, newPosition.z)
+		// const newPosition = this.position.clone()
+		// this.troika.position.set(newPosition.x, newPosition.y, newPosition.z)
+		this.troika.position.copy(this.position)
 	}
 
 	syncText(): void {

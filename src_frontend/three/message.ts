@@ -2,19 +2,23 @@ import * as THREE from 'three'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
 import { Text } from 'troika-three-text'
 
+import { getPointsVisu } from '../utils/threeUtil'
+import { ConvoText, ConvoType } from '../utils/types'
 import { Store } from '../state/store'
 import SceneSubject from './_sceneSubject'
-import { ConvoText, ConvoType } from '../utils/types'
+import Cursor from './cursor'
 
 export default class Message extends SceneSubject {
 	// Props
 	text: ConvoText
 	height: number
+	roleIndicator: Cursor
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	troika: any
 
 	// Debugging
 	boxHelper: THREE.BoxHelper
+	positionHelper: THREE.Points
 
 	constructor(
 		name: string,
@@ -25,16 +29,25 @@ export default class Message extends SceneSubject {
 	) {
 		super(name, scene, camera, state)
 
-		// Props Setup
+		this.position.set(
+			this.state.leftBottom.x + this.state.spacing,
+			this.state.leftBottom.y,
+			this.state.leftBottom.z
+		)
 		this.text = text
 
-		// Create and Link Text
+		// Create Text
 		this.troika = new Text()
 		this.setTextSettings()
-		this.syncText()
-		this.add(this.troika)
-
 		this.setHorizontalPosition()
+		this.syncText()
+
+		// Create Role Indicator
+		this.roleIndicator = new Cursor()
+
+		// add to scene
+		this.scene.add(this.troika)
+		this.scene.add(this.roleIndicator.get())
 
 		// Listen to troika Syncs
 		this.troika.addEventListener('synccomplete', () => {
@@ -46,9 +59,13 @@ export default class Message extends SceneSubject {
 	private setHorizontalPosition(): void {
 		switch (this.text.type) {
 			case ConvoType.input:
+				// this.position.setX(this.state.leftBottom.x)
 				break
 			case ConvoType.response:
-				this.translateX(this.state.ctpOffset)
+				this.position.setX(
+					this.state.leftBottom.x + this.state.spacing + this.state.ctpOffset
+				)
+				// this.translateX(this.state.ctpOffset)
 				break
 			default:
 				throw new Error('Invalid sender')
@@ -70,6 +87,7 @@ export default class Message extends SceneSubject {
 	}
 
 	private syncText(): void {
+		this.troika.position.copy(this.position)
 		this.troika.text = this.text.text
 		this.troika.sync()
 	}
@@ -89,17 +107,34 @@ export default class Message extends SceneSubject {
 
 	// Callback Implementations
 	update(): void {
-		// this.setMessagePosition()
-		this.setTextSettings()
+		this.syncText()
+		this.roleIndicator.update(
+			this.position.clone(),
+			this.state.lineHeight * this.state.cursorWidthRatio,
+			this.height
+		)
 	}
 
 	buildDevUI(gui: GUI): void {
 		this.boxHelper = new THREE.BoxHelper(this.troika)
 		this.scene.add(this.boxHelper)
+
+		this.positionHelper = getPointsVisu(
+			this.position.clone(),
+			new THREE.Color(0xff0000)
+		)
+		this.scene.add(this.positionHelper)
 	}
 
 	updateDevUI(): void {
+		// this.setTextSettings()
 		this.boxHelper.update()
+		this.scene.remove(this.positionHelper)
+		this.positionHelper = getPointsVisu(
+			this.position.clone(),
+			new THREE.Color(0xff00ff)
+		)
+		this.scene.add(this.positionHelper)
 	}
 
 	onWindowResize(): void {

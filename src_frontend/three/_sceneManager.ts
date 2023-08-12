@@ -82,7 +82,7 @@ export default class SceneManager {
 			new Grid('Grid', this.scene, this.camera.instance(), this.state),
 			new Mask('Mask', this.scene, this.camera.instance(), this.state),
 			new History('History', this.scene, this.camera.instance(), this.state),
-			new Input('Input', this.scene, this.camera.instance(), this.state),
+			// new Input('Input', this.scene, this.camera.instance(), this.state),
 		]
 		return sceneSubjects
 	}

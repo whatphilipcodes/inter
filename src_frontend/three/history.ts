@@ -19,13 +19,6 @@ export default class History extends SceneSubject {
 	) {
 		super(name, scene, camera, state)
 
-		// set position to leftBottom
-		this.position.set(
-			this.state.leftBottom.x + this.state.spacing,
-			this.state.leftBottom.y,
-			0
-		)
-
 		// Dummy messages
 		this.inputs = []
 		this.inputs.push(
@@ -42,7 +35,7 @@ export default class History extends SceneSubject {
 				messageID: 1,
 				timestamp: '2022-08-01T00:00:00.000Z',
 				type: ConvoType.response,
-				text: 'Hi. I am fine thanks a lot. How about you? Anything on your mind lately?',
+				text: 'Hi. I am fine thanks a lot. How about you? Anything on your mind lately? I am here to listen. Please dont hesitate to tell me anything.',
 				trust: 0.5,
 			},
 			{
@@ -64,7 +57,6 @@ export default class History extends SceneSubject {
 		)
 		this.inputs.reverse() // revert order
 		this.buildMessages()
-		this.scene.add(this)
 	}
 
 	// Methods
@@ -78,7 +70,6 @@ export default class History extends SceneSubject {
 				this.state,
 				input
 			)
-			this.add(message)
 			this.messages.push(message)
 			heightPromises.push(message.setHeight())
 		}
@@ -88,7 +79,7 @@ export default class History extends SceneSubject {
 	}
 
 	positionMessagesVertically(): void {
-		let yOffset = 0
+		let yOffset = this.state.leftBottom.y
 		for (const message of this.messages) {
 			message.position.setY(yOffset)
 			yOffset += message.height + this.state.spacing

@@ -25,23 +25,25 @@ export default class Message extends SceneSubject {
 	) {
 		super(name, scene, camera, state)
 
+		// Props Setup
 		this.text = text
+
 		// Create and Link Text
 		this.troika = new Text()
 		this.setTextSettings()
-		this.add(this.troika)
 		this.syncText()
+		this.add(this.troika)
 
-		this.setMessagePosition()
-	}
+		this.setHorizontalPosition()
 
-	// Getters
-	getTextHeight(): number {
-		return this.height
+		// Listen to troika Syncs
+		this.troika.addEventListener('synccomplete', () => {
+			this.setHeight()
+		})
 	}
 
 	// Methods
-	private setMessagePosition(): void {
+	private setHorizontalPosition(): void {
 		switch (this.text.type) {
 			case ConvoType.input:
 				break
@@ -69,10 +71,19 @@ export default class Message extends SceneSubject {
 
 	private syncText(): void {
 		this.troika.text = this.text.text
-		this.troika.sync(() => {
+		this.troika.sync()
+	}
+
+	async setHeight(): Promise<void> {
+		// This is necessary because because troika syncs can happen before the geometry is ready
+		while (!this.troika.textRenderInfo) {
+			await new Promise((resolve) => setTimeout(resolve, 1))
+		}
+		return new Promise((resolve) => {
 			this.height =
 				this.troika.geometry.boundingBox.max.y -
 				this.troika.geometry.boundingBox.min.y
+			resolve()
 		})
 	}
 

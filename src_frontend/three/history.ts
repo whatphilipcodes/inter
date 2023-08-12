@@ -34,7 +34,7 @@ export default class History extends SceneSubject {
 				messageID: 0,
 				timestamp: '2021-08-01T00:00:00.000Z',
 				type: ConvoType.input,
-				text: 'Hello',
+				text: 'Hello how are you doing, kind Sir?',
 				trust: 0.5,
 			},
 			{
@@ -42,7 +42,7 @@ export default class History extends SceneSubject {
 				messageID: 1,
 				timestamp: '2022-08-01T00:00:00.000Z',
 				type: ConvoType.response,
-				text: 'Hi',
+				text: 'Hi. I am fine thanks a lot. How about you? Anything on your mind lately?',
 				trust: 0.5,
 			},
 			{
@@ -50,7 +50,7 @@ export default class History extends SceneSubject {
 				messageID: 2,
 				timestamp: '2023-08-01T00:00:00.000Z',
 				type: ConvoType.input,
-				text: 'How are you?',
+				text: 'I am fine too. I am just thinking about the future.',
 				trust: 0.5,
 			},
 			{
@@ -58,19 +58,21 @@ export default class History extends SceneSubject {
 				messageID: 3,
 				timestamp: '2024-08-01T00:00:00.000Z',
 				type: ConvoType.response,
-				text: 'Good',
+				text: 'Oh, what about the future?',
 				trust: 0.5,
 			}
 		)
+		this.inputs.reverse() // revert order
 		this.buildMessages()
 		this.scene.add(this)
 	}
 
 	// Methods
 	buildMessages(): void {
-		for (const [i, input] of this.inputs.entries()) {
-			const message = new Message(
-				`Message${i}`,
+		const heightPromises: Promise<void>[] = []
+		for (const input of this.inputs) {
+			const message: Message = new Message(
+				input.timestamp,
 				this.scene,
 				this.camera,
 				this.state,
@@ -78,6 +80,18 @@ export default class History extends SceneSubject {
 			)
 			this.add(message)
 			this.messages.push(message)
+			heightPromises.push(message.setHeight())
+		}
+		Promise.all(heightPromises).then(() => {
+			this.positionMessagesVertically()
+		})
+	}
+
+	positionMessagesVertically(): void {
+		let yOffset = 0
+		for (const message of this.messages) {
+			message.position.setY(yOffset)
+			yOffset += message.height + this.state.spacing
 		}
 	}
 

@@ -12,7 +12,9 @@ export default class Message extends SceneSubject {
 	// Props
 	text: ConvoText
 	height: number
-	roleIndicator: Cursor
+	senderInd: Cursor
+	indicatorPos: THREE.Vector3
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	troika: any
 
@@ -29,12 +31,13 @@ export default class Message extends SceneSubject {
 	) {
 		super(name, scene, camera, state)
 
+		this.text = text
 		this.position.set(
 			this.state.leftBottom.x + this.state.spacing,
 			this.state.leftBottom.y,
 			this.state.leftBottom.z
 		)
-		this.text = text
+		this.indicatorPos = this.position.clone()
 
 		// Create Text
 		this.troika = new Text()
@@ -43,11 +46,11 @@ export default class Message extends SceneSubject {
 		this.syncText()
 
 		// Create Role Indicator
-		this.roleIndicator = new Cursor()
+		this.senderInd = new Cursor()
 
 		// add to scene
 		this.scene.add(this.troika)
-		this.scene.add(this.roleIndicator.get())
+		this.scene.add(this.senderInd.get())
 
 		// Listen to troika Syncs
 		this.troika.addEventListener('synccomplete', () => {
@@ -59,13 +62,21 @@ export default class Message extends SceneSubject {
 	private setHorizontalPosition(): void {
 		switch (this.text.type) {
 			case ConvoType.input:
-				// this.position.setX(this.state.leftBottom.x)
+				this.indicatorPos.set(
+					this.state.leftBottom.x,
+					this.position.y,
+					this.position.z
+				)
 				break
 			case ConvoType.response:
 				this.position.setX(
 					this.state.leftBottom.x + this.state.spacing + this.state.ctpOffset
 				)
-				// this.translateX(this.state.ctpOffset)
+				this.indicatorPos.set(
+					this.state.leftBottom.x + this.state.ctpIndicator,
+					this.position.y,
+					this.position.z
+				)
 				break
 			default:
 				throw new Error('Invalid sender')
@@ -108,8 +119,9 @@ export default class Message extends SceneSubject {
 	// Callback Implementations
 	update(): void {
 		this.syncText()
-		this.roleIndicator.update(
-			this.position.clone(),
+		this.setHorizontalPosition()
+		this.senderInd.update(
+			this.indicatorPos,
 			this.state.lineHeight * this.state.cursorWidthRatio,
 			this.height
 		)

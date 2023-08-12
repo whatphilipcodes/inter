@@ -52,6 +52,9 @@ export class Store {
 	// horizontal grid props
 	historyStart: number
 
+	// input props
+	inputHeight: number
+
 	// text settings
 	fontLineHeightRatio: number
 	cursorWidthRatio: number

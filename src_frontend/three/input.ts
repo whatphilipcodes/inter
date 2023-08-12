@@ -40,14 +40,11 @@ export default class Input extends SceneSubject {
 		// Sate Subscriptions
 		this.state.subscribe('input', () => this.syncText())
 		this.state.subscribe('specialKeyPressed', () => this.handleSpecialKey())
-		this.state.subscribe(
-			'updateInputOnGridChanges',
-			() => {
-				this.updateText()
-				this.updateCaret()
-			},
-			true
-		)
+
+		// Listen to troika Syncs
+		this.troika.addEventListener('synccomplete', () => {
+			this.calculateInputHeight()
+		})
 	}
 
 	// Methods
@@ -90,8 +87,6 @@ export default class Input extends SceneSubject {
 	}
 
 	setTextPosition() {
-		// const newPosition = this.position.clone()
-		// this.troika.position.set(newPosition.x, newPosition.y, newPosition.z)
 		this.troika.position.copy(this.position)
 	}
 
@@ -115,6 +110,21 @@ export default class Input extends SceneSubject {
 			default:
 				break
 		}
+	}
+
+	async calculateInputHeight(): Promise<void> {
+		// This is necessary because because troika syncs can happen before the geometry is ready
+		while (!this.troika.textRenderInfo) {
+			await new Promise((resolve) => setTimeout(resolve, 1))
+		}
+		return new Promise((resolve) => {
+			const height =
+				this.troika.geometry.boundingBox.max.y -
+				this.troika.geometry.boundingBox.min.y
+			this.state.mutate({ inputHeight: height })
+			console.log('input height', this.state.inputHeight)
+			resolve()
+		})
 	}
 
 	// getUpperCaretPos(): number {
@@ -151,7 +161,7 @@ export default class Input extends SceneSubject {
 	setCaretPosition(): void {
 		if (this.state.cursorPos === 0) {
 			this.caretPosition = new THREE.Vector3(
-				this.position.x,
+				this.state.leftBottom.x,
 				this.position.y,
 				this.position.z
 			)
@@ -178,6 +188,7 @@ export default class Input extends SceneSubject {
 
 	// Callback Implementations
 	update(): void {
+		this.updateText()
 		this.updateCaret()
 	}
 
@@ -203,6 +214,9 @@ export default class Input extends SceneSubject {
 	updateDevUI(): void {
 		this.boxHelper.update()
 		this.setInputPosition()
+		// instead of subscribing to the state
+		this.updateText()
+		this.updateCaret()
 	}
 
 	onWindowResize(): void {

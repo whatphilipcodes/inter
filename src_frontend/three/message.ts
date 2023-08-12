@@ -32,11 +32,6 @@ export default class Message extends SceneSubject {
 		super(name, scene, camera, state)
 
 		this.text = text
-		this.position.set(
-			this.state.leftBottom.x + this.state.spacing,
-			this.state.leftBottom.y,
-			this.state.leftBottom.z
-		)
 		this.indicatorPos = this.position.clone()
 
 		// Create Text
@@ -62,6 +57,11 @@ export default class Message extends SceneSubject {
 	private setHorizontalPosition(): void {
 		switch (this.text.type) {
 			case ConvoType.input:
+				this.position.set(
+					this.state.leftBottom.x + this.state.spacing,
+					this.position.y,
+					this.position.z
+				)
 				this.indicatorPos.set(
 					this.state.leftBottom.x,
 					this.position.y,
@@ -118,13 +118,14 @@ export default class Message extends SceneSubject {
 
 	// Callback Implementations
 	update(): void {
-		this.syncText()
+		this.setTextSettings()
 		this.setHorizontalPosition()
 		this.senderInd.update(
 			this.indicatorPos,
 			this.state.lineHeight * this.state.cursorWidthRatio,
 			this.height
 		)
+		this.syncText()
 	}
 
 	buildDevUI(gui: GUI): void {

@@ -47,7 +47,7 @@ export default class Cursor {
 	}
 
 	update(position: THREE.Vector3, width: number, height: number) {
-		this.setPosition(position)
 		this.setDimensions(width, height)
+		this.setPosition(position)
 	}
 }

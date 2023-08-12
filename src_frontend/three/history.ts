@@ -79,7 +79,8 @@ export default class History extends SceneSubject {
 	}
 
 	positionMessagesVertically(): void {
-		let yOffset = this.state.leftBottom.y
+		let yOffset =
+			this.state.leftBottom.y + this.state.inputHeight + this.state.spacing
 		for (const message of this.messages) {
 			message.position.setY(yOffset)
 			yOffset += message.height + this.state.spacing
@@ -88,6 +89,7 @@ export default class History extends SceneSubject {
 
 	// Callback Passdowns
 	update(): void {
+		this.positionMessagesVertically()
 		for (const message of this.messages) {
 			message.update()
 		}

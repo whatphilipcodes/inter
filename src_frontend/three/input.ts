@@ -44,13 +44,15 @@ export default class Input extends SceneSubject {
 		// Listen to troika Syncs
 		this.troika.addEventListener('synccomplete', () => {
 			this.calculateInputHeight()
+			this.caretPositionsArray = structuredClone(
+				this.troika.textRenderInfo.caretPositions
+			)
 		})
 	}
 
 	// Methods
 	updateText(): void {
 		this.setTextSettings()
-		this.setTextPosition()
 		this.syncText()
 	}
 
@@ -86,17 +88,10 @@ export default class Input extends SceneSubject {
 		this.troika.whiteSpace = 'normal'
 	}
 
-	setTextPosition() {
-		this.troika.position.copy(this.position)
-	}
-
 	syncText(): void {
+		this.troika.position.copy(this.position)
 		this.troika.text = this.state.input
-		this.troika.sync(() => {
-			this.caretPositionsArray = structuredClone(
-				this.troika.textRenderInfo.caretPositions
-			)
-		})
+		this.troika.sync()
 	}
 
 	handleSpecialKey(): void {

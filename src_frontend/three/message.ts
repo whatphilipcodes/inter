@@ -117,6 +117,11 @@ export default class Message extends SceneSubject {
 			this.height =
 				this.troika.geometry.boundingBox.max.y -
 				this.troika.geometry.boundingBox.min.y
+
+			this.senderInd.setDimensions(
+				this.state.lineHeight * this.state.cursorWidthRatio,
+				this.height
+			)
 			resolve()
 		})
 	}
@@ -126,11 +131,7 @@ export default class Message extends SceneSubject {
 		this.setTextSettings()
 		this.setHorizontalPosition()
 		this.setVerticalPosition()
-		this.senderInd.update(
-			this.indicatorPos,
-			this.state.lineHeight * this.state.cursorWidthRatio,
-			this.height
-		)
+		this.senderInd.update(this.indicatorPos)
 		this.syncText()
 	}
 
@@ -145,6 +146,11 @@ export default class Message extends SceneSubject {
 	}
 
 	updateDevUI(): void {
+		this.senderInd.setDimensions(
+			this.state.lineHeight * this.state.cursorWidthRatio,
+			this.height
+		)
+
 		if (!hasNaN(this.troika.position)) {
 			this.boxHelper.update()
 			// console.log(this.troika.position)

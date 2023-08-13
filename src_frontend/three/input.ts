@@ -32,8 +32,12 @@ export default class Input extends SceneSubject {
 		this.caretPositionsArray = new Float32Array(0)
 		this.caretPosition = this.position.clone()
 		this.troika = new Text()
-		this.caret = new Cursor()
+		this.caret = new Cursor('flash')
 		this.updateText()
+		this.caret.setDimensions(
+			this.state.lineHeight * this.state.cursorWidthRatio,
+			this.state.lineHeight
+		)
 
 		// Add to scene
 		this.scene.add(this.troika)
@@ -76,15 +80,6 @@ export default class Input extends SceneSubject {
 	updateText(): void {
 		this.setTextSettings()
 		this.syncText()
-	}
-
-	updateCaret(): void {
-		this.setCaretPosition()
-		this.caret.update(
-			this.caretPosition,
-			this.state.lineHeight * this.state.cursorWidthRatio,
-			this.state.lineHeight
-		)
 	}
 
 	setInputPosition(): void {
@@ -170,9 +165,10 @@ export default class Input extends SceneSubject {
 	}
 
 	// Callback Implementations
-	update(): void {
+	update(elTime: number): void {
 		this.updateText()
-		this.updateCaret()
+		this.setCaretPosition()
+		this.caret.update(this.caretPosition, elTime)
 	}
 
 	buildDevUI(gui: GUI): void {
@@ -197,14 +193,17 @@ export default class Input extends SceneSubject {
 	updateDevUI(): void {
 		this.boxHelper.update()
 		this.setInputPosition()
+		this.caret.setDimensions(
+			this.state.lineHeight * this.state.cursorWidthRatio,
+			this.state.lineHeight
+		)
+		console.log('test')
 		// instead of subscribing to the state
 		this.updateText()
-		this.updateCaret()
 	}
 
 	onWindowResize(): void {
 		this.setInputPosition()
-		this.updateCaret()
 		this.updateText()
 	}
 }

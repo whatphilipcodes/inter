@@ -18,48 +18,13 @@ export default class Conversation extends SceneSubject {
 	) {
 		super(name, scene, camera, state)
 
+		// init empty conversation
+		this.state.mutate({ conversation: [] })
+
 		// update messages with store subscription
 		this.state.subscribe('conversation', () => {
 			const newMessages = this.state.conversation.slice(this.messages.length)
 			this.addMessages(newMessages)
-		})
-
-		// Dummy messages
-		this.state.mutate({
-			conversation: [
-				{
-					convoID: 0,
-					messageID: 0,
-					timestamp: '2021-08-01T00:00:00.000Z',
-					type: ConvoType.input,
-					text: 'Hello how are you doing, kind Sir?',
-					trust: 0.0,
-				},
-				{
-					convoID: 0,
-					messageID: 1,
-					timestamp: '2022-08-01T00:00:00.000Z',
-					type: ConvoType.response,
-					text: 'Hi. I am fine thanks a lot. How about you? Anything on your mind lately? I am here to listen. Please dont hesitate to tell me anything.',
-					trust: 0.0,
-				},
-				{
-					convoID: 0,
-					messageID: 2,
-					timestamp: '2023-08-01T00:00:00.000Z',
-					type: ConvoType.input,
-					text: 'I am fine too. I am just thinking about the future.',
-					trust: 0.33,
-				},
-				{
-					convoID: 0,
-					messageID: 3,
-					timestamp: '2024-08-01T00:00:00.000Z',
-					type: ConvoType.response,
-					text: 'Oh, what about the future?',
-					trust: 0.33,
-				},
-			],
 		})
 	}
 

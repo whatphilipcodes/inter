@@ -121,12 +121,6 @@ export default class Input extends SceneSubject {
 			case 'Enter':
 				this.sendMessage()
 				break
-			case 'ArrowUp':
-				// this.state.mutate({ cursorPos: this.getUpperCaretPos() })
-				break
-			case 'ArrowDown':
-				// this.state.mutate({ cursorPos: this.getLowerCaretPos() })
-				break
 			default:
 				break
 		}

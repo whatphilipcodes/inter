@@ -137,8 +137,8 @@ class Generator:
                 **inputs,
                 do_sample=True,
                 num_beams=5,
-                max_new_tokens=100,
-                min_length=40,
+                max_new_tokens=config.GEN_OUTPUT_LENGTH_MAX,
+                min_length=config.GEN_OUTPUT_LENGTH_MIN,
                 no_repeat_ngram_size=2,
                 pad_token_id=self.tokenizer.eos_token_id,
             )

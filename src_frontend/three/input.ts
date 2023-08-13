@@ -67,7 +67,10 @@ export default class Input extends SceneSubject {
 		this.state.mutate({ input: '' })
 		this.state.cursorPos = 0
 
-		// this.state.api.post('/api/infer', message).then((res: ConvoText) => { })
+		this.state.api.post('/api/infer', message).then((res: ConvoText) => {
+			this.state.mutate({ conversation: [...this.state.conversation, res] })
+			this.state.mutate({ messageID: this.state.messageID + 1 })
+		})
 	}
 
 	updateText(): void {

@@ -66,6 +66,8 @@ export default class Input extends SceneSubject {
 		this.state.mutate({ messageID: this.state.messageID + 1 })
 		this.state.mutate({ input: '' })
 		this.state.cursorPos = 0
+
+		// this.state.api.post('/api/infer', message).then((res: ConvoText) => { })
 	}
 
 	updateText(): void {
@@ -141,37 +143,6 @@ export default class Input extends SceneSubject {
 			resolve()
 		})
 	}
-
-	// getUpperCaretPos(): number {
-	// 	const currentRect = getSelectionRects(
-	// 		this.troika.textRenderInfo,
-	// 		this.state.cursorPos - 1,
-	// 		this.state.cursorPos
-	// 	)
-	// 	if (currentRect.length === 0) return this.state.cursorPos
-	// 	const upperCaretPos = getCaretAtPoint(
-	// 		this.troika.textRenderInfo,
-	// 		currentRect[0].right,
-	// 		currentRect[0].top
-	// 	)
-	// 	return upperCaretPos.charIndex
-	// }
-
-	// getLowerCaretPos(): number {
-	// 	const lineHeight = this.troika.textRenderInfo.caretPositions[2]
-	// 	const currentRect = getSelectionRects(
-	// 		this.troika.textRenderInfo,
-	// 		this.state.cursorPos - 1,
-	// 		this.state.cursorPos
-	// 	)
-	// 	if (currentRect.length === 0) return this.state.cursorPos
-	// 	const lowerCaretPos = getCaretAtPoint(
-	// 		this.troika.textRenderInfo,
-	// 		currentRect[0].right,
-	// 		currentRect[0].top + lineHeight * 2
-	// 	)
-	// 	return lowerCaretPos.charIndex
-	// }
 
 	setCaretPosition(): void {
 		if (this.state.cursorPos === 0) {

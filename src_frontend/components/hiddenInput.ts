@@ -1,9 +1,12 @@
+import { State } from '../utils/types'
 import { Store } from '../state/store'
 import config from '../front.config'
+import { startTimer } from '../utils/misc'
 
 export default class HiddenInput extends HTMLElement {
 	state: Store
 	textarea: HTMLTextAreaElement
+	timer: () => void
 
 	constructor() {
 		super()
@@ -52,7 +55,7 @@ export default class HiddenInput extends HTMLElement {
 	// connect input to global state
 	initInput(globalState: Store) {
 		this.state = globalState
-		// update input value
+		// update input value (has to be seperate from cursor position -> undefined bug)
 		this.textarea.addEventListener('input', (e: Event) => {
 			const target = e.target as HTMLTextAreaElement
 			this.state.mutate({ input: target.value })
@@ -60,12 +63,13 @@ export default class HiddenInput extends HTMLElement {
 
 		// update cursor position
 		this.textarea.addEventListener('keydown', async () => {
-			await new Promise((resolve) => setTimeout(resolve, 0))
+			await new Promise((resolve) => setTimeout(resolve, 0)) // this is needed to prevent troika sync issues
 			this.state.mutate({ cursorPos: this.textarea.selectionStart })
 		})
 
 		// listen for special keys
-		this.textarea.addEventListener('keydown', async (e) => {
+		this.textarea.addEventListener('keydown', (e) => {
+			// This is seperate because preventDefault() doesn't work if the Promise is awaited
 			switch (e.key) {
 				case 'Enter':
 					e.preventDefault()
@@ -75,26 +79,28 @@ export default class HiddenInput extends HTMLElement {
 					this.state.mutate({ specialKeyPressed: 'Enter' })
 					this.textarea.value = ''
 					break
-				// case 'ArrowUp':
-				// 	e.preventDefault()
-				// 	this.state.mutate({ specialKeyPressed: 'ArrowUp' })
-				// 	this.textarea.setSelectionRange(
-				// 		this.state.cursorPos,
-				// 		this.state.cursorPos
-				// 	)
-				// 	break
-				// case 'ArrowDown':
-				// 	e.preventDefault()
-				// 	this.state.mutate({ specialKeyPressed: 'ArrowDown' })
-				// 	this.textarea.setSelectionRange(
-				// 		this.state.cursorPos,
-				// 		this.state.cursorPos
-				// 	)
-				// break
 				default:
+					if (this.timer) {
+						this.timer()
+					} else {
+						this.switchToInteraction()
+					}
+					this.timer = startTimer(this.switchToIdle, config.idleTimeout)
 					break
 			}
 		})
+	}
+
+	// State Control
+	// Arrow functions to preserve 'this' context
+	switchToInteraction = () => {
+		this.state.mutate({ appState: State.interaction })
+	}
+
+	switchToIdle = () => {
+		this.timer = null
+		this.state.mutate({ appState: State.idle, input: '', cursorPos: 0 })
+		this.textarea.value = ''
 	}
 }
 

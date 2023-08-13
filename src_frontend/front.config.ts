@@ -8,10 +8,10 @@ const config = {
 	hideCursor: false,
 	debugMsg: true,
 	showHiddenInput: false,
+	idleTimeout: 5000,
 
 	// api settings
 	apiTimeout: 120000,
-	idleTimeout: 20000,
 
 	// textarea settings
 	maxInputLength: 128,

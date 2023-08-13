@@ -2,8 +2,10 @@ import './index.css'
 
 // components -> index.html
 import './components/hiddenInput'
+import './components/loading'
 // components types
 import type Input from './components/hiddenInput'
+import type Loading from './components/loading'
 
 // state
 import { Store } from './state/store'
@@ -35,6 +37,7 @@ if (config.hideCursor) {
 //  *************************************************************/
 // Get references to all custom elements in index.html
 const input = document.getElementById('hiddenInput') as Input
+const loading = document.getElementById('loading') as Loading
 
 // /*************************************************************
 //  * State
@@ -44,10 +47,11 @@ const globalState = new Store()
 
 // connect frontend state to backend state
 function updateBackendState(current: State): void {
-	let translation
+	if (config.debugMsg) console.log('State updated:', current)
+	let translation: object
 	switch (current) {
 		case State.loading:
-			translation = { S: BackendState.loading }
+			translation = { state: BackendState.loading }
 			break
 		case State.idle:
 			translation = { state: BackendState.training }
@@ -119,6 +123,7 @@ window.addEventListener(
 			globalState.mutate({
 				appState: State.idle,
 			})
+			loading.remove()
 		}
 	} catch (error) {
 		console.error('Invalid URL:', error)

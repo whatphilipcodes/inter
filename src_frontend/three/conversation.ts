@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 // import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
 
-import { ConvoText, ConvoType } from '../utils/types'
+import { ConvoText } from '../utils/types'
 import SceneSubject from './_sceneSubject'
 import { Store } from '../state/store'
 import Message from './message'

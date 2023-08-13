@@ -2,6 +2,8 @@
 # Lib Imports
 import os
 import random
+from typing import List
+
 from datasets import DatasetDict, disable_caching
 
 # Local Imports
@@ -33,6 +35,37 @@ class DataManager:
         self._load_database()
 
     # PUBLIC METHODS  ###########################################################
+    def get_message(self, conID: int) -> List[ConvoText]:
+        """
+        Returns the ConvoText object with the given msgID.
+        """
+        sorted = self.database.sort("conID")
+        highest_train_datapoint = sorted["train"][-1]
+        highest_test_datapoint = sorted["test"][-1]
+        if highest_train_datapoint["conID"] > highest_test_datapoint["conID"]:
+            datapoint = highest_train_datapoint
+        else:
+            datapoint = highest_test_datapoint
+
+        interdata = InterData(**datapoint)
+        input = ConvoText(
+            timestamp=interdata.timestamp,
+            convoID=interdata.conID,
+            messageID=interdata.msgID,
+            type=ConvoText.ConvoType.input,
+            text=interdata.input,
+            trust=interdata.trust,
+        )
+        response = ConvoText(
+            timestamp=interdata.timestamp,
+            convoID=interdata.conID,
+            messageID=interdata.msgID,
+            type=ConvoText.ConvoType.response,
+            text=interdata.response,
+            trust=interdata.trust,
+        )
+        return [input, response]
+
     def get_datapoint(self, input: ConvoText) -> InterData:
         datapoint = InterData(
             timestamp=input.timestamp,

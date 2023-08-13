@@ -4,7 +4,7 @@ const config = {
 	truthScore: true,
 	devUI: false,
 	devTools: true,
-	fullScreen: true,
+	fullScreen: false,
 	hideCursor: false,
 	debugMsg: true,
 	showHiddenInput: false,

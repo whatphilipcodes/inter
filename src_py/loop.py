@@ -2,6 +2,7 @@
 # Lib Imports
 import asyncio
 import threading
+from typing import List
 
 # Local Imports
 from . import __backend_config as config
@@ -145,6 +146,13 @@ class MainLoop:
         The main loop runs in the background, separate from the main thread.
         """
         self._thread.start()
+
+    def get_message(self, messageID: int) -> List[ConvoText]:
+        """
+        Returns messages from the database.
+        """
+        message = self._data_manager.get_message(messageID)
+        return message
 
     async def update(self, patch: LoopPatch) -> LoopPatch:
         """

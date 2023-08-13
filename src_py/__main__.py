@@ -61,9 +61,9 @@ def main():
     async def infer(input: ConvoText):
         return await loop.infer(input)
 
-    @app.post("/api/history")
-    async def history(startID: int):
-        return "#TODO: return history from start to end"
+    @app.post("/api/get_message")
+    async def get_message(startID: int = 0):
+        return loop.get_message(startID)
 
     ### Start FastAPI as Server
     if uvi_port is None or uvi_host is None:

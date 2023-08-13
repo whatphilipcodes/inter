@@ -120,10 +120,17 @@ window.addEventListener(
 			console.log('Backend online & connected')
 		}
 		if (globalState.api.online) {
-			globalState.mutate({
-				appState: State.idle,
-			})
-			loading.remove()
+			globalState.api
+				.post('/api/get_message', {})
+				.then((res) => {
+					globalState.mutate({ convoID: res[0].convoID + 1 })
+				})
+				.then(() => {
+					globalState.mutate({
+						appState: State.idle,
+					})
+					loading.remove()
+				})
 		}
 	} catch (error) {
 		console.error('Invalid URL:', error)

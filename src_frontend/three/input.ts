@@ -54,7 +54,7 @@ export default class Input extends SceneSubject {
 
 	// Methods
 	sendMessage(): void {
-		const message = {
+		const message: ConvoText = {
 			convoID: this.state.convoID,
 			messageID: this.state.messageID,
 			timestamp: getTimestamp(),
@@ -133,9 +133,10 @@ export default class Input extends SceneSubject {
 			await new Promise((resolve) => setTimeout(resolve, 1))
 		}
 		return new Promise((resolve) => {
-			const height =
+			let height =
 				this.troika.geometry.boundingBox.max.y -
 				this.troika.geometry.boundingBox.min.y
+			if (height < this.state.lineHeight) height = this.state.lineHeight
 			this.state.mutate({ inputHeight: height })
 			resolve()
 		})

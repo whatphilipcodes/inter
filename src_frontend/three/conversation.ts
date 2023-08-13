@@ -6,7 +6,7 @@ import SceneSubject from './_sceneSubject'
 import { Store } from '../state/store'
 import Message from './message'
 
-export default class History extends SceneSubject {
+export default class Conversation extends SceneSubject {
 	// Props
 	inputs: ConvoText[]
 	messages: Message[] = []
@@ -86,6 +86,33 @@ export default class History extends SceneSubject {
 			yOffset += message.height + this.state.spacing
 		}
 	}
+
+	// /**
+	//  * Add a new message to the chat.
+	//  *
+	//  * @param message - The message object to be added.
+	//  */
+	// addMessage(message: Message) {
+	// 	this.messages.push(message)
+	// }
+
+	// /**
+	//  * Remove a specific message from the chat. If no message is provided,
+	//  * it removes the oldest message (i.e., the first one in the array).
+	//  *
+	//  * @param message - The message object to be removed (optional).
+	//  */
+	// removeMessage(message?: Message) {
+	// 	if (message) {
+	// 		const index = this.messages.indexOf(message)
+	// 		if (index !== -1) {
+	// 			this.messages.splice(index, 1)
+	// 		}
+	// 	} else {
+	// 		// If no specific message is provided, remove the first one
+	// 		this.messages.shift()
+	// 	}
+	// }
 
 	// Callback Passdowns
 	update(): void {

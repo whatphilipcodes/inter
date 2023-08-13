@@ -7,8 +7,8 @@ import { Store } from '../state/store'
 // SceneSubjects
 import Grid from './grid'
 import Mask from './mask'
-import History from './history'
 import Input from './input'
+import Conversation from './conversation'
 
 import Camera from './camera'
 
@@ -90,7 +90,12 @@ export default class SceneManager {
 	buildSceneSubjects(): SceneSubject[] {
 		const sceneSubjects = [
 			new Grid('Grid', this.scene, this.camera.instance(), this.state),
-			new History('History', this.scene, this.camera.instance(), this.state),
+			new Conversation(
+				'Conversation',
+				this.scene,
+				this.camera.instance(),
+				this.state
+			),
 			new Input('Input', this.scene, this.camera.instance(), this.state),
 			new Mask('Mask', this.scene, this.camera.instance(), this.state),
 		]

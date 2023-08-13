@@ -89,6 +89,7 @@ def main():
             response="",
             epoch_cls=0,
             epoch_gen=0,
+            trust=0.0,
         )
         pp.add_row(data)
 

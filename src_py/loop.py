@@ -57,7 +57,6 @@ class MainLoop:
                 if self._enter_state:
                     self._enter_training()
                 # TRAINING FLOW ##################################################
-                # TODO: get training data from data manager
                 self._classifier.step()
                 # self._generator.step()
                 # END TRAINING FLOW ##############################################
@@ -84,6 +83,7 @@ class MainLoop:
                             0.0, self._trust_score - config.TRUST_MOD
                         )
                     datapoint.mood = mood
+                    datapoint.trust = self._trust_score
 
                     # 2) instruct generator to create response -> response
                     # get context for generator
@@ -181,10 +181,10 @@ class MainLoop:
         self._data_manager.save()
         # get the updated dataset from the data manager
         # gen_data = self._data_manager.get_gen_data()
-        # cls_data = self._data_manager.get_cls_data()
+        cls_data = self._data_manager.get_cls_data()
         # update both models
         # self._generator.prepare_training(gen_data)
-        # self._classifier.prepare_training(cls_data)
+        self._classifier.prepare_training(cls_data)
 
     def _enter_inference(self) -> None:
         """
@@ -193,6 +193,9 @@ class MainLoop:
         self._enter_state = False
         if config.DEBUG_MSG:
             print("Inference started...")
+        # set the models to eval mode
+        self._generator.prepare_inference()
+        self._classifier.prepare_inference()
         # update the active split
         self._active_split = self._data_manager.get_split()
         # reset trust score

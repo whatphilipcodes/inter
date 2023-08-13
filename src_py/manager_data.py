@@ -49,7 +49,6 @@ class DataManager:
         return datapoint
 
     def get_split(self) -> str:
-        # XXX: Has to be updated if more splits are added
         split_probabilities = {
             "train": 0.8,
             "test": 0.2,
@@ -87,14 +86,21 @@ class DataManager:
         if config.DEBUG_MSG:
             print("Database saved to:", path)
 
-    def get_gen_data(self) -> DatasetDict:
-        gen_train = self.database["train"].sort("epoch_gen")
-        gen_test = self.database["test"]
-        gen_queue = DatasetDict({"train": gen_train, "test": gen_test})
-        return gen_queue
+    # def get_gen_data(self) -> DatasetDict:
+    #     gen_train = self.database["train"].sort("epoch_gen")
+    #     gen_test = self.database["test"]
+    #     gen_queue = DatasetDict({"train": gen_train, "test": gen_test})
+    #     return gen_queue
 
     def get_cls_data(self) -> DatasetDict:
-        cls_train = self.database["train"].sort("epoch_cls")
+        """
+        Returns a DatasetDict containing all entries with the minimal epoch_cls value.
+        """
+        min_epoch = min(self.database["train"]["epoch_cls"])
+        cls_train = self.database["train"].filter(
+            lambda example: example["epoch_cls"] == min_epoch
+        )
+        cls_train = cls_train.shuffle()
         cls_test = self.database["test"]
         cls_queue = DatasetDict({"train": cls_train, "test": cls_test})
         return cls_queue
@@ -138,7 +144,7 @@ class DataManager:
                 path = self.fallback_path
             except Exception as e:
                 raise Exception(
-                    "Something went really wrong. Please contact the developer.\nError: "
+                    "The base datapath was moved or deleted. Please contact the developer.\nError: "
                     + str(e)
                 )
 

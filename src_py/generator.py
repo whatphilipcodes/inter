@@ -55,64 +55,67 @@ class Generator:
         torch.backends.cuda.matmul.allow_tf32 = True  # type: ignore
 
     # PUBLIC METHODS ###########################################################
-    def prepare_training(self, data: DatasetDict, shuffle=False) -> None:
-        """
-        Prepares the current available data for training.\n
-        Info: Since the perplexity eval relies on external models it is not implemented yet and the test split is not used.
-        """
-        train = data["train"].to_pandas()
-        if isinstance(train, Iterator):
-            raise NotImplementedError("to_pandas() returned an iterator")
-        else:
-            df_train = train
-        train_grouped = df_train.groupby("conID")
+    # def prepare_training(self, data: DatasetDict, shuffle=False) -> None:
+    #     """
+    #     Prepares the current available data for training.\n
+    #     Info: Since the perplexity eval relies on external models it is not implemented yet and the test split is not used.
+    #     """
+    #     train = data["train"].to_pandas()
+    #     if isinstance(train, Iterator):
+    #         raise NotImplementedError("to_pandas() returned an iterator")
+    #     else:
+    #         df_train = train
+    #     train_grouped = df_train.groupby("conID")
 
-        training_data = []
-        for group in train_grouped:
-            string_list = self._create_training_str(group[1])
-            if shuffle:
-                random.shuffle(string_list)
-            for item in string_list:
-                training_data.append(item)
+    #     training_data = []
+    #     for group in train_grouped:
+    #         string_list = self._create_training_str(group[1])
+    #         if shuffle:
+    #             random.shuffle(string_list)
+    #         for item in string_list:
+    #             training_data.append(item)
 
-        training_struct = {"string": training_data}
+    #     training_struct = {"string": training_data}
 
-        training_set = DatasetDict()
-        training_set["train"] = Dataset.from_dict(training_struct)
+    #     training_set = DatasetDict()
+    #     training_set["train"] = Dataset.from_dict(training_struct)
 
-        self._tokenized_data = training_set.map(self._preprocess, batched=True)
-        self._tokenized_data = self._tokenized_data.remove_columns("string")
-        self._tokenized_data.set_format("torch")
+    #     self._tokenized_data = training_set.map(self._preprocess, batched=True)
+    #     self._tokenized_data = self._tokenized_data.remove_columns("string")
+    #     self._tokenized_data.set_format("torch")
 
-        self._setup_helpers()
-        self.model.train()
+    #     self._setup_helpers()
+    #     self.model.train()
 
-        torch.cuda.empty_cache()
+    #     torch.cuda.empty_cache()
 
-    def step(self) -> None:
-        batch = next(iter(self._train_dataloader))
+    def prepare_inference(self) -> None:
+        self.model.eval()
 
-        # for batch in train_dataloader: # type: ignore
-        batch = {k: v.to(self.device) for k, v in batch.items()}
+    # def step(self) -> None:
+    #     batch = next(iter(self._train_dataloader))
 
-        if "labels" not in batch:
-            batch["labels"] = batch["input_ids"]
+    #     # for batch in train_dataloader: # type: ignore
+    #     batch = {k: v.to(self.device) for k, v in batch.items()}
 
-        outputs = self.model(**batch)
-        loss = outputs.loss
+    #     if "labels" not in batch:
+    #         batch["labels"] = batch["input_ids"]
 
-        if loss is None:
-            raise ValueError(
-                "Loss is None. Check the model configuration and input data."
-            )
+    #     outputs = self.model(**batch)
+    #     loss = outputs.loss
 
-        loss.backward()
+    #     if loss is None:
+    #         raise ValueError(
+    #             "Loss is None. Check the model configuration and input data."
+    #         )
 
-        self._optimizer.step()
-        self._scheduler.step()
-        self._optimizer.zero_grad()
+    #     loss.backward()
 
-        print(f"Loss: {loss.item()}")
+    #     self._optimizer.step()
+    #     self._scheduler.step()
+    #     self._optimizer.zero_grad()
+
+    #     print(f"Loss: {loss.item()}")
 
     def get_trained_IDs(self) -> list[int]:
         # get the current trained conversation IDs
@@ -161,52 +164,52 @@ class Generator:
     # END PUBLIC METHODS #######################################################
 
     # PRIVATE METHODS ##########################################################
-    def _preprocess(self, example) -> None:
-        return self.tokenizer(
-            example["string"],
-            padding="max_length",
-            truncation=True,
-            max_length=int(
-                self.model.config.max_position_embeddings * 0.25
-            ),  # -> 512 ( of 2028 ) for gpt-neo
-        )
+    # def _preprocess(self, example) -> None:
+    #     return self.tokenizer(
+    #         example["string"],
+    #         padding="max_length",
+    #         truncation=True,
+    #         max_length=int(
+    #             self.model.config.max_position_embeddings * 0.25
+    #         ),  # -> 512 ( of 2028 ) for gpt-neo
+    #     )
 
-    def _create_training_str(self, conversation: pd.DataFrame) -> List[str]:
-        # create history from input and responses in conversation list
-        result: List[str] = []
-        context = conversation["context"].iloc[0]
-        for i in range(
-            2, len(conversation)
-        ):  # XXX: skip first two rows (for some reason first is empty and second and third are the same)
-            history = ""
-            for j in range(i):
-                history += SpecialTokens.input + conversation["input"].iloc[j]
-                history += SpecialTokens.response + conversation["response"].iloc[j]
-                # create training string
-                string = (
-                    SpecialTokens.context + context + history + SpecialTokens.endseq
-                )
-                result.append(string)
-        return result
+    # def _create_training_str(self, conversation: pd.DataFrame) -> List[str]:
+    #     # create history from input and responses in conversation list
+    #     result: List[str] = []
+    #     context = conversation["context"].iloc[0]
+    #     for i in range(
+    #         2, len(conversation)
+    #     ):  # XXX: skip first two rows (for some reason first is empty and second and third are the same)
+    #         history = ""
+    #         for j in range(i):
+    #             history += SpecialTokens.input + conversation["input"].iloc[j]
+    #             history += SpecialTokens.response + conversation["response"].iloc[j]
+    #             # create training string
+    #             string = (
+    #                 SpecialTokens.context + context + history + SpecialTokens.endseq
+    #             )
+    #             result.append(string)
+    #     return result
 
-    def _setup_helpers(self) -> None:
-        self._train_dataloader = DataLoader(
-            self._tokenized_data["train"],  # type: ignore
-            batch_size=config.GEN_BATCH_SIZE,
-            shuffle=False,
-        )
+    # def _setup_helpers(self) -> None:
+    #     self._train_dataloader = DataLoader(
+    #         self._tokenized_data["train"],  # type: ignore
+    #         batch_size=config.GEN_BATCH_SIZE,
+    #         shuffle=True,
+    #     )
 
-        self._optimizer = torch.optim.AdamW(
-            self.model.parameters(),
-            lr=config.GEN_LEARNING_RATE,
-            fused=True,
-        )
+    #     self._optimizer = torch.optim.AdamW(
+    #         self.model.parameters(),
+    #         lr=config.GEN_LEARNING_RATE,
+    #         fused=True,
+    #     )
 
-        self._scheduler = get_scheduler(
-            "linear",
-            optimizer=self._optimizer,
-            num_warmup_steps=0,
-            num_training_steps=len(self._train_dataloader),
-        )
+    #     self._scheduler = get_scheduler(
+    #         "linear",
+    #         optimizer=self._optimizer,
+    #         num_warmup_steps=0,
+    #         num_training_steps=len(self._train_dataloader),
+    #     )
 
     # END PRIVATE METHODS #######################################################

@@ -2,6 +2,8 @@ import * as THREE from 'three'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 import { Text /*getSelectionRects, getCaretAtPoint*/ } from 'troika-three-text'
 
+import { ConvoText, ConvoType } from '../utils/types'
+import { getTimestamp } from '../utils/misc'
 import SceneSubject from './_sceneSubject'
 import { Store } from '../state/store'
 import Cursor from './cursor'
@@ -51,6 +53,21 @@ export default class Input extends SceneSubject {
 	}
 
 	// Methods
+	sendMessage(): void {
+		const message = {
+			convoID: this.state.convoID,
+			messageID: this.state.messageID,
+			timestamp: getTimestamp(),
+			type: ConvoType.input,
+			text: this.state.input,
+			trust: 0.0,
+		}
+		this.state.mutate({ conversation: [...this.state.conversation, message] })
+		this.state.mutate({ messageID: this.state.messageID + 1 })
+		this.state.mutate({ input: '' })
+		this.state.cursorPos = 0
+	}
+
 	updateText(): void {
 		this.setTextSettings()
 		this.syncText()
@@ -97,8 +114,7 @@ export default class Input extends SceneSubject {
 	handleSpecialKey(): void {
 		switch (this.state.specialKeyPressed) {
 			case 'Enter':
-				this.state.mutate({ input: '' })
-				this.state.cursorPos = 0
+				this.sendMessage()
 				break
 			case 'ArrowUp':
 				// this.state.mutate({ cursorPos: this.getUpperCaretPos() })

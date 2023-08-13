@@ -57,7 +57,7 @@ class MainLoop:
                 if self._enter_state:
                     self._enter_training()
                 # TRAINING FLOW ##################################################
-                self._classifier.step()
+                # self._classifier.step()s
                 # self._generator.step()
                 # END TRAINING FLOW ##############################################
 

@@ -1,4 +1,4 @@
-import { State } from '../utils/types'
+import { State, ConvoText } from '../utils/types'
 import { API } from '../utils/api'
 import config from '../front.config'
 
@@ -10,9 +10,11 @@ export class Store {
 	elURL: URL
 	uviURL: URL
 	api: API
+
+	// conversation
 	convoID: number
 	messageID: number
-	startMsg: string
+	conversation: ConvoText[]
 
 	// screen dimensions
 	screenWidth: number

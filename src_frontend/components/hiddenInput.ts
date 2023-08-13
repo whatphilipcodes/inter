@@ -43,7 +43,7 @@ export default class HiddenInput extends HTMLElement {
 		// prevent space or enter as first char
 		this.textarea.addEventListener('keydown', function (e: KeyboardEvent) {
 			if (this.value.length !== 0) return
-			if (e.key === ' ' || e.key === 'Enter') {
+			if (e.key === ' ') {
 				e.preventDefault()
 			}
 		})
@@ -59,32 +59,39 @@ export default class HiddenInput extends HTMLElement {
 		})
 
 		// update cursor position
-		this.textarea.addEventListener('keydown', async (e) => {
+		this.textarea.addEventListener('keydown', async () => {
 			await new Promise((resolve) => setTimeout(resolve, 0))
+			this.state.mutate({ cursorPos: this.textarea.selectionStart })
+		})
+
+		// listen for special keys
+		this.textarea.addEventListener('keydown', async (e) => {
 			switch (e.key) {
 				case 'Enter':
 					e.preventDefault()
+					if (this.textarea.value.length === 0) {
+						return
+					}
 					this.state.mutate({ specialKeyPressed: 'Enter' })
 					this.textarea.value = ''
 					break
-				case 'ArrowUp':
-					e.preventDefault()
-					this.state.mutate({ specialKeyPressed: 'ArrowUp' })
-					this.textarea.setSelectionRange(
-						this.state.cursorPos,
-						this.state.cursorPos
-					)
-					break
-				case 'ArrowDown':
-					e.preventDefault()
-					this.state.mutate({ specialKeyPressed: 'ArrowDown' })
-					this.textarea.setSelectionRange(
-						this.state.cursorPos,
-						this.state.cursorPos
-					)
-					break
+				// case 'ArrowUp':
+				// 	e.preventDefault()
+				// 	this.state.mutate({ specialKeyPressed: 'ArrowUp' })
+				// 	this.textarea.setSelectionRange(
+				// 		this.state.cursorPos,
+				// 		this.state.cursorPos
+				// 	)
+				// 	break
+				// case 'ArrowDown':
+				// 	e.preventDefault()
+				// 	this.state.mutate({ specialKeyPressed: 'ArrowDown' })
+				// 	this.textarea.setSelectionRange(
+				// 		this.state.cursorPos,
+				// 		this.state.cursorPos
+				// 	)
+				// break
 				default:
-					this.state.mutate({ cursorPos: this.textarea.selectionStart })
 					break
 			}
 		})

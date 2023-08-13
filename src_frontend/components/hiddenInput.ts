@@ -99,7 +99,13 @@ export default class HiddenInput extends HTMLElement {
 
 	switchToIdle = () => {
 		this.timer = null
-		this.state.mutate({ appState: State.idle, input: '', cursorPos: 0 })
+		this.state.mutate({
+			appState: State.idle,
+			input: '',
+			cursorPos: 0,
+			messageID: 0,
+			convoID: this.state.convoID + 1,
+		})
 		this.textarea.value = ''
 	}
 }

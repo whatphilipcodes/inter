@@ -5,9 +5,9 @@ const config = {
 	truthScore: true,
 	devUI: false,
 	devTools: true,
-	fullScreen: false,
+	fullScreen: true,
 	hideCursor: true,
-	debugMsg: false,
+	debugMsg: true,
 	showHiddenInput: false,
 	idleTimeout: 30000,
 

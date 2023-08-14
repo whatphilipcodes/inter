@@ -79,6 +79,7 @@ class Classifier:
             self._current_batch_idx += 1
         except StopIteration:
             # All batches have been processed
+            self._save()
             if config.DEBUG_MSG:
                 print("Epoch finished")
             return True
@@ -120,10 +121,6 @@ class Classifier:
 
         # Decode and return
         return self._translate_to_mood(predicted_class_id)
-
-    def save(self):
-        self.model.save_pretrained(self.modelpath)
-        self.tokenizer.save_pretrained(self.modelpath)
 
     # END PUBLIC METHODS #######################################################
 
@@ -168,3 +165,9 @@ class Classifier:
         )
         output_dict["labels"] = [ClassifierLabels.dict[e] for e in example["mood"]]
         return output_dict
+
+    def _save(self):
+        self.model.save_pretrained(self.modelpath)
+        self.tokenizer.save_pretrained(self.modelpath)
+        if config.DEBUG_MSG:
+            print("Saved updated model to " + self.modelpath)

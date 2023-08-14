@@ -197,9 +197,8 @@ class MainLoop:
             print("Training started...")
         # save new conversations to database
         self._data_manager.save()
-        # get the updated dataset from the data manager
-        # cls_data = self._data_manager.get_cls_data()
-        # self._classifier.prepare_training(cls_data)
+        # # reset trust score
+        # self._trust_score = 0.0
 
     def _enter_inference(self) -> None:
         """
@@ -212,8 +211,6 @@ class MainLoop:
         self._classifier.prepare_inference()
         # update the active split
         self._active_split = self._data_manager.get_split()
-        # reset trust score
-        self._trust_score = 0.0
 
     def _enter_epoch(self) -> None:
         """
@@ -222,7 +219,6 @@ class MainLoop:
         self._new_epoch = False
         if config.DEBUG_MSG:
             print("New epoch started...")
-        # save current state of the model & reload the dataset entirely
-        self._data_manager.save()
+        # reload the dataset
         cls_data = self._data_manager.get_cls_data()
         self._classifier.prepare_training(cls_data)

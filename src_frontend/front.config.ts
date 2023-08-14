@@ -1,6 +1,7 @@
 import { State } from './utils/types'
 const config = {
 	// app settings
+	botStarts: true,
 	truthScore: true,
 	devUI: false,
 	devTools: true,

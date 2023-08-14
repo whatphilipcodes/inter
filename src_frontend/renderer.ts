@@ -46,7 +46,7 @@ const loading = document.getElementById('loading') as Loading
 const globalState = new Store()
 
 // connect frontend state to backend state
-function updateBackendState(current: State): void {
+async function updateBackendState(current: State): Promise<void> {
 	if (config.debugMsg) console.log('State updated:', current)
 	let translation: object
 	switch (current) {
@@ -54,6 +54,7 @@ function updateBackendState(current: State): void {
 			translation = { state: BackendState.loading }
 			break
 		case State.idle:
+			if (config.botStarts) await input.enterIdle()
 			translation = { state: BackendState.training }
 			break
 		case State.interaction:

@@ -1,7 +1,7 @@
-import { State } from '../utils/types'
+import { State, ConvoType } from '../utils/types'
 import { Store } from '../state/store'
 import config from '../front.config'
-import { startTimer } from '../utils/misc'
+import { getTimestamp, startTimer } from '../utils/misc'
 
 export default class HiddenInput extends HTMLElement {
 	state: Store
@@ -107,6 +107,21 @@ export default class HiddenInput extends HTMLElement {
 			convoID: this.state.convoID + 1,
 		})
 		this.textarea.value = ''
+	}
+
+	// State Callbacks
+	enterIdle = async () => {
+		// prepare greeting for next interaction
+		const trigger = {
+			convoID: this.state.convoID,
+			messageID: this.state.messageID,
+			timestamp: getTimestamp(),
+			type: ConvoType.input,
+			text: '',
+			trust: 0.0,
+		}
+		const greeting = await this.state.api.post('/api/infer', trigger)
+		this.state.mutate({ greeting: greeting })
 	}
 }
 

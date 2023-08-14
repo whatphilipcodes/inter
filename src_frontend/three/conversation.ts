@@ -1,7 +1,8 @@
 import * as THREE from 'three'
 // import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
 
-import { ConvoText } from '../utils/types'
+import config from '../front.config'
+import { ConvoText, State } from '../utils/types'
 import SceneSubject from './_sceneSubject'
 import { Store } from '../state/store'
 import Message from './message'
@@ -23,8 +24,18 @@ export default class Conversation extends SceneSubject {
 
 		// update messages with store subscription
 		this.state.subscribe('conversation', () => {
-			const newMessages = this.state.conversation.slice(this.messages.length)
-			this.addMessages(newMessages)
+			this.addMessages(this.state.conversation)
+			this.state.conversation = []
+		})
+
+		this.state.subscribe('appState', (newState) => {
+			if (
+				newState === State.interaction &&
+				this.state.greeting &&
+				config.botStarts
+			) {
+				this.addMessages([this.state.greeting])
+			}
 		})
 	}
 

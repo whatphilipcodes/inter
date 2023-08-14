@@ -46,6 +46,9 @@ class MainLoop:
         # Trust Score
         self._trust_score = 0.0
 
+        # Start with inference
+        self.state = LoopPatch.State.inference
+
     async def _loop(self) -> None:
         """
         Asynchronous method that defines the main loop.
@@ -58,7 +61,7 @@ class MainLoop:
                 if self._enter_state:
                     self._enter_training()
                 # TRAINING FLOW ##################################################
-                # self._classifier.step()s
+                # self._classifier.step()
                 # self._generator.step()
                 # END TRAINING FLOW ##############################################
 
@@ -74,7 +77,11 @@ class MainLoop:
                     datapoint = self._data_manager.get_datapoint(input_data)
 
                     # 1) get classification for input_data and update trust score
-                    mood = self._classifier.infer(input_data.text)
+                    if (input_data.text == "") or (input_data.text is None):
+                        mood = Mood.doubt
+                    else:
+                        mood = self._classifier.infer(input_data.text)
+
                     if mood == Mood.truth:
                         self._trust_score = min(
                             1.0, self._trust_score + config.TRUST_MOD

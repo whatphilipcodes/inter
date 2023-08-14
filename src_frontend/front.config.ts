@@ -3,8 +3,9 @@ const config = {
 	// app settings
 	botStarts: true,
 	startDelay: 2000,
+	historyInterval: 2000,
 	truthScore: true,
-	devUI: true,
+	devUI: false,
 	devTools: true,
 	fullScreen: false,
 	hideCursor: true,

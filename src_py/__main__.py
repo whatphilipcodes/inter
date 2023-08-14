@@ -62,8 +62,8 @@ def main():
         return await loop.infer(input)
 
     @app.post("/api/get_message")
-    async def get_message(startID: int = 0):
-        return loop.get_message(startID)
+    async def get_message(id: int = 0):
+        return loop.get_message(id)
 
     ### Start FastAPI as Server
     if uvi_port is None or uvi_host is None:

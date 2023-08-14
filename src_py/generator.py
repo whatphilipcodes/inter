@@ -39,7 +39,9 @@ class Generator:
         self,
     ) -> None:
         self.device = get_cuda()
-        self.modelpath = os.path.join(get_resource_path(), *config.GEN_PATH)
+        self.modelpath = os.path.join(
+            get_resource_path(), *config.MODEL_ROOT, "base", config.GEN_NAME
+        )
 
         # TODO: useful session handling ( advance trained epochs )
         # self._session = deque()

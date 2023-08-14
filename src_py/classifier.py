@@ -37,15 +37,18 @@ class Classifier:
     _current_batch_idx: int
     _num_batches: int
 
+    _load_path: str
+    _save_path: str
+
     def __init__(self):
-        self.modelpath = os.path.join(get_resource_path(), *config.CLS_PATH)
+        self._setup_paths()
         self.device = get_cuda()
         self.model = DebertaV2ForSequenceClassification.from_pretrained(
-            self.modelpath, num_labels=len(ClassifierLabels.dict)
+            self._load_path, num_labels=len(ClassifierLabels.dict)
         ).to(  # type: ignore
             self.device
         )
-        self.tokenizer = DebertaV2Tokenizer.from_pretrained(self.modelpath)
+        self.tokenizer = DebertaV2Tokenizer.from_pretrained(self._load_path)
 
     # PUBLIC METHODS ###########################################################
     def prepare_epoch(self, data: DatasetDict) -> None:
@@ -141,7 +144,7 @@ class Classifier:
 
         self._optimizer = torch.optim.AdamW(
             self.model.parameters(),
-            lr=config.GEN_LEARNING_RATE,
+            lr=config.CLS_LEARNING_RATE,
             fused=True,
         )
 
@@ -166,8 +169,30 @@ class Classifier:
         output_dict["labels"] = [ClassifierLabels.dict[e] for e in example["mood"]]
         return output_dict
 
+    def _setup_paths(self) -> None:
+        root = os.path.join(get_resource_path(), *config.MODEL_ROOT)
+        self._save_path = os.path.join(root, "current", config.CLS_NAME)
+
+        # check what folders exist in root
+        folders = os.listdir(root)
+        # if there is no folder 'base' raise error
+        if "base" not in folders:
+            raise FileNotFoundError("The base classifier model was moved or deleted.")
+
+        # if there is no folder 'current', create it and set base as load path
+        if "current" not in folders:
+            os.mkdir(os.path.join(root, "current"))
+            self._load_path = os.path.join(root, "base", config.CLS_NAME)
+        else:
+            # check if there is a model in current
+            if config.CLS_NAME not in os.listdir(os.path.join(root, "current")):
+                # if not, set base as load path
+                self._load_path = os.path.join(root, "base", config.CLS_NAME)
+            else:
+                self._load_path = os.path.join(root, "current", config.CLS_NAME)
+
     def _save(self):
-        self.model.save_pretrained(self.modelpath)
-        self.tokenizer.save_pretrained(self.modelpath)
+        self.model.save_pretrained(self._save_path)
+        self.tokenizer.save_pretrained(self._save_path)
         if config.DEBUG_MSG:
-            print("Saved updated model to " + self.modelpath)
+            print("Saved updated model to " + self._save_path)

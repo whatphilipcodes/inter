@@ -5,7 +5,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # src
-from .utils import setup_env, get_uvi_info, get_host_info, ConvoText, LoopPatch
+from .utils import (
+    setup_env,
+    get_uvi_info,
+    get_host_info,
+    ConvoText,
+    LoopPatch,
+    DataIndex,
+)
 from .loop import MainLoop
 
 # END IMPORT BLOCK ###########################################################
@@ -62,7 +69,9 @@ def main():
         return await loop.infer(input)
 
     @app.post("/api/get_message")
-    async def get_message(id: int = 0):
+    async def get_message(input: DataIndex):
+        id = input.id
+        print("id:", id)
         return loop.get_message(id)
 
     ### Start FastAPI as Server

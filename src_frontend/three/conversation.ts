@@ -42,13 +42,14 @@ export default class Conversation extends SceneSubject {
 				this.clearMessages()
 				break
 			case State.idle:
-				this.historyIndex = 0
+				this.historyIndex = 1
 				this.historyInterval = setInterval(() => {
+					console.log(this.historyIndex)
 					this.state.api
-						.post('/api/get_message', this.historyIndex)
+						.post('/api/get_message', { id: this.historyIndex })
 						.then((response: [ConvoText]) => {
 							console.log(response)
-							this.addMessages(response, true)
+							this.addMessages(response)
 							this.historyIndex += 1
 						})
 				}, config.historyInterval)

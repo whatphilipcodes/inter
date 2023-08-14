@@ -151,6 +151,14 @@ class ConvoText(BaseModel):
     tokens: Optional[list[str]] = None
 
 
+class DataIndex(BaseModel):
+    """
+    Datamodel for the index of a ConvoText object.
+    """
+
+    id: int
+
+
 class LoopPatch(BaseModel):
     """
     Datamodel to control the state of the main loop.

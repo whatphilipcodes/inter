@@ -78,7 +78,7 @@ class ConvoManager:
 
         # Check if the input is empty
         if input.text == "":
-            input.text = SpecialTokens.greet
+            input.text = self._get_greeting()
 
         # Build the input string
         self.current_input = (
@@ -152,5 +152,23 @@ class ConvoManager:
                 text = text[: end_position + 1]
 
         return text.strip()
+
+    def _get_greeting(self) -> str:
+        """
+        Returns a random greeting.
+        """
+        greetings = [
+            "Hello, my friend!",
+            "Hi there!",
+            "Hey.",
+            "Hiya! I've been thinking about you.",
+            "Hello! How are you doing?",
+            "Greetings, wonderful soul!",
+            "Hey, stranger!",
+            "Howdy, partner!",
+            "Hey, you!",
+            "Hey, sunshine!",
+        ]
+        return random.choice(greetings)
 
         # END PRIVATE METHODS ######################################################

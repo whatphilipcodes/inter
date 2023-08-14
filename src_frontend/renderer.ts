@@ -126,11 +126,18 @@ window.addEventListener(
 				.then((res) => {
 					globalState.mutate({ convoID: res[0].convoID + 1 })
 				})
-				.then(() => {
+				.then(async () => {
 					globalState.mutate({
 						appState: State.idle,
 					})
-					loading.remove()
+					globalState.subscribe(
+						'greeting',
+						() => {
+							loading.remove()
+						},
+						false,
+						true
+					)
 				})
 		}
 	} catch (error) {

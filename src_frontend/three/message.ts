@@ -54,6 +54,19 @@ export default class Message extends SceneSubject {
 		})
 	}
 
+	unbuild(): void {
+		this.scene.remove(this.troika)
+		this.scene.remove(this.senderInd.get())
+		this.troika.dispose()
+		this.senderInd.unbuild()
+		if (this.boxHelper) {
+			this.scene.remove(this.boxHelper)
+		}
+		if (this.positionHelper) {
+			this.scene.remove(this.positionHelper)
+		}
+	}
+
 	// Methods
 	private setHorizontalPosition(): void {
 		switch (this.text.type) {

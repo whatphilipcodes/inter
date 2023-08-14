@@ -73,6 +73,8 @@ export class Store {
 		[key: string]: () => void
 	}
 
+	private keysToUnsubscribeOnce: Set<string> = new Set()
+
 	constructor() {
 		Object.assign(this, this.initialState)
 		this.keyMutationCallbacks = {}
@@ -82,8 +84,14 @@ export class Store {
 	subscribe(
 		key: string,
 		callback: ((newVal?: unknown) => void) | (() => void),
-		toAnyMutation = false
+		toAnyMutation = false,
+		onlyOnce = false
 	): void {
+		if (onlyOnce) {
+			// Mark the key to be unsubscribed after the first invocation
+			this.keysToUnsubscribeOnce.add(key)
+		}
+
 		if (toAnyMutation) {
 			this.anyMutationCallbacks[key] = callback
 		} else {
@@ -111,16 +119,25 @@ export class Store {
 		}
 	}
 
+	// Modify the mutate method to unsubscribe keys after first invocation if needed
 	mutate(newState: Partial<Store>): void {
 		Object.assign(this, newState)
 		const keys = Object.keys(newState)
+
 		Object.values(this.anyMutationCallbacks).forEach((callback) => callback())
+
 		keys.forEach((key) => {
 			if (this.keyMutationCallbacks[key]) {
 				this.keyMutationCallbacks[key].forEach((callback) => {
 					if (callback) {
 						// eslint-disable-next-line @typescript-eslint/no-explicit-any
 						callback((newState as any)[key])
+
+						// Check if the key needs to be unsubscribed after first invocation
+						if (this.keysToUnsubscribeOnce.has(key)) {
+							this.unsubscribe(key, callback)
+							this.keysToUnsubscribeOnce.delete(key)
+						}
 					}
 				})
 			}

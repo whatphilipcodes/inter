@@ -46,6 +46,11 @@ export default class Cursor {
 		return this.mesh
 	}
 
+	unbuild() {
+		this.mesh.geometry.dispose()
+		this.material.dispose()
+	}
+
 	setBehavior(behavior: string) {
 		this.behavior = Behavior[behavior as keyof typeof Behavior]
 	}

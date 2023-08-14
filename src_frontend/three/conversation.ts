@@ -29,18 +29,17 @@ export default class Conversation extends SceneSubject {
 		})
 
 		this.state.subscribe('appState', (newState) => {
-			if (
-				newState === State.interaction &&
-				this.state.greeting &&
-				config.botStarts
-			) {
-				this.addMessages([this.state.greeting])
+			if (newState === State.interaction) {
+				this.clearMessages()
+				if (this.state.greeting && config.botStarts) {
+					this.addMessages([this.state.greeting])
+				}
 			}
 		})
 	}
 
 	// Methods
-	addMessages(newMessages: ConvoText[]): void {
+	addMessages(newMessages: ConvoText[], history = false): void {
 		const heightPromises: Promise<void>[] = []
 		// loops backwards to start with the oldest message
 		for (let i = newMessages.length - 1; i >= 0; i--) {
@@ -52,12 +51,24 @@ export default class Conversation extends SceneSubject {
 				this.state,
 				input
 			)
-			this.messages.unshift(message)
+			if (history) {
+				this.messages.push(message)
+			} else {
+				this.messages.unshift(message)
+			}
 			heightPromises.push(message.setHeight())
 		}
 		Promise.all(heightPromises).then(() => {
 			this.positionMessagesVertically()
 		})
+	}
+
+	clearMessages(): void {
+		for (const message of this.messages) {
+			message.unbuild()
+			message.remove()
+		}
+		this.messages = []
 	}
 
 	positionMessagesVertically(): void {

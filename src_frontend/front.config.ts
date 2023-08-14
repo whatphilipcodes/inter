@@ -1,9 +1,10 @@
-import { State } from './utils/types'
+import { State, InteractionState } from './utils/types'
 const config = {
 	// app settings
 	botStarts: true,
+	startDelay: 2000,
 	truthScore: true,
-	devUI: false,
+	devUI: true,
 	devTools: true,
 	fullScreen: false,
 	hideCursor: true,
@@ -21,6 +22,7 @@ const config = {
 	initState: {
 		// state
 		appState: State.loading,
+		chatState: InteractionState.disabled,
 
 		// textarea
 		input: '',

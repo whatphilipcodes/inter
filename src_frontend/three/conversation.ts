@@ -31,9 +31,6 @@ export default class Conversation extends SceneSubject {
 		this.state.subscribe('appState', (newState) => {
 			if (newState === State.interaction) {
 				this.clearMessages()
-				if (this.state.greeting && config.botStarts) {
-					this.addMessages([this.state.greeting])
-				}
 			}
 		})
 	}
@@ -72,8 +69,7 @@ export default class Conversation extends SceneSubject {
 	}
 
 	positionMessagesVertically(): void {
-		let yOffset =
-			this.state.leftBottom.y + this.state.inputHeight + this.state.spacing
+		let yOffset = this.state.leftBottom.y + this.state.inputHeight
 		for (const message of this.messages) {
 			message.position.setY(yOffset)
 			yOffset += message.height + this.state.spacing

@@ -6,6 +6,12 @@ enum State {
 	exit = 'exit',
 }
 
+enum InteractionState {
+	input = 'input',
+	waiting = 'waiting',
+	disabled = 'disabled',
+}
+
 // See utils.py for pydantic counterpart
 enum ConvoType {
 	input = 'input',
@@ -36,4 +42,11 @@ type LoopPatch = {
 }
 
 // export
-export { State, BackendState, ConvoType, ConvoText, LoopPatch }
+export {
+	State,
+	InteractionState,
+	BackendState,
+	ConvoType,
+	ConvoText,
+	LoopPatch,
+}

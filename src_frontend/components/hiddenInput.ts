@@ -1,4 +1,4 @@
-import { State, ConvoType } from '../utils/types'
+import { State, ConvoType, InteractionState } from '../utils/types'
 import { Store } from '../state/store'
 import config from '../front.config'
 import { getTimestamp, startTimer } from '../utils/misc'
@@ -69,6 +69,11 @@ export default class HiddenInput extends HTMLElement {
 
 		// listen for special keys
 		this.textarea.addEventListener('keydown', (e) => {
+			if (this.state.appState === State.idle) this.switchToInteraction()
+			if (this.state.chatState !== InteractionState.input) {
+				e.preventDefault()
+				return
+			}
 			// This is seperate because preventDefault() doesn't work if the Promise is awaited
 			switch (e.key) {
 				case 'Enter':
@@ -82,8 +87,6 @@ export default class HiddenInput extends HTMLElement {
 				default:
 					if (this.timer) {
 						this.timer()
-					} else {
-						this.switchToInteraction()
 					}
 					this.timer = startTimer(this.switchToIdle, config.idleTimeout)
 					break
@@ -94,13 +97,23 @@ export default class HiddenInput extends HTMLElement {
 	// State Control
 	// Arrow functions to preserve 'this' context
 	switchToInteraction = () => {
-		this.state.mutate({ appState: State.interaction })
+		this.state.mutate({
+			appState: State.interaction,
+			chatState: InteractionState.waiting,
+		})
+		startTimer(() => {
+			this.state.mutate({
+				chatState: InteractionState.input,
+				conversation: [...this.state.conversation, this.state.greeting],
+			})
+		}, config.startDelay)
 	}
 
 	switchToIdle = () => {
 		this.timer = null
 		this.state.mutate({
 			appState: State.idle,
+			chatState: InteractionState.disabled,
 			input: '',
 			cursorPos: 0,
 			messageID: 0,

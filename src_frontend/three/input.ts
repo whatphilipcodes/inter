@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 import { Text /*getSelectionRects, getCaretAtPoint*/ } from 'troika-three-text'
 
-import { ConvoText, ConvoType } from '../utils/types'
+import { ConvoText, ConvoType, InteractionState } from '../utils/types'
 import { getTimestamp } from '../utils/misc'
 import SceneSubject from './_sceneSubject'
 import { Store } from '../state/store'
@@ -32,7 +32,7 @@ export default class Input extends SceneSubject {
 		this.caretPositionsArray = new Float32Array(0)
 		this.caretPosition = this.position.clone()
 		this.troika = new Text()
-		this.caret = new Cursor('flash')
+		this.caret = new Cursor('hidden')
 		this.updateText()
 		this.caret.setDimensions(
 			this.state.lineHeight * this.state.cursorWidthRatio,
@@ -46,6 +46,9 @@ export default class Input extends SceneSubject {
 		// Sate Subscriptions
 		this.state.subscribe('input', () => this.syncText())
 		this.state.subscribe('specialKeyPressed', () => this.handleSpecialKey())
+		this.state.subscribe('chatState', (newState: InteractionState) =>
+			this.handleChatState(newState)
+		)
 
 		// Listen to troika Syncs
 		this.troika.addEventListener('synccomplete', () => {
@@ -66,14 +69,19 @@ export default class Input extends SceneSubject {
 			text: this.state.input,
 			trust: 0.0,
 		}
-		this.state.mutate({ conversation: [...this.state.conversation, message] })
-		this.state.mutate({ messageID: this.state.messageID + 1 })
-		this.state.mutate({ input: '' })
-		this.state.cursorPos = 0
-
+		this.state.mutate({
+			chatState: InteractionState.waiting,
+			conversation: [...this.state.conversation, message],
+			messageID: this.state.messageID + 1,
+			input: '',
+			cursorPos: 0,
+		})
 		this.state.api.post('/api/infer', message).then((res: ConvoText) => {
-			this.state.mutate({ conversation: [...this.state.conversation, res] })
-			this.state.mutate({ messageID: this.state.messageID + 1 })
+			this.state.mutate({
+				chatState: InteractionState.input,
+				conversation: [...this.state.conversation, res],
+				messageID: this.state.messageID + 1,
+			})
 		})
 	}
 
@@ -111,6 +119,29 @@ export default class Input extends SceneSubject {
 		this.troika.sync()
 	}
 
+	handleChatState(state: InteractionState): void {
+		switch (state) {
+			case InteractionState.input:
+				this.state.mutate({
+					inputHeight: this.state.lineHeight + this.state.spacing,
+				})
+				this.caret.setBehavior('flash')
+				break
+			case InteractionState.waiting:
+				this.state.mutate({
+					inputHeight: this.state.lineHeight + this.state.spacing,
+				})
+				this.caret.setBehavior('flash')
+				break
+			case InteractionState.disabled:
+				this.state.mutate({ inputHeight: 0 })
+				this.caret.setBehavior('hidden')
+				break
+			default:
+				break
+		}
+	}
+
 	handleSpecialKey(): void {
 		switch (this.state.specialKeyPressed) {
 			case 'Enter':
@@ -127,16 +158,30 @@ export default class Input extends SceneSubject {
 			await new Promise((resolve) => setTimeout(resolve, 1))
 		}
 		return new Promise((resolve) => {
-			let height =
-				this.troika.geometry.boundingBox.max.y -
-				this.troika.geometry.boundingBox.min.y
-			if (height < this.state.lineHeight) height = this.state.lineHeight
+			let height = 0
+			if (this.state.chatState !== InteractionState.disabled) {
+				height =
+					this.troika.geometry.boundingBox.max.y -
+					this.troika.geometry.boundingBox.min.y
+				if (height < this.state.lineHeight)
+					height = this.state.lineHeight + this.state.spacing
+				else height += this.state.spacing
+			}
 			this.state.mutate({ inputHeight: height })
 			resolve()
 		})
 	}
 
 	setCaretPosition(): void {
+		if (this.state.chatState === InteractionState.disabled) return
+		if (this.state.chatState === InteractionState.waiting) {
+			this.caretPosition = new THREE.Vector3(
+				this.state.leftBottom.x + this.state.ctpIndicator,
+				this.position.y,
+				this.position.z
+			)
+			return
+		}
 		if (this.state.cursorPos === 0) {
 			this.caretPosition = new THREE.Vector3(
 				this.state.leftBottom.x,

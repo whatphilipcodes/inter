@@ -165,7 +165,7 @@ export default class Message extends SceneSubject {
 		)
 
 		if (!hasNaN(this.troika.position)) {
-			this.boxHelper.update()
+			this.boxHelper?.update()
 			// console.log(this.troika.position)
 		}
 		this.scene.remove(this.positionHelper)

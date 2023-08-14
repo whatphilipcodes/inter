@@ -1,10 +1,11 @@
-import { State, ConvoText } from '../utils/types'
+import { State, InteractionState, ConvoText } from '../utils/types'
 import { API } from '../utils/api'
 import config from '../front.config'
 
 export class Store {
 	// state
 	appState: State
+	chatState: InteractionState
 
 	// api
 	elURL: URL

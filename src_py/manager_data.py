@@ -129,14 +129,52 @@ class DataManager:
         """
         Returns a DatasetDict containing all entries with the minimal epoch_cls value.
         """
-        min_epoch = min(self.database["train"]["epoch_cls"])
-        cls_train = self.database["train"].filter(
-            lambda example: example["epoch_cls"] == min_epoch
+        # XXX Could not get that to work using random indices instead
+        # # get minimal epoch_cls value in database
+        # min_epoch = min(self.database["train"]["epoch_cls"])
+        # # get indices of all entries with minimal epoch_cls value
+        # indices = [
+        #     idx
+        #     for idx, epoch in enumerate(self.database["train"]["epoch_cls"])
+        #     if epoch == min_epoch
+        # ]
+        # # get all entries with minimal epoch_cls value
+        # cls_train = self.database["train"].select(indices)
+
+        # # Add 1 to epoch_cls value of all entries in indices
+        # def advance_epoch_cls(batch, idx):
+        #     for i in range(len(batch["epoch_cls"])):
+        #         if [idx[i]] in indices:
+        #             batch["epoch_cls"][i] += 1
+        #     return batch
+
+        # self.database["train"] = self.database["train"].map(
+        #     advance_epoch_cls, with_indices=True, batched=True
+        # )
+
+        # print(
+        #     self.database["train"].filter(
+        #         lambda example: example["epoch_cls"] == min_epoch + 1  # type: ignore
+        #     )
+        # )
+
+        # print(
+        #     self.database["train"].filter(
+        #         lambda example: example["epoch_cls"] == min_epoch + 1  # type: ignore
+        #     )["epoch_cls"][0:10]
+        # )
+
+        train_indices = random.sample(
+            range(len(self.database["train"])), config.CLS_EPOCH_SIZE
         )
+        test_indices = random.sample(
+            range(len(self.database["test"])), int(config.CLS_EPOCH_SIZE * 0.2)
+        )
+        cls_train = self.database["train"].select(train_indices)
+        cls_test = self.database["test"].select(test_indices)
         cls_train = cls_train.shuffle()
-        cls_test = self.database["test"]
-        cls_queue = DatasetDict({"train": cls_train, "test": cls_test})
-        return cls_queue
+        cls_epoch = DatasetDict({"train": cls_train, "test": cls_test})
+        return cls_epoch
 
     # END PUBLIC METHODS #######################################################
 

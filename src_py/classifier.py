@@ -5,8 +5,7 @@ import os
 import torch
 from torch.utils.data import DataLoader
 
-from typing import Any
-from collections import deque
+from typing import Any, Iterator
 from transformers import (
     DebertaV2Tokenizer,
     DebertaV2ForSequenceClassification,
@@ -34,8 +33,11 @@ class Classifier:
     _optimizer: torch.optim.AdamW
     _scheduler: Any
 
+    _enumerator: Iterator
+    _current_batch_idx: int
+    _num_batches: int
+
     def __init__(self):
-        self._session = deque()
         self.modelpath = os.path.join(get_resource_path(), *config.CLS_PATH)
         self.device = get_cuda()
         self.model = DebertaV2ForSequenceClassification.from_pretrained(
@@ -46,25 +48,41 @@ class Classifier:
         self.tokenizer = DebertaV2Tokenizer.from_pretrained(self.modelpath)
 
     # PUBLIC METHODS ###########################################################
-    def prepare_training(self, data: DatasetDict) -> None:
+    def prepare_epoch(self, data: DatasetDict) -> None:
         # TODO: Check if this improves stability
-        torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
 
         self._tokenized_data = data.map(
-            self._preprocess, batched=True, remove_columns=data["train"].column_names
+            self._preprocess,
+            batched=True,
+            remove_columns=data["train"].column_names,
         )
         self._tokenized_data.set_format(
             type="torch",
             columns=["input_ids", "token_type_ids", "attention_mask", "labels"],
         )
+
+        # initialize batch counter
+        self._current_batch_idx = 0
+
+    def prepare_training(self, data: DatasetDict) -> None:
+        self.prepare_epoch(data)
         self._setup_helpers()
         self.model.train()
 
     def prepare_inference(self) -> None:
         self.model.eval()
 
-    def step(self) -> None:
-        batch = next(iter(self._train_dataloader))
+    def step(self) -> bool:
+        try:
+            batch = batch = next(self._enumerator)
+            self._current_batch_idx += 1
+        except StopIteration:
+            # All batches have been processed
+            if config.DEBUG_MSG:
+                print("Epoch finished")
+            return True
+
         batch = {k: v.to(self.device) for k, v in batch.items()}
         outputs = self.model(**batch)
         loss = outputs.loss
@@ -79,7 +97,11 @@ class Classifier:
         self._optimizer.zero_grad()
 
         if config.DEBUG_MSG:
-            print(f"Loss: {loss.item()}")
+            print(
+                f"Loss in Batch {self._current_batch_idx} of {self._num_batches}:\n{loss.item()}"
+            )
+
+        return False
 
     def infer(self, text: str):
         # Set model to eval mode
@@ -98,6 +120,10 @@ class Classifier:
 
         # Decode and return
         return self._translate_to_mood(predicted_class_id)
+
+    def save(self):
+        self.model.save_pretrained(self.modelpath)
+        self.tokenizer.save_pretrained(self.modelpath)
 
     # END PUBLIC METHODS #######################################################
 
@@ -128,6 +154,10 @@ class Classifier:
             num_warmup_steps=100,
             num_training_steps=len(self._train_dataloader),
         )
+
+        # turn dataloader into an iterator & get number of batches
+        self._enumerator = iter(self._train_dataloader)
+        self._num_batches = len(self._train_dataloader)
 
     def _preprocess(self, example: Any) -> Any:
         output_dict = self.tokenizer(

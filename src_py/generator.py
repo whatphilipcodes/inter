@@ -53,6 +53,7 @@ class Generator:
         )
 
         torch.backends.cuda.matmul.allow_tf32 = True  # type: ignore
+        self.model.eval()
 
     # PUBLIC METHODS ###########################################################
     # def prepare_training(self, data: DatasetDict, shuffle=False) -> None:

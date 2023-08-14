@@ -39,6 +39,7 @@ class MainLoop:
 
         # Loop Flags
         self._enter_state = True
+        self._new_epoch = True
 
         # Inference Props
         self._active_split = self._data_manager.get_split()
@@ -61,8 +62,10 @@ class MainLoop:
                 if self._enter_state:
                     self._enter_training()
                 # TRAINING FLOW ##################################################
-                # self._classifier.step()
-                # self._generator.step()
+                if self._new_epoch:
+                    self._enter_epoch()
+                # TRAINING FLOW ##################################################
+                self._new_epoch = self._classifier.step()
                 # END TRAINING FLOW ##############################################
 
             if self.state == LoopPatch.State.inference:
@@ -180,7 +183,7 @@ class MainLoop:
         await self.__inference_queue.put(input)
         # wait for the result to become available and return it
         while input.messageID not in self.__results:
-            await asyncio.sleep(0.1)  # Check every 100 ms
+            await asyncio.sleep(0.01)  # Check every 10 ms
         # return the result and remove it from the dictionary
         return self.__results.pop(input.messageID)
 
@@ -195,10 +198,7 @@ class MainLoop:
         # save new conversations to database
         self._data_manager.save()
         # get the updated dataset from the data manager
-        # gen_data = self._data_manager.get_gen_data()
         # cls_data = self._data_manager.get_cls_data()
-        # update both models
-        # self._generator.prepare_training(gen_data)
         # self._classifier.prepare_training(cls_data)
 
     def _enter_inference(self) -> None:
@@ -209,9 +209,20 @@ class MainLoop:
         if config.DEBUG_MSG:
             print("Inference started...")
         # set the models to eval mode
-        self._generator.prepare_inference()
         self._classifier.prepare_inference()
         # update the active split
         self._active_split = self._data_manager.get_split()
         # reset trust score
         self._trust_score = 0.0
+
+    def _enter_epoch(self) -> None:
+        """
+        Run every time the loop enters the epoch state.
+        """
+        self._new_epoch = False
+        if config.DEBUG_MSG:
+            print("New epoch started...")
+        # save current state of the model & reload the dataset entirely
+        self._data_manager.save()
+        cls_data = self._data_manager.get_cls_data()
+        self._classifier.prepare_training(cls_data)

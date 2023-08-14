@@ -6,8 +6,8 @@ const config = {
 	devUI: false,
 	devTools: true,
 	fullScreen: false,
-	hideCursor: false,
-	debugMsg: true,
+	hideCursor: true,
+	debugMsg: false,
 	showHiddenInput: false,
 	idleTimeout: 30000,
 

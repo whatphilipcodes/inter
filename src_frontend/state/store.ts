@@ -15,6 +15,7 @@ export class Store {
 	convoID: number
 	messageID: number
 	conversation: ConvoText[]
+	greeting: ConvoText
 
 	// screen dimensions
 	screenWidth: number
@@ -65,7 +66,7 @@ export class Store {
 	private initialState = config.initState
 
 	private keyMutationCallbacks: {
-		[key: string]: ((newVal?: unknown) => void) | (() => void)
+		[key: string]: (((newVal?: unknown) => void) | (() => void))[]
 	}
 
 	private anyMutationCallbacks: {
@@ -83,28 +84,47 @@ export class Store {
 		callback: ((newVal?: unknown) => void) | (() => void),
 		toAnyMutation = false
 	): void {
-		if (toAnyMutation) this.anyMutationCallbacks[key] = callback
-		else this.keyMutationCallbacks[key] = callback
+		if (toAnyMutation) {
+			this.anyMutationCallbacks[key] = callback
+		} else {
+			if (!this.keyMutationCallbacks[key]) this.keyMutationCallbacks[key] = []
+			this.keyMutationCallbacks[key].push(callback)
+		}
 	}
 
-	unsubscribe(key: string): void {
-		if (key in this.anyMutationCallbacks) delete this.anyMutationCallbacks[key]
-		else if (key in this.keyMutationCallbacks)
-			delete this.keyMutationCallbacks[key]
-		else throw new Error(`No callback found for key ${key}`)
+	unsubscribe(
+		key: string,
+		callback: ((newVal?: unknown) => void) | (() => void)
+	): void {
+		if (key in this.anyMutationCallbacks) {
+			delete this.anyMutationCallbacks[key]
+		} else if (key in this.keyMutationCallbacks) {
+			const index = this.keyMutationCallbacks[key].indexOf(callback)
+			if (index > -1) {
+				this.keyMutationCallbacks[key].splice(index, 1)
+				if (this.keyMutationCallbacks[key].length === 0) {
+					delete this.keyMutationCallbacks[key]
+				}
+			} else {
+				throw new Error(`No callback found for key ${key}`)
+			}
+		}
 	}
 
 	mutate(newState: Partial<Store>): void {
 		Object.assign(this, newState)
 		const keys = Object.keys(newState)
 		Object.values(this.anyMutationCallbacks).forEach((callback) => callback())
-		const filteredCallbacks = keys
-			.map((key) => this.keyMutationCallbacks[key])
-			.filter((callback) => typeof callback === 'function')
-		filteredCallbacks.forEach(
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(callback, i) => callback && callback((newState as any)[keys[i]])
-		)
+		keys.forEach((key) => {
+			if (this.keyMutationCallbacks[key]) {
+				this.keyMutationCallbacks[key].forEach((callback) => {
+					if (callback) {
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						callback((newState as any)[key])
+					}
+				})
+			}
+		})
 	}
 
 	async initAxios(baseURL: URL): Promise<void> {

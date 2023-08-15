@@ -71,7 +71,6 @@ def main():
     @app.post("/api/get_message")
     async def get_message(input: DataIndex):
         id = input.id
-        print("id:", id)
         return loop.get_message(id)
 
     ### Start FastAPI as Server

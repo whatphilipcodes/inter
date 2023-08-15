@@ -10,8 +10,10 @@ import config from '../front.config'
 export default class Conversation extends SceneSubject {
 	// Props
 	messages: Message[] = []
+	loadedMsg: number
 	historyInterval: NodeJS.Timer
 	historyIndex: number
+	buffer: ConvoText[]
 	// chunks need to scale with the grid settings in order to fill the screen -> load ConvoTexts while height < sample size n = numLines * lineHeight * 2
 	constructor(
 		name: string,
@@ -20,6 +22,8 @@ export default class Conversation extends SceneSubject {
 		state: Store
 	) {
 		super(name, scene, camera, state)
+		this.loadedMsg = 0
+		this.buffer = []
 
 		// init empty conversation
 		this.state.mutate({ conversation: [] })
@@ -44,14 +48,26 @@ export default class Conversation extends SceneSubject {
 			case State.idle:
 				this.historyIndex = 1
 				this.historyInterval = setInterval(() => {
-					console.log(this.historyIndex)
-					this.state.api
-						.post('/api/get_message', { id: this.historyIndex })
-						.then((response: [ConvoText]) => {
-							console.log(response)
-							this.addMessages(response)
-							this.historyIndex += 1
-						})
+					if (this.buffer.length > 0) {
+						this.addMessages(this.buffer, true)
+						this.buffer = []
+					}
+					if (this.loadedMsg < config.numPreloadMsg) {
+						this.state.api
+							.post('/api/get_message', { id: this.historyIndex })
+							.then((response: ConvoText[]) => {
+								for (const msg of response) {
+									if (msg.text === '') continue
+									this.buffer.push(msg)
+								}
+								this.historyIndex += 1
+							})
+					}
+					for (const message of this.messages) {
+						message.scrollVertical()
+					}
+					this.cleanMessages()
+					console.log(this.loadedMsg)
 				}, config.historyInterval)
 				break
 			default:
@@ -92,10 +108,24 @@ export default class Conversation extends SceneSubject {
 		this.messages = []
 	}
 
+	cleanMessages(): void {
+		let visible = 0
+		for (const message of this.messages) {
+			if (!message.visible) {
+				message.unbuild()
+				message.remove()
+			} else {
+				visible += 1
+			}
+		}
+		this.loadedMsg = visible
+	}
+
 	positionMessagesVertically(): void {
 		let yOffset = this.state.leftBottom.y + this.state.inputHeight
 		for (const message of this.messages) {
-			message.position.setY(yOffset)
+			message.offset = yOffset
+			message.setVerticalPosition()
 			yOffset += message.height + this.state.spacing
 		}
 	}

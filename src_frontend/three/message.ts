@@ -15,6 +15,9 @@ export default class Message extends SceneSubject {
 	height: number
 	senderInd: Cursor
 	indicatorPos: THREE.Vector3
+	offset: number
+	scroll: number
+	visible: boolean
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	troika: any
@@ -32,8 +35,10 @@ export default class Message extends SceneSubject {
 	) {
 		super(name, scene, camera, state)
 
+		this.visible = true
 		this.text = text
 		this.indicatorPos = this.position.clone()
+		this.scroll = 0
 
 		// Create Text
 		this.troika = new Text()
@@ -97,8 +102,21 @@ export default class Message extends SceneSubject {
 		}
 	}
 
-	private setVerticalPosition(): void {
+	setVerticalPosition(): void {
+		this.position.setY(this.offset + this.scroll)
 		this.indicatorPos.setY(this.position.y)
+	}
+
+	scrollVertical(): void {
+		this.scroll -= this.state.lineHeight
+		this.setVerticalPosition()
+		this.checkVisibility()
+	}
+
+	checkVisibility(): void {
+		if (this.position.y + this.height < this.state.leftBottom.y) {
+			this.visible = false
+		}
 	}
 
 	private setTextSettings(): void {

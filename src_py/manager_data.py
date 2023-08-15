@@ -39,7 +39,6 @@ class DataManager:
         """
         Returns the ConvoText object with the given msgID.
         """
-        print("get_message", conID)
         sorted = self.database.sort("conID")
         highest_train_datapoint = sorted["train"][-conID]
         highest_test_datapoint = sorted["test"][-conID]

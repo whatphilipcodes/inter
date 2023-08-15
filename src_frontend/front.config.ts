@@ -3,13 +3,14 @@ const config = {
 	// app settings
 	botStarts: true,
 	startDelay: 2000,
-	historyInterval: 2000,
+	historyInterval: 1500,
+	numPreloadMsg: 50,
 	truthScore: true,
 	devUI: false,
-	devTools: true,
-	fullScreen: false,
+	devTools: false,
+	fullScreen: true,
 	hideCursor: true,
-	debugMsg: true,
+	debugMsg: false,
 	showHiddenInput: false,
 	idleTimeout: 30000,
 

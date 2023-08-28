@@ -242,7 +242,6 @@ export default class Input extends SceneSubject {
 			this.state.lineHeight * this.state.cursorWidthRatio,
 			this.state.lineHeight
 		)
-		console.log('test')
 		// instead of subscribing to the state
 		this.updateText()
 	}

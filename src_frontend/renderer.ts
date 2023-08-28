@@ -38,6 +38,7 @@ if (config.hideCursor) {
 // Get references to all custom elements in index.html
 const input = document.getElementById('hiddenInput') as Input
 const loading = document.getElementById('loading') as Loading
+if (!config.loadingScreen) loading.remove()
 
 // /*************************************************************
 //  * State
@@ -133,7 +134,7 @@ window.addEventListener(
 					globalState.subscribe(
 						'greeting',
 						() => {
-							loading.remove()
+							if (config.loadingScreen) loading.remove()
 						},
 						false,
 						true

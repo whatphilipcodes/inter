@@ -1,15 +1,16 @@
 import { State, InteractionState } from './utils/types'
 const config = {
 	// app settings
+	loadingScreen: false,
 	botStarts: true,
 	startDelay: 2000,
 	historyInterval: 1500,
 	numPreloadMsg: 50,
 	truthScore: true,
-	devUI: false,
-	devTools: false,
-	fullScreen: true,
-	hideCursor: true,
+	devUI: true,
+	devTools: true,
+	fullScreen: false,
+	hideCursor: false,
 	debugMsg: false,
 	showHiddenInput: false,
 	idleTimeout: 30000,

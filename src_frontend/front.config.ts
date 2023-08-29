@@ -7,13 +7,13 @@ const config = {
 	historyInterval: 1500,
 	numPreloadMsg: 50,
 	truthScore: true,
-	devUI: true,
+	devUI: false,
 	devTools: true,
 	fullScreen: false,
 	hideCursor: false,
 	debugMsg: false,
 	showHiddenInput: false,
-	idleTimeout: 30000,
+	idleTimeout: 80000,
 
 	// api settings
 	apiTimeout: 120000,

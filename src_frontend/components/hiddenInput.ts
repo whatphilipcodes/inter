@@ -107,6 +107,7 @@ export default class HiddenInput extends HTMLElement {
 				conversation: [...this.state.conversation, this.state.greeting],
 			})
 		}, config.startDelay)
+		this.timer = startTimer(this.switchToIdle, config.idleTimeout)
 	}
 
 	switchToIdle = () => {

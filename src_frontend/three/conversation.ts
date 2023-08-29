@@ -49,6 +49,7 @@ export default class Conversation extends SceneSubject {
 				this.historyIndex = 1
 				this.historyInterval = setInterval(() => {
 					if (this.buffer.length > 0) {
+						console.log(this.buffer)
 						this.addMessages(this.buffer, true)
 						this.buffer = []
 					}
@@ -67,7 +68,7 @@ export default class Conversation extends SceneSubject {
 						message.scrollVertical()
 					}
 					this.cleanMessages()
-					console.log(this.loadedMsg)
+					// console.log(this.loadedMsg)
 				}, config.historyInterval)
 				break
 			default:

@@ -1,4 +1,4 @@
-DEBUG_MSG = False
+DEBUG_MSG = True
 TRUST_MOD = 0.2
 
 GEN_OUTPUT_LENGTH_MAX = 32
@@ -11,8 +11,9 @@ CLS_LEARNING_RATE = 3e-5
 
 MAX_DATA_FOLDERS = 2
 
-DATA_PATH = ["data"]
-DATA_SUB_PROTECTED = "base"
+INPUT_DATA_PATH = ["data", "input"]
+INPUT_PROTECTED_SUB = "base"
+NLI_DATA_PATH = ["data", "nli_fever"]
 
 MODEL_ROOT = ["models"]
 GEN_NAME = "pythia-mod"

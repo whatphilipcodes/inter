@@ -41,9 +41,6 @@ class MainLoop:
         self._enter_state = True
         self._new_epoch = True
 
-        # Inference Props
-        self._active_split = self._data_manager.get_split()
-
         # Trust Score
         self._trust_score = 0.0
 
@@ -77,7 +74,7 @@ class MainLoop:
                     input_data: ConvoText = await self.__inference_queue.get()
 
                     # 0) get datapoint from data manager
-                    datapoint = self._data_manager.get_datapoint(input_data)
+                    datapoint = self._data_manager.create_datapoint(input_data)
 
                     # 1) get classification for input_data and update trust score
                     if (input_data.text == "") or (input_data.text is None):
@@ -127,7 +124,7 @@ class MainLoop:
                     self.__results[input_data.messageID] = response_object
 
                     # 3) add datapoint to data manager (data manager will evaluate mood)
-                    self._data_manager.add(datapoint, self._active_split)
+                    self._data_manager.add(datapoint)
 
                     self.__inference_queue.task_done()
                 # END INFERENCE FLOW #############################################
@@ -209,8 +206,6 @@ class MainLoop:
             print("Inference started...")
         # set the models to eval mode
         self._classifier.prepare_inference()
-        # update the active split
-        self._active_split = self._data_manager.get_split()
 
     def _enter_epoch(self) -> None:
         """

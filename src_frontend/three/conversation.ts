@@ -49,14 +49,19 @@ export default class Conversation extends SceneSubject {
 				this.historyIndex = 1
 				this.historyInterval = setInterval(() => {
 					if (this.buffer.length > 0) {
-						console.log(this.buffer)
+						// console.log(this.buffer)
 						this.addMessages(this.buffer, true)
 						this.buffer = []
 					}
 					if (this.loadedMsg < config.numPreloadMsg) {
+						// console.log('loading conID ' + this.historyIndex)
 						this.state.api
 							.post('/api/get_message', { id: this.historyIndex })
 							.then((response: ConvoText[]) => {
+								// handle empty response
+								if (response.length === 0) {
+									return
+								}
 								for (const msg of response) {
 									if (msg.text === '') continue
 									this.buffer.push(msg)

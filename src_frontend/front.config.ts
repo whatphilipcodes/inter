@@ -13,7 +13,7 @@ const config = {
 	hideCursor: false,
 	debugMsg: false,
 	showHiddenInput: false,
-	idleTimeout: 80000,
+	idleTimeout: 60000,
 
 	// api settings
 	apiTimeout: 120000,

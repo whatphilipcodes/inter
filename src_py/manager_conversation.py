@@ -107,7 +107,7 @@ class ConvoManager:
         processed = self._postprocess(filtered)
 
         # regex filter
-        nonw_start = r"^\W"
+        nonw_start = r"^\W.*?\n"
         processed = re.sub(nonw_start, "", processed)
 
         # send retry signal if response is empty

@@ -13,6 +13,7 @@ export default class Conversation extends SceneSubject {
 	loadedMsg: number
 	historyInterval: NodeJS.Timer
 	historyIndex: number
+	msgPending: boolean
 	buffer: ConvoText[]
 	// chunks need to scale with the grid settings in order to fill the screen -> load ConvoTexts while height < sample size n = numLines * lineHeight * 2
 	constructor(
@@ -24,6 +25,7 @@ export default class Conversation extends SceneSubject {
 		super(name, scene, camera, state)
 		this.loadedMsg = 0
 		this.buffer = []
+		this.msgPending = false
 
 		// init empty conversation
 		this.state.mutate({ conversation: [] })
@@ -48,23 +50,26 @@ export default class Conversation extends SceneSubject {
 			case State.idle:
 				this.historyIndex = 1 + this.messages.length + 1 // +1 for greeting, starting at 1 because index is reversed in backend
 				this.historyInterval = setInterval(() => {
-					if (this.buffer.length > 0) {
-						this.addMessages(this.buffer, true)
-						this.buffer = []
-					}
-					if (this.loadedMsg < config.numPreloadMsg) {
+					if (this.loadedMsg < config.numPreloadMsg && !this.msgPending) {
+						console.log('fetching index -' + this.historyIndex)
 						this.state.api
 							.post('/api/get_message', { id: this.historyIndex })
 							.then((response: { msg_pair: ConvoText[]; length: number }) => {
 								// handle empty response
+								console.log(response.msg_pair)
 								if (!response) return
 								this.state.mutate({ databaseLength: response.length })
 								for (const msg of response.msg_pair) {
-									// if (msg.text === '') continue
+									if (msg.text === '') continue
 									this.buffer.push(msg)
 								}
 								this.historyIndex += 1
+								this.msgPending = false
 							})
+					}
+					if (this.buffer.length > 0) {
+						this.addMessages(this.buffer, true)
+						this.buffer = []
 					}
 					for (const message of this.messages) {
 						message.scrollVertical()
@@ -124,6 +129,7 @@ export default class Conversation extends SceneSubject {
 				visible += 1
 			}
 		}
+		console.log(visible)
 		this.loadedMsg = visible
 	}
 

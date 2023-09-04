@@ -1,5 +1,6 @@
 # IMPORT BLOCK ###############################################################
 # Lib Imports
+import re
 import random
 from typing import List
 
@@ -104,8 +105,15 @@ class ConvoManager:
             SpecialTokens.endseq, ""
         )
         processed = self._postprocess(filtered)
-        # if config.DEBUG_MSG:
-        #     print(f"Filtered result:\n {processed}")
+
+        # regex filter
+        nonw_start = r"^\W"
+        processed = re.sub(nonw_start, "", processed)
+
+        # send retry signal if response is empty
+        if not re.search(r"[a-zA-Z]", processed):
+            processed = "<|retry|>"
+
         self._update_history(processed)
         return processed
 

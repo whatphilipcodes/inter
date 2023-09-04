@@ -103,11 +103,15 @@ class MainLoop:
                         input_data, mood=mood, context=context
                     )
 
-                    # generator: run inference on input string
+                    # run inference on input string and filter
                     utf = self._generator.infer(input_str)
-
-                    # filter out response
                     response = self._convo_manager.filter_response(utf)
+
+                    # retry if response is empty
+                    if response == "<|retry|>":
+                        utf = self._generator.infer(input_str)
+                        response = self._convo_manager.filter_response(utf)
+
                     datapoint.response = response
 
                     # create response object

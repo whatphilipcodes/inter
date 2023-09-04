@@ -124,8 +124,11 @@ window.addEventListener(
 		if (globalState.api.online) {
 			globalState.api
 				.post('/api/get_message', { id: 1 }) // is used as -1 to get latest message
-				.then((res) => {
-					globalState.mutate({ convoID: res[0].convoID + 1 })
+				.then((response) => {
+					globalState.mutate({
+						convoID: response.msg_pair[0].convoID + 1,
+						databaseLength: response.length,
+					})
 				})
 				.then(async () => {
 					globalState.mutate({

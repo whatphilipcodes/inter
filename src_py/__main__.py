@@ -71,7 +71,8 @@ def main():
     @app.post("/api/get_message")
     async def get_message(input: DataIndex):
         id = input.id
-        return loop.get_message(id)
+        list, length = loop.get_message(id)
+        return {"msg_pair": list, "length": length}
 
     ### Start FastAPI as Server
     if uvi_port is None or uvi_host is None:

@@ -17,6 +17,7 @@ export class Store {
 	messageID: number
 	conversation: ConvoText[]
 	greeting: ConvoText
+	databaseLength: number
 
 	// screen dimensions
 	screenWidth: number

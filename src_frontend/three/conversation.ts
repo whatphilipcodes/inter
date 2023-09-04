@@ -46,24 +46,21 @@ export default class Conversation extends SceneSubject {
 				this.clearMessages()
 				break
 			case State.idle:
-				this.historyIndex = 1
+				this.historyIndex = 1 + this.messages.length + 1 // +1 for greeting, starting at 1 because index is reversed in backend
 				this.historyInterval = setInterval(() => {
 					if (this.buffer.length > 0) {
-						// console.log(this.buffer)
 						this.addMessages(this.buffer, true)
 						this.buffer = []
 					}
 					if (this.loadedMsg < config.numPreloadMsg) {
-						// console.log('loading conID ' + this.historyIndex)
 						this.state.api
 							.post('/api/get_message', { id: this.historyIndex })
-							.then((response: ConvoText[]) => {
+							.then((response: { msg_pair: ConvoText[]; length: number }) => {
 								// handle empty response
-								if (response.length === 0) {
-									return
-								}
-								for (const msg of response) {
-									if (msg.text === '') continue
+								if (!response) return
+								this.state.mutate({ databaseLength: response.length })
+								for (const msg of response.msg_pair) {
+									// if (msg.text === '') continue
 									this.buffer.push(msg)
 								}
 								this.historyIndex += 1
@@ -72,8 +69,11 @@ export default class Conversation extends SceneSubject {
 					for (const message of this.messages) {
 						message.scrollVertical()
 					}
+					if (this.historyIndex >= this.state.databaseLength) {
+						if (config.debugMsg) console.log('resetting history index')
+						this.historyIndex = 1
+					}
 					this.cleanMessages()
-					// console.log(this.loadedMsg)
 				}, config.historyInterval)
 				break
 			default:

@@ -2,7 +2,7 @@
 # Lib Imports
 import asyncio
 import threading
-from typing import List
+from typing import List, Tuple
 
 # Local Imports
 from . import __backend_config as config
@@ -154,12 +154,13 @@ class MainLoop:
         """
         self._thread.start()
 
-    def get_message(self, messageID: int) -> List[ConvoText]:
+    def get_message(self, messageID: int) -> Tuple[List[ConvoText], int]:
         """
         Returns messages from the database.
         """
+        dataset_length = self._data_manager.input_database.__len__()
         message = self._data_manager.get_message(messageID)
-        return message
+        return message, dataset_length
 
     async def update(self, patch: LoopPatch) -> LoopPatch:
         """

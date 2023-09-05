@@ -1,7 +1,7 @@
 import { State, InteractionState } from './utils/types'
 const config = {
 	// app settings
-	loadingScreen: true,
+	loadingScreen: false,
 	botStarts: true,
 	startDelay: 2000,
 	historyInterval: 1500,

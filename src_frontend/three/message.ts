@@ -18,6 +18,7 @@ export default class Message extends SceneSubject {
 	offset: number
 	scroll: number
 	visible: boolean
+	scrollable: boolean
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	troika: any
@@ -39,6 +40,7 @@ export default class Message extends SceneSubject {
 		this.text = text
 		this.indicatorPos = this.position.clone()
 		this.scroll = 0
+		this.scrollable = false
 
 		// Create Text
 		this.troika = new Text()
@@ -108,6 +110,7 @@ export default class Message extends SceneSubject {
 	}
 
 	scrollVertical(): void {
+		if (!this.scrollable) return
 		this.scroll -= this.state.lineHeight
 		this.setVerticalPosition()
 		this.updateVisibility()

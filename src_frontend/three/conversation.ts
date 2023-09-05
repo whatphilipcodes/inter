@@ -78,11 +78,14 @@ export default class Conversation extends SceneSubject {
 				})
 		}
 		for (const message of this.messages) {
-			message.scrollVertical()
+			message.scrollable = true
 		}
 		if (this.buffer.length > 0) {
 			this.addMessages(this.buffer, true)
 			this.buffer = []
+		}
+		for (const message of this.messages) {
+			message.scrollVertical()
 		}
 		if (this.historyIndex >= this.state.databaseLength) {
 			if (config.debugMsg) console.log('resetting history index')

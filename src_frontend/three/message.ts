@@ -110,10 +110,10 @@ export default class Message extends SceneSubject {
 	scrollVertical(): void {
 		this.scroll -= this.state.lineHeight
 		this.setVerticalPosition()
-		this.checkVisibility()
+		this.updateVisibility()
 	}
 
-	checkVisibility(): void {
+	updateVisibility(): void {
 		if (this.position.y + this.height < this.state.leftBottom.y) {
 			this.visible = false
 		}

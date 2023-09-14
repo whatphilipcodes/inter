@@ -79,11 +79,11 @@ export default class Message extends SceneSubject {
 		switch (this.text.type) {
 			case ConvoType.input:
 				this.position.setX(this.state.leftBottom.x + this.state.spacing)
-				if (config.truthScore) {
-					this.position.setX(
-						this.position.x + this.state.ctpOffset * 0.5 * this.text.trust
-					)
-				}
+				// if (config.truthScore) {
+				// 	this.position.setX(
+				// 		this.position.x + this.state.ctpOffset * 0.5 * this.text.trust
+				// 	)
+				// }
 				this.indicatorPos.setX(this.state.leftBottom.x)
 				break
 			case ConvoType.response:

@@ -79,11 +79,6 @@ export default class Message extends SceneSubject {
 		switch (this.text.type) {
 			case ConvoType.input:
 				this.position.setX(this.state.leftBottom.x + this.state.spacing)
-				// if (config.truthScore) {
-				// 	this.position.setX(
-				// 		this.position.x + this.state.ctpOffset * 0.5 * this.text.trust
-				// 	)
-				// }
 				this.indicatorPos.setX(this.state.leftBottom.x)
 				break
 			case ConvoType.response:
@@ -110,7 +105,7 @@ export default class Message extends SceneSubject {
 	}
 
 	scrollVertical(): void {
-		if (!this.scrollable) return
+		//if (!this.scrollable || !this.visible) return
 		this.scroll -= this.state.lineHeight
 		this.setVerticalPosition()
 		this.updateVisibility()
@@ -156,6 +151,7 @@ export default class Message extends SceneSubject {
 				this.state.lineHeight * this.state.cursorWidthRatio,
 				this.height
 			)
+			//this.scrollable = true
 			resolve()
 		})
 	}

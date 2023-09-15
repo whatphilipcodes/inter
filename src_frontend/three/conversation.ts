@@ -14,6 +14,8 @@ export default class Conversation extends SceneSubject {
 	msgPending: boolean
 	msgVisible: number
 
+	scroll: number
+
 	historyInterval: NodeJS.Timer
 	historyIndex: number
 	// chunks need to scale with the grid settings in order to fill the screen -> load ConvoTexts while height < sample size n = numLines * lineHeight * 2
@@ -43,6 +45,7 @@ export default class Conversation extends SceneSubject {
 	}
 
 	handleEnterState(newState: State): void {
+		this.scroll = 0
 		switch (newState) {
 			case State.interaction:
 				clearInterval(this.historyInterval)
@@ -77,21 +80,26 @@ export default class Conversation extends SceneSubject {
 					this.msgPending = false
 				})
 		}
+
 		for (const message of this.messages) {
 			message.scrollable = true
 		}
+
 		if (this.buffer.length > 0) {
+			this.buffer.reverse()
 			for (const item of this.buffer) {
 				this.addMessage(item, true)
 			}
 			this.buffer = []
 		}
-		for (const message of this.messages) {
-			//message.scrollVertical()
-		}
+
+		this.scrollVertical()
+
 		if (this.historyIndex >= this.state.databaseLength) {
 			if (config.debugMsg) console.log('resetting history index')
 			this.historyIndex = 1
+			this.clearMessages()
+			this.scroll = 0
 		}
 	}
 
@@ -109,31 +117,17 @@ export default class Conversation extends SceneSubject {
 		} else {
 			this.messages.unshift(message)
 		}
-		this.positionMessagesVertically()
+		new Promise((resolve) => {
+			resolve(message.setHeight())
+		}).then(() => {
+			this.positionMessagesVertically()
+			this.add(message)
+		})
 	}
-	// addMessages(newMessages: ConvoText[], history = false): void {
-	// 	const heightPromises: Promise<void>[] = []
-	// 	// loops backwards to start with the oldest message
-	// 	for (let i = newMessages.length - 1; i >= 0; i--) {
-	// 		const input = newMessages[i]
-	// 		const message: Message = new Message(
-	// 			input.timestamp,
-	// 			this.scene,
-	// 			this.camera,
-	// 			this.state,
-	// 			input
-	// 		)
-	// 		if (history) {
-	// 			this.messages.push(message)
-	// 		} else {
-	// 			this.messages.unshift(message)
-	// 		}
-	// 		heightPromises.push(message.setHeight())
-	// 	}
-	// 	Promise.all(heightPromises).then(() => {
-	// 		this.positionMessagesVertically()
-	// 	})
-	// }
+
+	scrollVertical(): void {
+		this.scroll -= this.state.lineHeight
+	}
 
 	clearMessages(): void {
 		for (const message of this.messages) {
@@ -157,7 +151,7 @@ export default class Conversation extends SceneSubject {
 	}
 
 	positionMessagesVertically(): void {
-		let yOffset = this.state.leftBottom.y + this.state.inputHeight
+		let yOffset = this.state.leftBottom.y + this.state.inputHeight + this.scroll
 		for (const message of this.messages) {
 			message.offset = yOffset
 			message.setVerticalPosition()

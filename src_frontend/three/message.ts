@@ -104,12 +104,12 @@ export default class Message extends SceneSubject {
 		this.indicatorPos.setY(this.position.y)
 	}
 
-	scrollVertical(): void {
-		//if (!this.scrollable || !this.visible) return
-		this.scroll -= this.state.lineHeight
-		this.setVerticalPosition()
-		this.updateVisibility()
-	}
+	// scrollVertical(): void {
+	// 	//if (!this.scrollable || !this.visible) return
+	// 	this.scroll -= this.state.lineHeight
+	// 	this.setVerticalPosition()
+	// 	this.updateVisibility()
+	// }
 
 	updateVisibility(): void {
 		if (this.position.y + this.height < this.state.leftBottom.y) {

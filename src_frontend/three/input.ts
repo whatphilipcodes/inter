@@ -71,7 +71,7 @@ export default class Input extends SceneSubject {
 		}
 		this.state.mutate({
 			chatState: InteractionState.waiting,
-			conversation: [...this.state.conversation, message],
+			message: message,
 			messageID: this.state.messageID + 1,
 			input: '',
 			cursorPos: 0,
@@ -79,7 +79,7 @@ export default class Input extends SceneSubject {
 		this.state.api.post('/api/infer', message).then((res: ConvoText) => {
 			this.state.mutate({
 				chatState: InteractionState.input,
-				conversation: [...this.state.conversation, res],
+				message: res,
 				messageID: this.state.messageID + 1,
 			})
 		})

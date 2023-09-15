@@ -15,7 +15,7 @@ export class Store {
 	// conversation
 	convoID: number
 	messageID: number
-	conversation: ConvoText[]
+	message: ConvoText
 	greeting: ConvoText
 	databaseLength: number
 

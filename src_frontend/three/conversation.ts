@@ -29,12 +29,12 @@ export default class Conversation extends SceneSubject {
 		this.msgPending = false
 
 		// init empty conversation
-		this.state.mutate({ conversation: [] })
+		this.state.mutate({ message: null })
 
 		// update messages with store subscription
-		this.state.subscribe('conversation', () => {
-			this.addMessages(this.state.conversation)
-			this.state.conversation = []
+		this.state.subscribe('message', () => {
+			this.addMessage(this.state.message)
+			this.state.message = null
 		})
 
 		this.state.subscribe('appState', (newState: State) => {
@@ -81,11 +81,13 @@ export default class Conversation extends SceneSubject {
 			message.scrollable = true
 		}
 		if (this.buffer.length > 0) {
-			this.addMessages(this.buffer, true)
+			for (const item of this.buffer) {
+				this.addMessage(item, true)
+			}
 			this.buffer = []
 		}
 		for (const message of this.messages) {
-			message.scrollVertical()
+			//message.scrollVertical()
 		}
 		if (this.historyIndex >= this.state.databaseLength) {
 			if (config.debugMsg) console.log('resetting history index')
@@ -94,29 +96,44 @@ export default class Conversation extends SceneSubject {
 	}
 
 	// Methods
-	addMessages(newMessages: ConvoText[], history = false): void {
-		const heightPromises: Promise<void>[] = []
-		// loops backwards to start with the oldest message
-		for (let i = newMessages.length - 1; i >= 0; i--) {
-			const input = newMessages[i]
-			const message: Message = new Message(
-				input.timestamp,
-				this.scene,
-				this.camera,
-				this.state,
-				input
-			)
-			if (history) {
-				this.messages.push(message)
-			} else {
-				this.messages.unshift(message)
-			}
-			heightPromises.push(message.setHeight())
+	addMessage(newMessage: ConvoText, history = false): void {
+		const message: Message = new Message(
+			newMessage.timestamp,
+			this.scene,
+			this.camera,
+			this.state,
+			newMessage
+		)
+		if (history) {
+			this.messages.push(message)
+		} else {
+			this.messages.unshift(message)
 		}
-		Promise.all(heightPromises).then(() => {
-			this.positionMessagesVertically()
-		})
+		this.positionMessagesVertically()
 	}
+	// addMessages(newMessages: ConvoText[], history = false): void {
+	// 	const heightPromises: Promise<void>[] = []
+	// 	// loops backwards to start with the oldest message
+	// 	for (let i = newMessages.length - 1; i >= 0; i--) {
+	// 		const input = newMessages[i]
+	// 		const message: Message = new Message(
+	// 			input.timestamp,
+	// 			this.scene,
+	// 			this.camera,
+	// 			this.state,
+	// 			input
+	// 		)
+	// 		if (history) {
+	// 			this.messages.push(message)
+	// 		} else {
+	// 			this.messages.unshift(message)
+	// 		}
+	// 		heightPromises.push(message.setHeight())
+	// 	}
+	// 	Promise.all(heightPromises).then(() => {
+	// 		this.positionMessagesVertically()
+	// 	})
+	// }
 
 	clearMessages(): void {
 		for (const message of this.messages) {

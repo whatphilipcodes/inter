@@ -19,7 +19,7 @@ Truth often implies a sense of objectiveness despite its ability of being highly
   [Download from NVIDIA](https://developer.nvidia.com/cuda-11-8-0-download-archive)
 
 - Install the current Release<br>
-  [Download from GitHub](https://github.com/whatphilipcodes/inter/releases)
+  [Download from Google Drive](https://drive.google.com/file/d/1w1eX_KdQQt4pXLrNMGWdebUVukQOqPUp/view?usp=sharing)
 
 # Dev Env Setup
 
